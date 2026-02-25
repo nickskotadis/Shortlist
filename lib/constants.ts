@@ -11,7 +11,7 @@ export const PROMPT_VERSIONS = {
   bullets: "bullets-v1",
   summary: "summary-v1",
   cover_letter: "cover-letter-v1",
-  validator: "validator-v1",
+  validator: "validator-v2",
 } as const;
 
 export const BANNED_PHRASES = [

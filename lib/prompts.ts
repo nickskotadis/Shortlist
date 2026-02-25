@@ -307,9 +307,12 @@ export function buildValidatorPrompt(
   documentType: DocumentType,
   jdAnalysis: Partial<JdAnalysis>,
   output: string,
-  userType: UserType
+  userType: UserType,
+  candidateInput: string
 ): string {
-  return `You are a senior hiring manager reviewing resume/cover letter content. Score harshly. The bar is: "Would a hiring manager at a top company find this compelling and credible?"
+  return `You are a senior hiring manager reviewing resume/cover letter content. Your job has two parts: quality scoring and hallucination detection.
+
+── PART 1: QUALITY SCORING ───────────────────────────────────────────────────
 
 Score each dimension 1–10:
 1. SPECIFICITY — All claims backed by evidence, metrics, or concrete context?
@@ -321,18 +324,39 @@ Score each dimension 1–10:
 Banned phrases (any occurrence = immediate flag):
 ${banned}
 
----
+── PART 2: HALLUCINATION CHECK ───────────────────────────────────────────────
 
-CONTEXT:
+Compare the generated output against the candidate's original input below. Flag every specific claim in the output that cannot be traced back to what the candidate actually told us.
+
+Flag as type "hallucination":
+- Specific numbers (percentages, dollar amounts, headcount, timeframes like "in 3 months") that do NOT appear in the candidate input
+- Named skills, tools, languages, or technologies not mentioned by the candidate
+- Credentials, certifications, degrees, company names, or titles not in the candidate input
+
+Flag as type "skill_inflation":
+- Skills or tools the candidate mentioned but the output overstates (e.g., candidate said "familiar with Python", output claims "expert Python developer")
+
+Do NOT flag:
+- Qualitative framing consistent with the described role ("led cross-functional teams", "managed stakeholder relationships")
+- JD terminology mirrored in a non-claim context (role language, industry vocabulary)
+- Relative benchmarks without a fabricated number ("significant growth", "top performer")
+- Reasonable structural inferences from the user type (e.g., an executive likely had P&L exposure)
+
+CANDIDATE'S ORIGINAL INPUT:
+${candidateInput}
+
+── CONTEXT ────────────────────────────────────────────────────────────────────
+
 Document type: ${documentType}
 Target role: ${jdAnalysis.role_title ?? ""}
 User type: ${userType}
 What the role actually needs: ${jdAnalysis.implicit_signals?.what_they_actually_need ?? ""}
 
-CONTENT TO REVIEW:
+── GENERATED OUTPUT TO REVIEW ─────────────────────────────────────────────────
+
 ${output}
 
----
+──────────────────────────────────────────────────────────────────────────────
 
 Return ONLY valid JSON. No text outside the JSON, no markdown code fences:
 
@@ -347,9 +371,9 @@ Return ONLY valid JSON. No text outside the JSON, no markdown code fences:
   "overall": 0.0,
   "issues": [
     {
-      "type": "banned_phrase | vague_claim | irrelevant | passive_voice | generic | other",
+      "type": "hallucination | skill_inflation | banned_phrase | vague_claim | irrelevant | passive_voice | generic | other",
       "location": "exact quote from the output",
-      "fix": "specific suggested replacement"
+      "fix": "specific instruction or replacement"
     }
   ],
   "verdict": "PASS | REVISE | REJECT",
@@ -357,9 +381,9 @@ Return ONLY valid JSON. No text outside the JSON, no markdown code fences:
 }
 
 Verdict thresholds:
-- PASS: overall >= 7.0 AND no individual score below 6
-- REVISE: overall >= 5.5 OR any score below 6
-- REJECT: overall < 5.5 OR specificity < 4 OR authenticity < 4`;
+- PASS: overall >= 7.0 AND no individual score below 6 AND zero hallucination/skill_inflation issues
+- REVISE: overall >= 5.5 OR any score below 6 OR exactly 1 hallucination/skill_inflation issue
+- REJECT: overall < 5.5 OR specificity < 4 OR authenticity < 4 OR 2+ hallucination/skill_inflation issues`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -396,9 +420,16 @@ export function resolveVerdict(result: {
   overall: number;
   scores: Record<string, number>;
   verdict: ValidatorVerdict;
+  issues?: Array<{ type: string }>;
 }): ValidatorVerdict {
-  const { overall, scores } = result;
-  if (overall >= 7.0 && Object.values(scores).every((s) => s >= 6)) return "PASS";
-  if (overall >= 5.5) return "REVISE";
+  const { overall, scores, issues = [] } = result;
+  const fabrications = issues.filter(
+    (i) => i.type === "hallucination" || i.type === "skill_inflation"
+  ).length;
+
+  if (fabrications >= 2) return "REJECT";
+  if (overall >= 7.0 && Object.values(scores).every((s) => s >= 6) && fabrications === 0)
+    return "PASS";
+  if (overall >= 5.5 || fabrications === 1) return "REVISE";
   return "REJECT";
 }

@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
             messages: [
               {
                 role: "user",
-                content: buildValidatorPrompt(document_type, jdAnalysis, text, user_type),
+                content: buildValidatorPrompt(document_type, jdAnalysis, text, user_type, candidate_input),
               },
             ],
           });
