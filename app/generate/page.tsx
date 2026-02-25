@@ -260,9 +260,9 @@ export default function GeneratePage() {
           <Link href="/" className="text-base font-semibold text-slate-900 tracking-tight hover:text-indigo-600 transition-colors">
             Shortlist
           </Link>
-          <span className="text-xs text-slate-400 hidden sm:block">
-            Fill in the form → click Generate
-          </span>
+          <Link href="/dashboard" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">
+            Dashboard
+          </Link>
         </div>
       </nav>
 

@@ -1,6 +1,17 @@
 export const MODELS = {
   generator: "claude-sonnet-4-6",
+  parser: "claude-haiku-4-5-20251001",   // JD parsing — Haiku is sufficient and 6x cheaper
   validator: "claude-haiku-4-5-20251001",
+} as const;
+
+// Bump the version string whenever you edit the corresponding prompt template.
+// Stored on every generations row so you can measure impact of prompt changes.
+export const PROMPT_VERSIONS = {
+  jd_parser: "jd-parser-v1",
+  bullets: "bullets-v1",
+  summary: "summary-v1",
+  cover_letter: "cover-letter-v1",
+  validator: "validator-v1",
 } as const;
 
 export const BANNED_PHRASES = [

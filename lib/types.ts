@@ -84,5 +84,5 @@ export type SseEvent =
   | { type: "jd_analysis"; data: JdAnalysis }
   | { type: "text"; content: string }
   | { type: "retry"; message: string }
-  | { type: "done"; output: string; jd_analysis: JdAnalysis; scores: ValidatorResult["scores"]; overall: number; verdict: ValidatorVerdict; retry_count: number }
+  | { type: "done"; output: string; jd_analysis: JdAnalysis; scores: ValidatorResult["scores"]; overall: number; verdict: ValidatorVerdict; retry_count: number; prompt_version?: string }
   | { type: "error"; message: string };

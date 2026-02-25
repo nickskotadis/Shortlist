@@ -30,12 +30,20 @@ export default function Home() {
           <span className="text-lg font-semibold text-slate-900 tracking-tight">
             Shortlist
           </span>
-          <Link
-            href="/generate"
-            className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
-          >
-            Try it free →
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/auth/login"
+              className="text-sm text-slate-500 hover:text-slate-700 transition-colors"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/generate"
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+            >
+              Try it free →
+            </Link>
+          </div>
         </div>
       </nav>
 
