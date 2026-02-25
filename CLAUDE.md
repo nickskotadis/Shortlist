@@ -42,11 +42,11 @@ Be decisive. If there are options, pick one and justify it.
 - `PROMPT_VERSIONS` constant in `lib/constants.ts` — stored on every generations row
 - Token counts (`input_tokens`, `output_tokens`) tracked via `finalMessage()`
 
-### Week 2 — TODO
-- Hallucination check + skill inflation check in validator prompt
-- JD analysis cache (Upstash KV, hash-keyed, 1h TTL)
-- Dashboard page: list saved generations with job context
-- Prompt version registry
+### Week 2 — DONE
+- Hallucination + skill inflation detection in validator (validator-v2); issues surfaced in OutputPanel as amber warning card; do NOT drive retries — retrying can't fix fabricated metrics when input is vague
+- JD analysis cache (Upstash KV, SHA-256 hash key, 1h TTL); null-safe — works without env vars; requires UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN
+- Dashboard page (`/dashboard`) — last 50 generations, expandable cards with score bars + copy
+- Prompt version registry was completed in Week 1
 
 ### Week 3 — TODO
 - DOCX export (`docx` npm package)
