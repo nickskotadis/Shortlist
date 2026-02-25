@@ -381,9 +381,11 @@ Return ONLY valid JSON. No text outside the JSON, no markdown code fences:
 }
 
 Verdict thresholds:
-- PASS: overall >= 7.0 AND no individual score below 6 AND zero hallucination/skill_inflation issues
-- REVISE: overall >= 5.5 OR any score below 6 OR exactly 1 hallucination/skill_inflation issue
-- REJECT: overall < 5.5 OR specificity < 4 OR authenticity < 4 OR 2+ hallucination/skill_inflation issues`;
+- PASS: overall >= 7.0 AND no individual score below 6
+- REVISE: overall >= 5.5 OR any score below 6
+- REJECT: overall < 5.5 OR specificity < 4 OR authenticity < 4
+
+Note: hallucination/skill_inflation issues are always flagged in the issues list regardless of verdict, so the user can review them before submitting.`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -422,14 +424,11 @@ export function resolveVerdict(result: {
   verdict: ValidatorVerdict;
   issues?: Array<{ type: string }>;
 }): ValidatorVerdict {
-  const { overall, scores, issues = [] } = result;
-  const fabrications = issues.filter(
-    (i) => i.type === "hallucination" || i.type === "skill_inflation"
-  ).length;
-
-  if (fabrications >= 2) return "REJECT";
-  if (overall >= 7.0 && Object.values(scores).every((s) => s >= 6) && fabrications === 0)
-    return "PASS";
-  if (overall >= 5.5 || fabrications === 1) return "REVISE";
+  const { overall, scores } = result;
+  // Hallucination issues are surfaced to the user via the issues list but do not
+  // drive retries — retrying won't fix invented metrics when the input is vague.
+  // Quality scores (especially Specificity) already penalise hallucinated claims.
+  if (overall >= 7.0 && Object.values(scores).every((s) => s >= 6)) return "PASS";
+  if (overall >= 5.5) return "REVISE";
   return "REJECT";
 }

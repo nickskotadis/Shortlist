@@ -1,5 +1,7 @@
+import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { Redis } from "@upstash/redis";
 import { createClient } from "@/lib/supabase/server";
 import {
   buildJdParserPrompt,
@@ -21,6 +23,21 @@ import type {
 } from "@/lib/types";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+// ── JD analysis cache ─────────────────────────────────────────────────────────
+const redis =
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      })
+    : null;
+
+const JD_CACHE_TTL = 3600; // 1 hour
+
+function jdCacheKey(jdText: string): string {
+  return `jd:${createHash("sha256").update(jdText.trim()).digest("hex").slice(0, 32)}`;
+}
 
 // ── Input length limits ────────────────────────────────────────────────────────
 const LIMITS = {
@@ -103,25 +120,46 @@ export async function POST(req: NextRequest) {
       let validatorResult: ValidatorResult | null = null;
 
       try {
-        // ── Stage 1: Parse JD (Haiku — structured extraction, not creative) ────
+        // ── Stage 1: Parse JD (Haiku — cache-first, 1h TTL) ─────────────────────
         let jdAnalysis: Partial<JdAnalysis> = preAnalyzed ?? {};
 
         if (!preAnalyzed && jd_text) {
-          const jdResponse = await anthropic.messages.create({
-            model: MODELS.parser,
-            max_tokens: 1024,
-            messages: [{ role: "user", content: buildJdParserPrompt(jd_text) }],
-          });
+          let cacheHit = false;
 
-          totalInputTokens += jdResponse.usage.input_tokens;
-          totalOutputTokens += jdResponse.usage.output_tokens;
+          if (redis) {
+            try {
+              const cached = await redis.get<JdAnalysis>(jdCacheKey(jd_text));
+              if (cached) {
+                jdAnalysis = cached;
+                cacheHit = true;
+              }
+            } catch {
+              // Cache read failed — fall through to Haiku
+            }
+          }
 
-          const raw =
-            jdResponse.content[0].type === "text" ? jdResponse.content[0].text : "{}";
-          try {
-            jdAnalysis = JSON.parse(stripCodeFences(raw));
-          } catch {
-            jdAnalysis = {};
+          if (!cacheHit) {
+            const jdResponse = await anthropic.messages.create({
+              model: MODELS.parser,
+              max_tokens: 1024,
+              messages: [{ role: "user", content: buildJdParserPrompt(jd_text) }],
+            });
+
+            totalInputTokens += jdResponse.usage.input_tokens;
+            totalOutputTokens += jdResponse.usage.output_tokens;
+
+            const raw =
+              jdResponse.content[0].type === "text" ? jdResponse.content[0].text : "{}";
+            try {
+              jdAnalysis = JSON.parse(stripCodeFences(raw));
+            } catch {
+              jdAnalysis = {};
+            }
+
+            // Store in cache — fire-and-forget, never block the response
+            if (redis && Object.keys(jdAnalysis).length > 0) {
+              redis.set(jdCacheKey(jd_text), jdAnalysis, { ex: JD_CACHE_TTL }).catch(() => {});
+            }
           }
         }
 
