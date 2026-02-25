@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import type {
   GenerateRequest,
   JdAnalysis,
+  ValidatorIssue,
   ValidatorResult,
   ValidatorVerdict,
 } from "@/lib/types";
@@ -23,6 +24,7 @@ export interface GenerateResult {
   overall: number;
   verdict: ValidatorVerdict;
   retryCount: number;
+  issues: ValidatorIssue[];
 }
 
 export function useGenerate() {
@@ -98,6 +100,7 @@ export function useGenerate() {
                   overall: event.overall,
                   verdict: event.verdict,
                   retryCount: event.retry_count,
+                  issues: event.issues ?? [],
                 });
                 setStatus("done");
                 break;

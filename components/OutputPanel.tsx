@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { GenerateStatus, GenerateResult } from "@/hooks/useGenerate";
-import type { JdAnalysis } from "@/lib/types";
+import type { JdAnalysis, ValidatorIssue } from "@/lib/types";
 
 interface OutputPanelProps {
   status: GenerateStatus;
@@ -196,6 +196,35 @@ export default function OutputPanel({
               </p>
             )}
           </div>
+
+          {/* Hallucination / skill inflation flags */}
+          {(() => {
+            const flags = result.issues.filter(
+              (i: ValidatorIssue) => i.type === "hallucination" || i.type === "skill_inflation"
+            );
+            if (flags.length === 0) return null;
+            return (
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <svg className="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <p className="text-xs font-semibold text-amber-800">Verify before submitting</p>
+                </div>
+                <div className="space-y-3">
+                  {flags.map((flag: ValidatorIssue, i: number) => (
+                    <div key={i}>
+                      <p className="text-xs font-mono text-amber-900 bg-amber-100 px-2 py-1 rounded mb-1 break-words">
+                        &ldquo;{flag.location}&rdquo;
+                      </p>
+                      <p className="text-xs text-amber-700 leading-relaxed">{flag.fix}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Actions */}
           <div className="flex gap-2">

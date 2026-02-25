@@ -280,6 +280,7 @@ export async function POST(req: NextRequest) {
           verdict: validatorResult.verdict,
           retry_count: retryCount,
           prompt_version: promptVersion,
+          issues: validatorResult.issues,
         });
 
         // ── Persist to DB (authenticated users only) ─────────────────────────────
