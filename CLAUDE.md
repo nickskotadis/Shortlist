@@ -54,6 +54,12 @@ Be decisive. If there are options, pick one and justify it.
 - No Supabase Storage — direct download, no signed URLs needed
 - Feedback rating (thumbs up/down) — `generations.feedback_positive boolean` column; `/api/generations/[id]/feedback` PATCH; optimistic UI in dashboard cards; UPDATE RLS policy required (`migration_002.sql`)
 
+### Post-Week 3 cleanup — DONE
+- `generation_id` surfaced through SSE `done` event → `GenerateResult` → `OutputPanel`; DB insert moved before `done` send so ID is available immediately
+- Thumbs up/down feedback added to `OutputPanel` (fresh generations) — only visible when authenticated (generation_id present); previously dashboard-only
+- Export error messages — both `OutputPanel` and dashboard cards now show inline error instead of silent failure
+- `migration_003.sql` — drops unused `feedback_rating smallint` column (was in migration_001, never used); adds `on_generation_created` trigger to increment `profiles.generation_count` on every insert (required for Week 4 rate limiting); backfill: `UPDATE profiles SET generation_count = (SELECT COUNT(*) FROM generations WHERE user_id = profiles.id)`
+
 ### Week 4 — TODO
 - Stripe billing (Free / Pro)
 - `/api/stripe/hook` webhook
@@ -75,7 +81,9 @@ Be decisive. If there are options, pick one and justify it.
 - `supabase/schema.sql` — base schema
 - `supabase/migration_001.sql` — plan/billing + generation metadata columns
 - `supabase/migration_002.sql` — feedback_positive column + UPDATE RLS policy
+- `supabase/migration_003.sql` — drop feedback_rating; generation_count trigger
 - `lib/export.ts` — server-only DOCX + PDF generators (never import from client components)
+- `hooks/useGenerate.ts` — `GenerateResult` includes `generationId: string | null` (null for unauthenticated)
 - `proxy.ts` — Next.js 16 session middleware (note: not `middleware.ts`)
 
 ## Design system
