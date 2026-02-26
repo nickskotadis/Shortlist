@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { GenerateStatus, GenerateResult } from "@/hooks/useGenerate";
-import type { JdAnalysis, ValidatorIssue } from "@/lib/types";
+import type { JdAnalysis, ValidatorIssue, DocumentType } from "@/lib/types";
 
 interface OutputPanelProps {
   status: GenerateStatus;
@@ -10,6 +10,7 @@ interface OutputPanelProps {
   jdAnalysis: JdAnalysis | null;
   result: GenerateResult | null;
   error: string | null;
+  documentType: DocumentType;
 }
 
 const scoreLabels: Record<string, string> = {
@@ -62,14 +63,34 @@ function StatusBadge({ verdict }: { verdict: string }) {
   );
 }
 
+function DownloadIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+    </svg>
+  );
+}
+
+function Spinner() {
+  return (
+    <span className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+  );
+}
+
 export default function OutputPanel({
   status,
   streamText,
   jdAnalysis,
   result,
   error,
+  documentType,
 }: OutputPanelProps) {
   const [copied, setCopied] = useState(false);
+  const [exportLoading, setExportLoading] = useState<{ docx: boolean; pdf: boolean }>({
+    docx: false,
+    pdf: false,
+  });
 
   const copy = async () => {
     const text = result?.output ?? streamText;
@@ -77,6 +98,34 @@ export default function OutputPanel({
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const downloadExport = async (format: "docx" | "pdf") => {
+    if (!result?.output) return;
+    setExportLoading((prev) => ({ ...prev, [format]: true }));
+    try {
+      const res = await fetch("/api/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          output_text: result.output,
+          document_type: documentType,
+          format,
+        }),
+      });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `shortlist-${documentType}.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export failed:", err);
+    } finally {
+      setExportLoading((prev) => ({ ...prev, [format]: false }));
+    }
   };
 
   // ── Idle state ─────────────────────────────────────────────────────────────
@@ -227,7 +276,8 @@ export default function OutputPanel({
           })()}
 
           {/* Actions */}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Copy */}
             <button
               onClick={copy}
               className="flex items-center gap-2 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg transition-colors"
@@ -250,6 +300,27 @@ export default function OutputPanel({
               )}
             </button>
 
+            {/* DOCX */}
+            <button
+              onClick={() => downloadExport("docx")}
+              disabled={exportLoading.docx}
+              className="flex items-center gap-2 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {exportLoading.docx ? <Spinner /> : <DownloadIcon />}
+              DOCX
+            </button>
+
+            {/* PDF */}
+            <button
+              onClick={() => downloadExport("pdf")}
+              disabled={exportLoading.pdf}
+              className="flex items-center gap-2 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {exportLoading.pdf ? <Spinner /> : <DownloadIcon />}
+              PDF
+            </button>
+
+            {/* Hiring manager worry */}
             {jdAnalysis?.hiring_manager_worry && (
               <div className="flex-1 bg-slate-50 rounded-lg px-4 py-2 border border-slate-100">
                 <p className="text-xs text-slate-400 font-medium mb-0.5">What they worry about</p>

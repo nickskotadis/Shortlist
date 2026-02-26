@@ -23,6 +23,7 @@ export interface Generation {
   input_tokens: number | null;
   output_tokens: number | null;
   latency_ms: number | null;
+  feedback_positive: boolean | null;
   job_applications: {
     company_name: string | null;
     job_title: string | null;
@@ -102,11 +103,50 @@ function ScoreBar({ label, score }: { label: string; score: number }) {
   );
 }
 
+function ThumbsUpIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z" />
+      <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+    </svg>
+  );
+}
+
+function ThumbsDownIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3z" />
+      <path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" />
+    </svg>
+  );
+}
+
+function DownloadIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+    </svg>
+  );
+}
+
+function MiniSpinner() {
+  return (
+    <span className="w-3.5 h-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+  );
+}
+
 // ── Generation card ───────────────────────────────────────────────────────────
 
 function GenerationCard({ gen }: { gen: Generation }) {
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [feedback, setFeedback] = useState<boolean | null>(gen.feedback_positive);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [exportLoading, setExportLoading] = useState<{ docx: boolean; pdf: boolean }>({
+    docx: false,
+    pdf: false,
+  });
 
   const jobTitle = gen.job_applications?.job_title;
   const company = gen.job_applications?.company_name;
@@ -119,6 +159,52 @@ function GenerationCard({ gen }: { gen: Generation }) {
     await navigator.clipboard.writeText(gen.output_text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const submitFeedback = async (positive: boolean) => {
+    if (feedback === positive || feedbackLoading) return;
+    const prev = feedback;
+    setFeedback(positive); // optimistic
+    setFeedbackLoading(true);
+    try {
+      const res = await fetch(`/api/generations/${gen.id}/feedback`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ positive }),
+      });
+      if (!res.ok) setFeedback(prev); // revert on error
+    } catch {
+      setFeedback(prev);
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
+
+  const downloadExport = async (format: "docx" | "pdf") => {
+    setExportLoading((prev) => ({ ...prev, [format]: true }));
+    try {
+      const res = await fetch("/api/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          output_text: gen.output_text,
+          document_type: gen.document_type,
+          format,
+        }),
+      });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `shortlist-${gen.document_type}.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export failed:", err);
+    } finally {
+      setExportLoading((prev) => ({ ...prev, [format]: false }));
+    }
   };
 
   return (
@@ -190,12 +276,71 @@ function GenerationCard({ gen }: { gen: Generation }) {
                   </span>
                 )}
               </div>
-              <button
-                onClick={handleCopy}
-                className="text-xs font-medium text-slate-600 hover:text-indigo-600 transition-colors"
-              >
-                {copied ? "✓ Copied" : "Copy"}
-              </button>
+
+              {/* Actions: export + feedback + copy */}
+              <div className="flex items-center gap-3">
+                {/* DOCX */}
+                <button
+                  onClick={() => downloadExport("docx")}
+                  disabled={exportLoading.docx}
+                  className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {exportLoading.docx ? <MiniSpinner /> : <DownloadIcon />}
+                  DOCX
+                </button>
+
+                {/* PDF */}
+                <button
+                  onClick={() => downloadExport("pdf")}
+                  disabled={exportLoading.pdf}
+                  className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {exportLoading.pdf ? <MiniSpinner /> : <DownloadIcon />}
+                  PDF
+                </button>
+
+                <span className="text-slate-200">|</span>
+
+                {/* Thumbs up */}
+                <button
+                  onClick={() => submitFeedback(true)}
+                  disabled={feedbackLoading}
+                  aria-label="Helpful"
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium transition-all disabled:cursor-not-allowed ${
+                    feedback === true
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                      : "bg-white border-slate-200 text-slate-500 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600"
+                  }`}
+                >
+                  <ThumbsUpIcon />
+                  {feedback === true ? "Helpful" : ""}
+                </button>
+
+                {/* Thumbs down */}
+                <button
+                  onClick={() => submitFeedback(false)}
+                  disabled={feedbackLoading}
+                  aria-label="Not helpful"
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium transition-all disabled:cursor-not-allowed ${
+                    feedback === false
+                      ? "bg-red-50 border-red-200 text-red-600"
+                      : "bg-white border-slate-200 text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                  }`}
+                >
+                  <ThumbsDownIcon />
+                  {feedback === false ? "Not helpful" : ""}
+                </button>
+
+                <span className="text-slate-200">|</span>
+
+                {/* Copy */}
+                <button
+                  onClick={handleCopy}
+                  className="text-xs font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+                >
+                  {copied ? "✓ Copied" : "Copy"}
+                </button>
+              </div>
             </div>
           </div>
         </>

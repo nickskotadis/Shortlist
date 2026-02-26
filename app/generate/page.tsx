@@ -445,6 +445,7 @@ export default function GeneratePage() {
             jdAnalysis={jdAnalysis}
             result={result}
             error={error}
+            documentType={documentType}
           />
         </div>
       </div>
