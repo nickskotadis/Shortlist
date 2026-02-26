@@ -270,6 +270,50 @@ export async function POST(req: NextRequest) {
 
         const promptVersion = PROMPT_VERSIONS[document_type];
 
+        // ── Persist to DB (authenticated users only) ─────────────────────────────
+        // Insert before sending "done" so we can include the generation_id.
+        let generationId: string | null = null;
+
+        if (user) {
+          const hasMetrics = /[\d%$€£]/.test(candidate_input);
+          const candidateWordCount = candidate_input.trim().split(/\s+/).length;
+          const jdWordCount = jd_text ? jd_text.trim().split(/\s+/).length : 0;
+
+          const { data: insertData, error: dbError } = await supabase
+            .from("generations")
+            .insert({
+              user_id: user.id,
+              job_application_id: body.job_application_id ?? null,
+              document_type,
+              user_type,
+              input_snapshot: {
+                user_type,
+                document_type,
+                candidate_word_count: candidateWordCount,
+                jd_word_count: jdWordCount,
+                has_metrics: hasMetrics,
+              },
+              output_text: fullText,
+              prompt_version: promptVersion,
+              model_used: MODELS.generator,
+              input_tokens: totalInputTokens,
+              output_tokens: totalOutputTokens,
+              latency_ms: Date.now() - startTime,
+              validator_scores: validatorResult.scores,
+              validator_verdict: validatorResult.verdict,
+              retry_count: retryCount,
+            })
+            .select("id")
+            .single();
+
+          if (dbError) {
+            // Don't surface DB errors to the user — generation already succeeded
+            console.error("[shortlist] Failed to save generation:", dbError.message);
+          } else if (insertData) {
+            generationId = insertData.id;
+          }
+        }
+
         // ── Done ─────────────────────────────────────────────────────────────────
         send({
           type: "done",
@@ -281,42 +325,8 @@ export async function POST(req: NextRequest) {
           retry_count: retryCount,
           prompt_version: promptVersion,
           issues: validatorResult.issues,
+          generation_id: generationId ?? undefined,
         });
-
-        // ── Persist to DB (authenticated users only) ─────────────────────────────
-        if (user) {
-          const hasMetrics = /[\d%$€£]/.test(candidate_input);
-          const candidateWordCount = candidate_input.trim().split(/\s+/).length;
-          const jdWordCount = jd_text ? jd_text.trim().split(/\s+/).length : 0;
-
-          const { error: dbError } = await supabase.from("generations").insert({
-            user_id: user.id,
-            job_application_id: body.job_application_id ?? null,
-            document_type,
-            user_type,
-            input_snapshot: {
-              user_type,
-              document_type,
-              candidate_word_count: candidateWordCount,
-              jd_word_count: jdWordCount,
-              has_metrics: hasMetrics,
-            },
-            output_text: fullText,
-            prompt_version: promptVersion,
-            model_used: MODELS.generator,
-            input_tokens: totalInputTokens,
-            output_tokens: totalOutputTokens,
-            latency_ms: Date.now() - startTime,
-            validator_scores: validatorResult.scores,
-            validator_verdict: validatorResult.verdict,
-            retry_count: retryCount,
-          });
-
-          if (dbError) {
-            // Don't surface DB errors to the user — generation already succeeded
-            console.error("[shortlist] Failed to save generation:", dbError.message);
-          }
-        }
       } catch (err) {
         const message = err instanceof Error ? err.message : "Generation failed";
         send({ type: "error", message });

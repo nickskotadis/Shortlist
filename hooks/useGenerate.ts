@@ -25,6 +25,7 @@ export interface GenerateResult {
   verdict: ValidatorVerdict;
   retryCount: number;
   issues: ValidatorIssue[];
+  generationId: string | null;
 }
 
 export function useGenerate() {
@@ -101,6 +102,7 @@ export function useGenerate() {
                   verdict: event.verdict,
                   retryCount: event.retry_count,
                   issues: event.issues ?? [],
+                  generationId: event.generation_id ?? null,
                 });
                 setStatus("done");
                 break;

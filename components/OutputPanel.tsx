@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { GenerateStatus, GenerateResult } from "@/hooks/useGenerate";
 import type { JdAnalysis, ValidatorIssue, DocumentType } from "@/lib/types";
 
@@ -78,6 +78,24 @@ function Spinner() {
   );
 }
 
+function ThumbsUpIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z" />
+      <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+    </svg>
+  );
+}
+
+function ThumbsDownIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3z" />
+      <path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" />
+    </svg>
+  );
+}
+
 export default function OutputPanel({
   status,
   streamText,
@@ -91,6 +109,17 @@ export default function OutputPanel({
     docx: false,
     pdf: false,
   });
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<boolean | null>(null);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+
+  // Reset per-result state when a new generation starts
+  useEffect(() => {
+    if (status === "parsing") {
+      setFeedback(null);
+      setExportError(null);
+    }
+  }, [status]);
 
   const copy = async () => {
     const text = result?.output ?? streamText;
@@ -103,6 +132,7 @@ export default function OutputPanel({
   const downloadExport = async (format: "docx" | "pdf") => {
     if (!result?.output) return;
     setExportLoading((prev) => ({ ...prev, [format]: true }));
+    setExportError(null);
     try {
       const res = await fetch("/api/export", {
         method: "POST",
@@ -113,7 +143,10 @@ export default function OutputPanel({
           format,
         }),
       });
-      if (!res.ok) return;
+      if (!res.ok) {
+        setExportError("Export failed — please try again.");
+        return;
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -121,10 +154,29 @@ export default function OutputPanel({
       a.download = `shortlist-${documentType}.${format}`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Export failed:", err);
+    } catch {
+      setExportError("Export failed — please try again.");
     } finally {
       setExportLoading((prev) => ({ ...prev, [format]: false }));
+    }
+  };
+
+  const submitFeedback = async (positive: boolean) => {
+    if (!result?.generationId || feedback === positive || feedbackLoading) return;
+    const prev = feedback;
+    setFeedback(positive);
+    setFeedbackLoading(true);
+    try {
+      const res = await fetch(`/api/generations/${result.generationId}/feedback`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ positive }),
+      });
+      if (!res.ok) setFeedback(prev);
+    } catch {
+      setFeedback(prev);
+    } finally {
+      setFeedbackLoading(false);
     }
   };
 
@@ -320,6 +372,41 @@ export default function OutputPanel({
               PDF
             </button>
 
+            {/* Feedback — only shown for authenticated users (generationId present) */}
+            {result.generationId && (
+              <>
+                <span className="text-slate-200 text-sm">|</span>
+
+                <button
+                  onClick={() => submitFeedback(true)}
+                  disabled={feedbackLoading}
+                  aria-label="Helpful"
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg border text-xs font-medium transition-all disabled:cursor-not-allowed ${
+                    feedback === true
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                      : "bg-white border-slate-200 text-slate-500 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600"
+                  }`}
+                >
+                  <ThumbsUpIcon />
+                  {feedback === true ? "Helpful" : ""}
+                </button>
+
+                <button
+                  onClick={() => submitFeedback(false)}
+                  disabled={feedbackLoading}
+                  aria-label="Not helpful"
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg border text-xs font-medium transition-all disabled:cursor-not-allowed ${
+                    feedback === false
+                      ? "bg-red-50 border-red-200 text-red-600"
+                      : "bg-white border-slate-200 text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                  }`}
+                >
+                  <ThumbsDownIcon />
+                  {feedback === false ? "Not helpful" : ""}
+                </button>
+              </>
+            )}
+
             {/* Hiring manager worry */}
             {jdAnalysis?.hiring_manager_worry && (
               <div className="flex-1 bg-slate-50 rounded-lg px-4 py-2 border border-slate-100">
@@ -330,6 +417,11 @@ export default function OutputPanel({
               </div>
             )}
           </div>
+
+          {/* Export error */}
+          {exportError && (
+            <p className="text-xs text-red-500">{exportError}</p>
+          )}
         </>
       )}
     </div>

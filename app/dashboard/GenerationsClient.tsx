@@ -147,6 +147,7 @@ function GenerationCard({ gen }: { gen: Generation }) {
     docx: false,
     pdf: false,
   });
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const jobTitle = gen.job_applications?.job_title;
   const company = gen.job_applications?.company_name;
@@ -182,6 +183,7 @@ function GenerationCard({ gen }: { gen: Generation }) {
 
   const downloadExport = async (format: "docx" | "pdf") => {
     setExportLoading((prev) => ({ ...prev, [format]: true }));
+    setExportError(null);
     try {
       const res = await fetch("/api/export", {
         method: "POST",
@@ -192,7 +194,10 @@ function GenerationCard({ gen }: { gen: Generation }) {
           format,
         }),
       });
-      if (!res.ok) return;
+      if (!res.ok) {
+        setExportError("Export failed — please try again.");
+        return;
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -200,8 +205,8 @@ function GenerationCard({ gen }: { gen: Generation }) {
       a.download = `shortlist-${gen.document_type}.${format}`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Export failed:", err);
+    } catch {
+      setExportError("Export failed — please try again.");
     } finally {
       setExportLoading((prev) => ({ ...prev, [format]: false }));
     }
@@ -342,6 +347,9 @@ function GenerationCard({ gen }: { gen: Generation }) {
                 </button>
               </div>
             </div>
+            {exportError && (
+              <p className="text-xs text-red-500 px-6 pb-3">{exportError}</p>
+            )}
           </div>
         </>
       )}
