@@ -11,7 +11,10 @@ export const PROMPT_VERSIONS = {
   bullets: "bullets-v1",
   summary: "summary-v1",
   cover_letter: "cover-letter-v1",
+  linkedin_about: "linkedin-about-v1",
+  linkedin_headline: "linkedin-headline-v1",
   validator: "validator-v2",
+  health_score: "health-score-v1",
 } as const;
 
 export const BANNED_PHRASES = [
@@ -50,3 +53,21 @@ export const FREE_MONTHLY_LIMIT = 2;
 export const MAX_RETRIES = 1;
 export const PASS_THRESHOLD = 7.0;
 export const MIN_DIMENSION_SCORE = 6;
+
+export const TONES = [
+  {
+    value: "professional",
+    label: "Professional",
+    description: "Polished, formal — standard for most industries",
+  },
+  {
+    value: "conversational",
+    label: "Conversational",
+    description: "Warm, approachable — startups and creative roles",
+  },
+  {
+    value: "bold",
+    label: "Bold / Direct",
+    description: "High-confidence, punchy — sales, leadership, exec",
+  },
+] as const;

@@ -1,4 +1,4 @@
-import { DocumentType, JdAnalysis, UserData, UserType, ValidatorVerdict } from "./types";
+import { DocumentType, JdAnalysis, ToneType, UserData, UserType, ValidatorVerdict } from "./types";
 import { BANNED_PHRASES } from "./constants";
 
 const banned = BANNED_PHRASES.join(", ");
@@ -17,6 +17,18 @@ export function stripCodeFences(text: string): string {
 
 export function isPass(overall: number, scores: Record<string, number>, minDimension: number): boolean {
   return overall >= 7.0 && Object.values(scores).every((s) => s >= minDimension);
+}
+
+// Inject a tone override when the user has selected non-default tone
+export function buildToneInstruction(tone?: ToneType): string {
+  if (!tone || tone === "professional") return "";
+  if (tone === "conversational") {
+    return `\nTONE OVERRIDE: Write in a warm, approachable, conversational voice. Use natural phrasing and contractions where they fit. Sound like a real, thoughtful professional — not a corporate document.\n`;
+  }
+  if (tone === "bold") {
+    return `\nTONE OVERRIDE: Write in a bold, direct, high-confidence voice. Lead with the most impressive facts. Make strong declarative statements. Cut all hedging language.\n`;
+  }
+  return "";
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -142,10 +154,11 @@ Tone: Authoritative. Strategic. Precise. Never braggy — let the numbers speak.
 export function buildBulletsPrompt(
   userTypeBlock: string,
   jdAnalysis: Partial<JdAnalysis>,
-  candidateInput: string
+  candidateInput: string,
+  tone?: ToneType
 ): string {
   return `${userTypeBlock}
-
+${buildToneInstruction(tone)}
 ---
 
 You are an elite career strategist and professional writer. You specialize in resume bullets that make hiring managers stop scanning and start reading.
@@ -193,14 +206,15 @@ export function buildSummaryPrompt(
   userTypeBlock: string,
   jdAnalysis: Partial<JdAnalysis>,
   candidateInput: string,
-  topBullets: string[] = []
+  topBullets: string[] = [],
+  tone?: ToneType
 ): string {
   const bulletContext = topBullets.length > 0
     ? `Top achievements (use for coherence):\n${topBullets.slice(0, 2).join("\n")}`
     : `Candidate background:\n${candidateInput}`;
 
   return `${userTypeBlock}
-
+${buildToneInstruction(tone)}
 ---
 
 Write a professional summary for a resume. This is the most-read section — a hiring manager will spend 10 seconds on it and decide whether to continue.
@@ -239,7 +253,8 @@ export function buildCoverLetterPrompt(
   candidateInput: string,
   candidateName?: string,
   additionalNotes?: string,
-  rawJdText?: string
+  rawJdText?: string,
+  tone?: ToneType
 ): string {
   const jobContext = jdAnalysis.role_title
     ? `Company type: ${jdAnalysis.company_type ?? "unknown"}
@@ -253,7 +268,7 @@ Key terminology: ${(jdAnalysis.key_terminology ?? []).join(", ")}`
     : "No job description provided — infer the role from the candidate's background and target.";
 
   return `${userTypeBlock}
-
+${buildToneInstruction(tone)}
 ---
 
 You are writing a cover letter. This is not a template. It is a specific, personal letter from a real person to a real hiring manager at a real company. It must read that way.
@@ -297,6 +312,83 @@ ${additionalNotes ? `Additional notes: ${additionalNotes}` : ""}
 ---
 
 Start directly with the first sentence of the letter. Do not label paragraphs. Do not add any meta-commentary.`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LINKEDIN GENERATORS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function buildLinkedInAboutPrompt(
+  userTypeBlock: string,
+  jdAnalysis: Partial<JdAnalysis>,
+  candidateInput: string,
+  tone?: ToneType
+): string {
+  return `${userTypeBlock}
+${buildToneInstruction(tone)}
+---
+
+Write a LinkedIn About section. This is the most-read section of a LinkedIn profile. It needs to work for recruiters who search for keywords AND hiring managers who visit the profile directly.
+
+Rules:
+- 200–300 words. First-person voice ("I" is allowed and natural here — this is a personal profile, not a resume).
+- Lead with who you are and the problem you solve — not your job title.
+- Include 2–3 specific, quantified achievements woven naturally into the narrative.
+- End with a clear signal of what you're looking for or open to.
+- Optimized for LinkedIn's algorithm: naturally incorporate relevant keywords from the target role without keyword stuffing.
+- No bullet points — flowing paragraphs only (LinkedIn formatting).
+- Do NOT start with "I am" or "I'm a." Start with a hook that earns attention.
+
+Banned phrases:
+${banned}
+
+---
+
+TARGET CONTEXT:
+Role: ${jdAnalysis.role_title ?? "target role"}
+Industry: ${jdAnalysis.industry ?? "target industry"}
+Key terminology: ${(jdAnalysis.key_terminology ?? []).join(", ")}
+
+---
+
+CANDIDATE BACKGROUND:
+${candidateInput}
+
+---
+
+Return only the About text. No label, no explanation.`;
+}
+
+export function buildLinkedInHeadlinePrompt(
+  userTypeBlock: string,
+  jdAnalysis: Partial<JdAnalysis>,
+  candidateInput: string,
+  tone?: ToneType
+): string {
+  return `${userTypeBlock}
+${buildToneInstruction(tone)}
+---
+
+Write a LinkedIn Headline. This 220-character field appears in search results and is the first thing recruiters see.
+
+Rules:
+- Maximum 220 characters (hard limit — count before returning).
+- Keyword-dense: include role title, key skills, and/or industry terms that recruiters actually search for.
+- Differentiated: not just a job title. Show what makes this person distinctive.
+- Format options (pick the best fit):
+  - "[Role] | [Key strength] | [Notable achievement or credential]"
+  - "[Role] helping [type of company/customer] [outcome]"
+  - "[Specific skill] + [specific skill] = [result they deliver]"
+- No generic phrases like "Passionate about..." or "Experienced professional"
+
+TARGET CONTEXT:
+Role: ${jdAnalysis.role_title ?? "target role"}
+Key terminology: ${(jdAnalysis.key_terminology ?? []).join(", ")}
+
+CANDIDATE BACKGROUND:
+${candidateInput}
+
+Return only the headline text. No label, no explanation.`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -431,4 +523,47 @@ export function resolveVerdict(result: {
   if (overall >= 7.0 && Object.values(scores).every((s) => s >= 6)) return "PASS";
   if (overall >= 5.5) return "REVISE";
   return "REJECT";
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESUME HEALTH SCORE
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function buildHealthScorePrompt(resumeText: string): string {
+  return `You are a senior recruiter and career coach. Analyze this resume and return a structured quality assessment.
+
+Score each dimension 1–10:
+1. CLARITY — Is the resume easy to read and scan? Clear sections, logical flow, no confusing structure?
+2. IMPACT — Do bullets/statements convey achievement and outcome, not just job duties?
+3. ATS_FRIENDLINESS — Will ATS systems parse this correctly? Avoids tables, graphics, complex formatting, uses standard section names?
+4. ACTION_VERBS — Do bullets start with strong, specific past-tense action verbs? Or weak/passive openers?
+5. QUANTIFICATION — What percentage of claims include specific numbers, metrics, percentages, or dollar amounts?
+
+Return ONLY valid JSON:
+
+{
+  "scores": {
+    "clarity": 0,
+    "impact": 0,
+    "ats_friendliness": 0,
+    "action_verbs": 0,
+    "quantification": 0
+  },
+  "overall": 0.0,
+  "recommendations": [
+    "specific, actionable suggestion 1",
+    "specific, actionable suggestion 2",
+    "specific, actionable suggestion 3"
+  ],
+  "word_count": 0
+}
+
+Rules:
+- overall = average of all 5 scores
+- recommendations: exactly 3–5 items, each a specific action the candidate can take right now
+- word_count: approximate word count of the resume
+- No text outside the JSON
+
+RESUME:
+${resumeText}`;
 }

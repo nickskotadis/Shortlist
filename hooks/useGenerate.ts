@@ -26,6 +26,7 @@ export interface GenerateResult {
   retryCount: number;
   issues: ValidatorIssue[];
   generationId: string | null;
+  keywords: string[];
 }
 
 export function useGenerate() {
@@ -35,6 +36,7 @@ export function useGenerate() {
   const [result, setResult] = useState<GenerateResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [limitReached, setLimitReached] = useState(false);
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const generate = useCallback(async (request: GenerateRequest) => {
     setStatus("parsing");
@@ -43,6 +45,7 @@ export function useGenerate() {
     setResult(null);
     setError(null);
     setLimitReached(false);
+    setSessionExpired(false);
 
     try {
       const response = await fetch("/api/generate", {
@@ -55,6 +58,12 @@ export function useGenerate() {
         const err = await response.json().catch(() => ({ error: "Request failed" }));
         if (response.status === 429 && err.error === "monthly_limit_reached") {
           setLimitReached(true);
+          setStatus("error");
+          return;
+        }
+        if (response.status === 401) {
+          setSessionExpired(true);
+          setError("Your session has expired — please log in again.");
           setStatus("error");
           return;
         }
@@ -110,6 +119,7 @@ export function useGenerate() {
                   retryCount: event.retry_count,
                   issues: event.issues ?? [],
                   generationId: event.generation_id ?? null,
+                  keywords: event.keywords ?? [],
                 });
                 setStatus("done");
                 break;
@@ -136,7 +146,8 @@ export function useGenerate() {
     setResult(null);
     setError(null);
     setLimitReached(false);
+    setSessionExpired(false);
   }, []);
 
-  return { generate, reset, status, streamText, jdAnalysis, result, error, limitReached };
+  return { generate, reset, status, streamText, jdAnalysis, result, error, limitReached, sessionExpired };
 }

@@ -9,6 +9,8 @@ import {
   buildBulletsPrompt,
   buildSummaryPrompt,
   buildCoverLetterPrompt,
+  buildLinkedInAboutPrompt,
+  buildLinkedInHeadlinePrompt,
   buildValidatorPrompt,
   buildRetryPrompt,
   stripCodeFences,
@@ -46,6 +48,12 @@ const LIMITS = {
   jdMax: 15_000,
 };
 
+const VALID_DOC_TYPES = ["bullets", "summary", "cover_letter", "linkedin_about", "linkedin_headline"];
+const VALID_USER_TYPES = ["career_switcher", "mid_career", "student", "executive"];
+
+// LinkedIn doc types don't require JD (they work from resume alone)
+const JD_OPTIONAL_TYPES = new Set(["linkedin_about", "linkedin_headline"]);
+
 export async function POST(req: NextRequest) {
   let body: GenerateRequest;
   try {
@@ -61,6 +69,7 @@ export async function POST(req: NextRequest) {
     user_type,
     user_data,
     candidate_input,
+    tone,
   } = body;
 
   // ── Field validation ─────────────────────────────────────────────────────────
@@ -70,10 +79,10 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  if (!["bullets", "summary", "cover_letter"].includes(document_type)) {
+  if (!VALID_DOC_TYPES.includes(document_type)) {
     return NextResponse.json({ error: "Invalid document_type" }, { status: 400 });
   }
-  if (!["career_switcher", "mid_career", "student", "executive"].includes(user_type)) {
+  if (!VALID_USER_TYPES.includes(user_type)) {
     return NextResponse.json({ error: "Invalid user_type" }, { status: 400 });
   }
 
@@ -149,6 +158,8 @@ export async function POST(req: NextRequest) {
         // ── Stage 1: Parse JD (Haiku — cache-first, 1h TTL) ─────────────────────
         let jdAnalysis: Partial<JdAnalysis> = preAnalyzed ?? {};
 
+        const needsJd = !JD_OPTIONAL_TYPES.has(document_type);
+
         if (!preAnalyzed && jd_text) {
           let cacheHit = false;
 
@@ -187,6 +198,9 @@ export async function POST(req: NextRequest) {
               redis.set(jdCacheKey(jd_text), jdAnalysis, { ex: JD_CACHE_TTL }).catch(() => {});
             }
           }
+        } else if (!preAnalyzed && !jd_text && needsJd) {
+          // No JD provided and doc type requires it — proceed with empty analysis
+          jdAnalysis = {};
         }
 
         send({ type: "jd_analysis", data: jdAnalysis as JdAnalysis });
@@ -197,9 +211,9 @@ export async function POST(req: NextRequest) {
         const buildPrompt = () => {
           switch (document_type) {
             case "bullets":
-              return buildBulletsPrompt(userTypeBlock, jdAnalysis, candidate_input);
+              return buildBulletsPrompt(userTypeBlock, jdAnalysis, candidate_input, tone);
             case "summary":
-              return buildSummaryPrompt(userTypeBlock, jdAnalysis, candidate_input);
+              return buildSummaryPrompt(userTypeBlock, jdAnalysis, candidate_input, [], tone);
             case "cover_letter":
               return buildCoverLetterPrompt(
                 userTypeBlock,
@@ -207,8 +221,13 @@ export async function POST(req: NextRequest) {
                 candidate_input,
                 user_data?.candidate_name,
                 user_data?.additional_notes,
-                jd_text
+                jd_text,
+                tone
               );
+            case "linkedin_about":
+              return buildLinkedInAboutPrompt(userTypeBlock, jdAnalysis, candidate_input, tone);
+            case "linkedin_headline":
+              return buildLinkedInHeadlinePrompt(userTypeBlock, jdAnalysis, candidate_input, tone);
           }
         };
 
@@ -294,7 +313,7 @@ export async function POST(req: NextRequest) {
           validatorResult = await validate(fullText);
         }
 
-        const promptVersion = PROMPT_VERSIONS[document_type];
+        const promptVersion = PROMPT_VERSIONS[document_type as keyof typeof PROMPT_VERSIONS] ?? document_type;
 
         // ── Persist to DB (authenticated users only) ─────────────────────────────
         // Insert before sending "done" so we can include the generation_id.
@@ -312,6 +331,7 @@ export async function POST(req: NextRequest) {
               job_application_id: body.job_application_id ?? null,
               document_type,
               user_type,
+              tone: tone ?? "professional",
               input_snapshot: {
                 user_type,
                 document_type,
@@ -352,6 +372,7 @@ export async function POST(req: NextRequest) {
           prompt_version: promptVersion,
           issues: validatorResult.issues,
           generation_id: generationId ?? undefined,
+          keywords: (jdAnalysis as JdAnalysis).key_terminology ?? [],
         });
       } catch (err) {
         const message = err instanceof Error ? err.message : "Generation failed";

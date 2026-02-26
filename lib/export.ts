@@ -17,6 +17,8 @@ const DOC_TYPE_LABELS: Record<DocumentType, string> = {
   bullets: "Resume Bullets",
   summary: "Professional Summary",
   cover_letter: "Cover Letter",
+  linkedin_about: "LinkedIn About",
+  linkedin_headline: "LinkedIn Headline",
 };
 
 // ── DOCX ──────────────────────────────────────────────────────────────────────
@@ -45,7 +47,7 @@ export async function generateDocx(outputText: string, documentType: DocumentTyp
       }),
     ];
   } else {
-    // cover_letter
+    // cover_letter, linkedin_about, linkedin_headline
     const chunks = outputText.split(/\n\n+/);
     bodyParagraphs = chunks.map(
       (chunk) =>
@@ -152,7 +154,7 @@ export async function generatePdf(outputText: string, documentType: DocumentType
   } else if (documentType === "summary") {
     bodyContent = React.createElement(Text, { style: styles.body }, outputText);
   } else {
-    // cover_letter
+    // cover_letter, linkedin_about, linkedin_headline
     const chunks = outputText.split(/\n\n+/).filter((c) => c.trim().length > 0);
     bodyContent = React.createElement(
       View,

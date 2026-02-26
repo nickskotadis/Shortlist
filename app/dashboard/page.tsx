@@ -20,7 +20,7 @@ export default async function DashboardPage() {
     supabase
       .from("generations")
       .select(
-        "id, document_type, output_text, validator_scores, validator_verdict, retry_count, created_at, prompt_version, input_tokens, output_tokens, latency_ms, feedback_positive, job_applications(company_name, job_title)"
+        "id, document_type, output_text, label, validator_scores, validator_verdict, retry_count, created_at, prompt_version, input_tokens, output_tokens, latency_ms, feedback_positive, job_applications(company_name, job_title)"
       )
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })

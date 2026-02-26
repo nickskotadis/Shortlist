@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useGenerate } from "@/hooks/useGenerate";
 import OutputPanel from "@/components/OutputPanel";
-import type { DocumentType, UserType, UserData } from "@/lib/types";
-import { FREE_MONTHLY_LIMIT } from "@/lib/constants";
+import type { DocumentType, UserType, UserData, ToneType } from "@/lib/types";
+import { FREE_MONTHLY_LIMIT, TONES } from "@/lib/constants";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -40,10 +40,12 @@ const USER_TYPES: { value: UserType; label: string; description: string }[] = [
   },
 ];
 
-const DOC_TYPES: { value: DocumentType; label: string; description: string }[] = [
+const DOC_TYPES: { value: DocumentType; label: string; description: string; noJd?: boolean }[] = [
   { value: "bullets", label: "Resume Bullets", description: "5 tailored bullets for your most relevant role" },
   { value: "summary", label: "Professional Summary", description: "A 3–4 sentence header for your resume" },
   { value: "cover_letter", label: "Cover Letter", description: "A specific, non-templated 300-word letter" },
+  { value: "linkedin_about", label: "LinkedIn About", description: "2,600-char profile section optimized for search", noJd: true },
+  { value: "linkedin_headline", label: "LinkedIn Headline", description: "220-char punchy headline with keywords", noJd: true },
 ];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -275,33 +277,111 @@ function UsageMeter({ usage }: { usage: PlanUsage }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function GenerateForm({ initialUsage }: { initialUsage: PlanUsage | null }) {
+export default function GenerateForm({
+  initialUsage,
+  savedResume,
+}: {
+  initialUsage: PlanUsage | null;
+  savedResume: string | null;
+}) {
   const [userType, setUserType] = useState<UserType | null>(null);
   const [userData, setUserData] = useState<UserData>({});
   const [jdText, setJdText] = useState("");
-  const [candidateInput, setCandidateInput] = useState("");
+  const [candidateInput, setCandidateInput] = useState(savedResume ?? "");
   const [documentType, setDocumentType] = useState<DocumentType>("bullets");
+  const [tone, setTone] = useState<ToneType>("professional");
 
-  const { generate, status, streamText, jdAnalysis, result, error, limitReached } = useGenerate();
+  // Saved resume state
+  const [resumeSaved, setResumeSaved] = useState(!!savedResume);
+  const [resumeSaving, setResumeSaving] = useState(false);
+
+  // PDF upload state
+  const [parseLoading, setParseLoading] = useState(false);
+  const [parseError, setParseError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { generate, status, streamText, jdAnalysis, result, error, limitReached, sessionExpired } = useGenerate();
 
   const isRunning = status === "parsing" || status === "generating" || status === "validating";
 
+  // JD is optional for LinkedIn doc types
+  const selectedDocType = DOC_TYPES.find((d) => d.value === documentType);
+  const jdRequired = !selectedDocType?.noJd;
+
   const canGenerate =
     userType !== null &&
-    jdText.trim().length > 0 &&
+    (jdRequired ? jdText.trim().length > 0 : true) &&
     candidateInput.trim().length > 0 &&
     !isRunning &&
     !limitReached;
+
+  // Pre-fill JD from URL params (Chrome extension integration)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const jd = params.get("jd");
+    if (jd) setJdText(decodeURIComponent(jd));
+  }, []);
 
   const handleGenerate = () => {
     if (!canGenerate || !userType) return;
     generate({
       document_type: documentType,
-      jd_text: jdText,
+      jd_text: jdRequired ? jdText : undefined,
       user_type: userType,
       user_data: userData,
       candidate_input: candidateInput,
+      tone,
     });
+  };
+
+  // ── PDF / DOCX upload ───────────────────────────────────────────────────────
+  const handleFileUpload = async (file: File) => {
+    setParseLoading(true);
+    setParseError(null);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/parse-resume", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok) {
+        setParseError(data.error ?? "Failed to parse file");
+        return;
+      }
+      setCandidateInput(data.text);
+      setResumeSaved(false); // content changed, not yet saved
+    } catch {
+      setParseError("Failed to parse file — try pasting manually.");
+    } finally {
+      setParseLoading(false);
+    }
+  };
+
+  // ── Save resume ─────────────────────────────────────────────────────────────
+  const handleSaveResume = async () => {
+    if (!candidateInput.trim() || resumeSaving) return;
+    setResumeSaving(true);
+    try {
+      const res = await fetch("/api/profile/resume", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resume_text: candidateInput }),
+      });
+      if (res.ok) {
+        setResumeSaved(true);
+      }
+    } catch {
+      // Silent — non-critical
+    } finally {
+      setResumeSaving(false);
+    }
+  };
+
+  const sectionNum = (base: number) => {
+    let n = base;
+    if (!userType) n--; // background section hidden
+    if (selectedDocType?.noJd) n--; // JD section hidden
+    return n;
   };
 
   return (
@@ -312,9 +392,14 @@ export default function GenerateForm({ initialUsage }: { initialUsage: PlanUsage
           <Link href="/" className="text-base font-semibold text-slate-900 tracking-tight hover:text-indigo-600 transition-colors">
             Shortlist
           </Link>
-          <Link href="/dashboard" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">
-            Dashboard
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/score" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
+              Resume Score
+            </Link>
+            <Link href="/dashboard" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">
+              Dashboard
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -372,55 +457,117 @@ export default function GenerateForm({ initialUsage }: { initialUsage: PlanUsage
             </div>
           )}
 
-          {/* Section 3: The job */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-slate-900 mb-1">
-              {userType ? "3." : "2."} The job
-            </h2>
-            <p className="text-xs text-slate-400 mb-4">
-              Paste the full job description. More detail = better output.
-            </p>
-            <Textarea
-              placeholder="Paste the full job description here..."
-              value={jdText}
-              onChange={setJdText}
-              rows={8}
-              hint="Include the full posting — responsibilities, requirements, about the company."
-            />
-          </div>
+          {/* Section: The job */}
+          {!selectedDocType?.noJd && (
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <h2 className="text-sm font-semibold text-slate-900 mb-1">
+                {userType ? "3." : "2."} The job
+              </h2>
+              <p className="text-xs text-slate-400 mb-4">
+                Paste the full job description. More detail = better output.
+              </p>
+              <Textarea
+                placeholder="Paste the full job description here..."
+                value={jdText}
+                onChange={setJdText}
+                rows={8}
+                hint="Include the full posting — responsibilities, requirements, about the company."
+              />
+            </div>
+          )}
 
-          {/* Section 4: Your experience */}
+          {/* Section: Your resume / experience */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-slate-900 mb-1">
-              {userType ? "4." : "3."} Your experience
-            </h2>
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="text-sm font-semibold text-slate-900">
+                {sectionNum(4)}. Your resume
+              </h2>
+              <div className="flex items-center gap-2">
+                {/* Save resume badge */}
+                {resumeSaved && candidateInput.trim() && (
+                  <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                    Saved
+                  </span>
+                )}
+                {/* Upload PDF/DOCX */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.docx"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file);
+                    e.target.value = "";
+                  }}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={parseLoading}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {parseLoading ? (
+                    <span className="w-3 h-3 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                  )}
+                  {parseLoading ? "Parsing..." : "Upload PDF / DOCX"}
+                </button>
+              </div>
+            </div>
             <p className="text-xs text-slate-400 mb-4">
-              Describe your relevant experience in plain language. No need to make it perfect.
+              Paste your resume or upload a file. No need to make it perfect — raw bullet points work great.
             </p>
+            {parseError && (
+              <p className="text-xs text-red-500 mb-2">{parseError}</p>
+            )}
             <Textarea
-              placeholder="e.g. I managed a team of 5 and grew pipeline from $2M to $8M over 2 years. I also launched a new product line that became 30% of revenue..."
+              placeholder="Paste your resume or describe your experience...&#10;&#10;e.g. I managed a team of 5 engineers and shipped 3 major features that grew ARR from $2M to $8M. Previously at Acme Corp where I led the migration to microservices..."
               value={candidateInput}
-              onChange={setCandidateInput}
-              rows={7}
-              hint="Include numbers where you have them — even rough ones (team size, revenue, % improvement, time saved). Don't overthink it."
+              onChange={(v) => {
+                setCandidateInput(v);
+                if (resumeSaved) setResumeSaved(false);
+              }}
+              rows={8}
+              hint="Include numbers where you have them — even rough ones (team size, revenue, % improvement, time saved)."
             />
+            {/* Save as default button */}
+            {initialUsage && candidateInput.trim() && (
+              <div className="mt-3 flex items-center justify-end">
+                <button
+                  onClick={handleSaveResume}
+                  disabled={resumeSaving || resumeSaved}
+                  className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${
+                    resumeSaved
+                      ? "text-emerald-700 bg-emerald-50 border-emerald-200 cursor-default"
+                      : "text-slate-600 hover:text-indigo-600 bg-white hover:bg-indigo-50 border-slate-200 hover:border-indigo-200"
+                  } disabled:opacity-50`}
+                >
+                  {resumeSaving ? "Saving..." : resumeSaved ? "✓ Saved as default" : "Save as default resume"}
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Section 5: Document type + Generate */}
+          {/* Section: What to generate */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
             <h2 className="text-sm font-semibold text-slate-900 mb-1">
-              {userType ? "5." : "4."} What to generate
+              {sectionNum(5)}. What to generate
             </h2>
             <p className="text-xs text-slate-400 mb-4">
               Start with bullets — they feed the summary and cover letter.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-2 mb-6">
-              {DOC_TYPES.map((d) => (
+            {/* Doc type grid — 3+2 layout */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+              {DOC_TYPES.slice(0, 3).map((d) => (
                 <button
                   key={d.value}
                   onClick={() => setDocumentType(d.value)}
-                  className={`flex-1 text-left rounded-xl border px-4 py-3 transition-all ${
+                  className={`text-left rounded-xl border px-3 py-3 transition-all ${
                     documentType === d.value
                       ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
                       : "border-slate-200 bg-white hover:border-slate-300"
@@ -433,9 +580,69 @@ export default function GenerateForm({ initialUsage }: { initialUsage: PlanUsage
                 </button>
               ))}
             </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
+              {DOC_TYPES.slice(3).map((d) => (
+                <button
+                  key={d.value}
+                  onClick={() => setDocumentType(d.value)}
+                  className={`text-left rounded-xl border px-3 py-3 transition-all ${
+                    documentType === d.value
+                      ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                      : "border-slate-200 bg-white hover:border-slate-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className={`text-sm font-medium ${documentType === d.value ? "text-indigo-700" : "text-slate-900"}`}>
+                      {d.label}
+                    </p>
+                    <span className="text-xs text-indigo-500 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded-full font-medium">
+                      LinkedIn
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500">{d.description}</p>
+                </button>
+              ))}
+            </div>
+
+            {/* Tone selector */}
+            <div className="mb-6">
+              <p className="text-xs font-medium text-slate-600 mb-2">Writing tone</p>
+              <div className="flex gap-2">
+                {TONES.map((t) => (
+                  <button
+                    key={t.value}
+                    onClick={() => setTone(t.value as ToneType)}
+                    title={t.description}
+                    className={`flex-1 text-center rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
+                      tone === t.value
+                        ? "border-indigo-500 bg-indigo-50 text-indigo-700 ring-1 ring-indigo-500"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-slate-400 mt-1.5">
+                {TONES.find((t) => t.value === tone)?.description}
+              </p>
+            </div>
 
             {/* Usage meter — only for authenticated users */}
             {initialUsage && <UsageMeter usage={initialUsage} />}
+
+            {/* Session expired */}
+            {sessionExpired && (
+              <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+                <p className="text-sm font-medium text-amber-900 mb-2">Session expired</p>
+                <Link
+                  href="/auth/login"
+                  className="inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all"
+                >
+                  Log in again →
+                </Link>
+              </div>
+            )}
 
             {/* Limit reached — replace button with upgrade CTA */}
             {limitReached ? (
@@ -485,7 +692,9 @@ export default function GenerateForm({ initialUsage }: { initialUsage: PlanUsage
                 )}
                 {userType && !canGenerate && !isRunning && (
                   <p className="text-xs text-slate-400 text-center mt-3">
-                    Paste a job description and describe your experience to continue
+                    {jdRequired && !jdText.trim()
+                      ? "Paste a job description and describe your experience to continue"
+                      : "Describe your experience to continue"}
                   </p>
                 )}
               </>
@@ -497,15 +706,16 @@ export default function GenerateForm({ initialUsage }: { initialUsage: PlanUsage
         <div className="lg:sticky lg:top-24">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-slate-900">Output</h2>
-            {(status === "done") && (
+            {status === "done" && (
               <button
                 onClick={() =>
                   generate({
                     document_type: documentType,
-                    jd_text: jdText,
+                    jd_text: jdRequired ? jdText : undefined,
                     user_type: userType!,
                     user_data: userData,
                     candidate_input: candidateInput,
+                    tone,
                   })
                 }
                 className="text-xs text-slate-500 hover:text-indigo-600 transition-colors font-medium"

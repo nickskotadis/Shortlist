@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { GenerateStatus, GenerateResult } from "@/hooks/useGenerate";
 import type { JdAnalysis, ValidatorIssue, DocumentType } from "@/lib/types";
 
@@ -93,6 +93,114 @@ function ThumbsDownIcon() {
       <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3z" />
       <path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" />
     </svg>
+  );
+}
+
+// ── Keyword gap panel ────────────────────────────────────────────────────────
+
+function KeywordGap({ keywords, output }: { keywords: string[]; output: string }) {
+  if (keywords.length === 0) return null;
+
+  const outputLower = output.toLowerCase();
+  const matched = keywords.filter((k) => outputLower.includes(k.toLowerCase()));
+  const missing = keywords.filter((k) => !outputLower.includes(k.toLowerCase()));
+
+  if (matched.length === 0 && missing.length === 0) return null;
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          Keyword match
+        </p>
+        <span className="text-xs font-medium text-slate-600">
+          {matched.length}/{keywords.length} keywords
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {matched.map((k) => (
+          <span
+            key={k}
+            className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full"
+          >
+            <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            {k}
+          </span>
+        ))}
+        {missing.map((k) => (
+          <span
+            key={k}
+            className="inline-flex items-center gap-1 text-xs font-medium text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full"
+          >
+            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            {k}
+          </span>
+        ))}
+      </div>
+      {missing.length > 0 && (
+        <p className="text-xs text-slate-400 mt-2">
+          Missing keywords can be added to your resume or cover letter where accurate.
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ── Label input ──────────────────────────────────────────────────────────────
+
+function LabelInput({ generationId }: { generationId: string }) {
+  const [label, setLabel] = useState("");
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const save = useCallback(async (value: string) => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await fetch(`/api/generations/${generationId}/label`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ label: value }),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch {
+      // Silent — non-critical
+    } finally {
+      setSaving(false);
+    }
+  }, [generationId, saving]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") save(label);
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        type="text"
+        placeholder="Add a label (e.g. 'Stripe PM')"
+        value={label}
+        onChange={(e) => {
+          setLabel(e.target.value);
+          setSaved(false);
+        }}
+        onBlur={() => label && save(label)}
+        onKeyDown={handleKeyDown}
+        maxLength={200}
+        className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition"
+      />
+      {saving && (
+        <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-transparent rounded-full animate-spin" />
+      )}
+      {saved && (
+        <span className="text-xs text-emerald-600 font-medium">Saved</span>
+      )}
+    </div>
   );
 }
 
@@ -298,6 +406,11 @@ export default function OutputPanel({
             )}
           </div>
 
+          {/* Keyword gap analysis */}
+          {result.keywords && result.keywords.length > 0 && (
+            <KeywordGap keywords={result.keywords} output={result.output} />
+          )}
+
           {/* Hallucination / skill inflation flags */}
           {(() => {
             const flags = result.issues.filter(
@@ -326,6 +439,11 @@ export default function OutputPanel({
               </div>
             );
           })()}
+
+          {/* Label this generation */}
+          {result.generationId && (
+            <LabelInput generationId={result.generationId} />
+          )}
 
           {/* Actions */}
           <div className="flex flex-wrap items-center gap-2">
@@ -406,17 +524,17 @@ export default function OutputPanel({
                 </button>
               </>
             )}
-
-            {/* Hiring manager worry */}
-            {jdAnalysis?.hiring_manager_worry && (
-              <div className="flex-1 bg-slate-50 rounded-lg px-4 py-2 border border-slate-100">
-                <p className="text-xs text-slate-400 font-medium mb-0.5">What they worry about</p>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  {jdAnalysis.hiring_manager_worry}
-                </p>
-              </div>
-            )}
           </div>
+
+          {/* Hiring manager worry */}
+          {jdAnalysis?.hiring_manager_worry && (
+            <div className="bg-slate-50 rounded-lg px-4 py-3 border border-slate-100">
+              <p className="text-xs text-slate-400 font-medium mb-0.5">What they worry about</p>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                {jdAnalysis.hiring_manager_worry}
+              </p>
+            </div>
+          )}
 
           {/* Export error */}
           {exportError && (

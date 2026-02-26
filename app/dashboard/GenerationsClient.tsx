@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { DocumentType, ValidatorVerdict } from "@/lib/types";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -9,6 +10,7 @@ export interface Generation {
   id: string;
   document_type: DocumentType;
   output_text: string;
+  label: string | null;
   validator_scores: {
     specificity: number;
     relevance: number;
@@ -36,6 +38,8 @@ const DOC_TYPE_LABELS: Record<DocumentType, string> = {
   bullets: "Resume Bullets",
   summary: "Summary",
   cover_letter: "Cover Letter",
+  linkedin_about: "LinkedIn About",
+  linkedin_headline: "LinkedIn Headline",
 };
 
 function relativeDate(iso: string): string {
@@ -148,10 +152,16 @@ function GenerationCard({ gen }: { gen: Generation }) {
     pdf: false,
   });
   const [exportError, setExportError] = useState<string | null>(null);
+  const [label, setLabel] = useState(gen.label ?? "");
+  const [labelSaved, setLabelSaved] = useState(!!gen.label);
+  const [labelSaving, setLabelSaving] = useState(false);
 
   const jobTitle = gen.job_applications?.job_title;
   const company = gen.job_applications?.company_name;
-  const context = [jobTitle, company].filter(Boolean).join(" at ");
+  const jobContext = [jobTitle, company].filter(Boolean).join(" at ");
+
+  // Card title: label > job context > doc type
+  const cardTitle = label || gen.label || jobContext || DOC_TYPE_LABELS[gen.document_type];
 
   const scores = gen.validator_scores;
   const overall = scores ? computeOverall(scores) : null;
@@ -178,6 +188,24 @@ function GenerationCard({ gen }: { gen: Generation }) {
       setFeedback(prev);
     } finally {
       setFeedbackLoading(false);
+    }
+  };
+
+  const saveLabel = async (value: string) => {
+    if (labelSaving) return;
+    setLabelSaving(true);
+    try {
+      await fetch(`/api/generations/${gen.id}/label`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ label: value }),
+      });
+      setLabelSaved(true);
+      setTimeout(() => setLabelSaved(false), 1500);
+    } catch {
+      // Silent
+    } finally {
+      setLabelSaving(false);
     }
   };
 
@@ -244,18 +272,43 @@ function GenerationCard({ gen }: { gen: Generation }) {
             </span>
           </div>
         </div>
-        <p className="text-sm text-slate-500 mt-1.5 truncate">
-          {context ? context : <span className="italic text-slate-400">No job context</span>}
+        {/* Card title: label or job context */}
+        <p className={`text-sm mt-1.5 truncate ${label || gen.label ? "font-medium text-slate-900" : "text-slate-500"}`}>
+          {cardTitle !== DOC_TYPE_LABELS[gen.document_type]
+            ? cardTitle
+            : <span className="italic text-slate-400">No label</span>}
         </p>
       </button>
 
-      {/* Expanded: output text */}
+      {/* Expanded: output text + label edit */}
       {expanded && (
         <>
           <div className="border-t border-slate-100 px-6 py-5">
             <pre className="font-mono text-sm text-slate-900 whitespace-pre-wrap break-words leading-relaxed max-h-96 overflow-y-auto">
               {gen.output_text}
             </pre>
+          </div>
+
+          {/* Label edit */}
+          <div className="border-t border-slate-100 px-6 py-3 bg-slate-50">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Add a label (e.g. 'Stripe PM')"
+                value={label}
+                onChange={(e) => {
+                  setLabel(e.target.value);
+                  setLabelSaved(false);
+                }}
+                onBlur={() => saveLabel(label)}
+                onKeyDown={(e) => { if (e.key === "Enter") saveLabel(label); }}
+                maxLength={200}
+                onClick={(e) => e.stopPropagation()}
+                className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition"
+              />
+              {labelSaving && <MiniSpinner />}
+              {labelSaved && <span className="text-xs text-emerald-600 font-medium">Saved</span>}
+            </div>
           </div>
 
           {/* Scores + meta footer */}
@@ -348,7 +401,7 @@ function GenerationCard({ gen }: { gen: Generation }) {
               </div>
             </div>
             {exportError && (
-              <p className="text-xs text-red-500 px-6 pb-3">{exportError}</p>
+              <p className="text-xs text-red-500 mt-2">{exportError}</p>
             )}
           </div>
         </>
@@ -362,17 +415,34 @@ function GenerationCard({ gen }: { gen: Generation }) {
 export default function GenerationsClient({ generations }: { generations: Generation[] }) {
   if (generations.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
-        <p className="text-sm font-medium text-slate-900 mb-1">No generations yet</p>
-        <p className="text-sm text-slate-500 mb-6">
-          Generate something and it&apos;ll appear here. You need to be signed in for saves to work.
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-16 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mx-auto mb-5">
+          <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <p className="text-base font-semibold text-slate-900 mb-2">No generations yet</p>
+        <p className="text-sm text-slate-500 mb-2 max-w-sm mx-auto">
+          Generate tailored resume bullets, summaries, and cover letters — all in under 30 seconds.
         </p>
-        <a
-          href="/generate"
-          className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all"
-        >
-          Generate now →
-        </a>
+        <p className="text-xs text-slate-400 mb-6">
+          You need to be signed in for generations to save here.
+        </p>
+        <div className="flex items-center justify-center gap-3">
+          <Link
+            href="/generate"
+            className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all"
+          >
+            Generate now →
+          </Link>
+          <Link
+            href="/score"
+            className="inline-flex items-center gap-1 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium px-5 py-2.5 rounded-xl transition-all"
+          >
+            Score my resume
+          </Link>
+        </div>
       </div>
     );
   }

@@ -1,6 +1,7 @@
 export type UserType = "career_switcher" | "mid_career" | "student" | "executive";
-export type DocumentType = "bullets" | "summary" | "cover_letter";
+export type DocumentType = "bullets" | "summary" | "cover_letter" | "linkedin_about" | "linkedin_headline";
 export type ValidatorVerdict = "PASS" | "REVISE" | "REJECT";
+export type ToneType = "professional" | "conversational" | "bold";
 
 export interface JdAnalysis {
   role_title: string;
@@ -69,6 +70,19 @@ export interface ValidatorResult {
   verdict_reason: string;
 }
 
+export interface HealthScoreResult {
+  scores: {
+    clarity: number;
+    impact: number;
+    ats_friendliness: number;
+    action_verbs: number;
+    quantification: number;
+  };
+  overall: number;
+  recommendations: string[];
+  word_count: number;
+}
+
 export interface GenerateRequest {
   document_type: DocumentType;
   jd_text?: string;
@@ -77,6 +91,7 @@ export interface GenerateRequest {
   user_type: UserType;
   user_data: UserData;
   candidate_input: string;
+  tone?: ToneType;
 }
 
 // SSE event shapes sent to the client
@@ -84,5 +99,5 @@ export type SseEvent =
   | { type: "jd_analysis"; data: JdAnalysis }
   | { type: "text"; content: string }
   | { type: "retry"; message: string }
-  | { type: "done"; output: string; jd_analysis: JdAnalysis; scores: ValidatorResult["scores"]; overall: number; verdict: ValidatorVerdict; retry_count: number; prompt_version?: string; issues?: ValidatorIssue[]; generation_id?: string }
+  | { type: "done"; output: string; jd_analysis: JdAnalysis; scores: ValidatorResult["scores"]; overall: number; verdict: ValidatorVerdict; retry_count: number; prompt_version?: string; issues?: ValidatorIssue[]; generation_id?: string; keywords?: string[] }
   | { type: "error"; message: string };
