@@ -48,11 +48,11 @@ Be decisive. If there are options, pick one and justify it.
 - Dashboard page (`/dashboard`) — last 50 generations, expandable cards with score bars + copy
 - Prompt version registry was completed in Week 1
 
-### Week 3 — TODO
-- DOCX export (`docx` npm package)
-- PDF export
-- Supabase Storage for exports (signed URLs)
-- Feedback rating (thumbs up/down → `generations.feedback_rating`)
+### Week 3 — DONE
+- DOCX export (`docx` pkg) — `/api/export` POST, server-side generation, binary stream to client
+- PDF export (`@react-pdf/renderer`) — same route, `format` param selects DOCX vs PDF; `serverExternalPackages` required in `next.config.ts`
+- No Supabase Storage — direct download, no signed URLs needed
+- Feedback rating (thumbs up/down) — `generations.feedback_positive boolean` column; `/api/generations/[id]/feedback` PATCH; optimistic UI in dashboard cards; UPDATE RLS policy required (`migration_002.sql`)
 
 ### Week 4 — TODO
 - Stripe billing (Free / Pro)
@@ -74,6 +74,8 @@ Be decisive. If there are options, pick one and justify it.
 - `hooks/useGenerate.ts` — client-side SSE consumer
 - `supabase/schema.sql` — base schema
 - `supabase/migration_001.sql` — plan/billing + generation metadata columns
+- `supabase/migration_002.sql` — feedback_positive column + UPDATE RLS policy
+- `lib/export.ts` — server-only DOCX + PDF generators (never import from client components)
 - `proxy.ts` — Next.js 16 session middleware (note: not `middleware.ts`)
 
 ## Design system
