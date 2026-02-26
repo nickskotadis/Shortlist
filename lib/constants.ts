@@ -45,6 +45,8 @@ export const BANNED_PHRASES = [
   "To whom it may concern",
 ] as const;
 
+export const FREE_MONTHLY_LIMIT = 2;
+
 export const MAX_RETRIES = 1;
 export const PASS_THRESHOLD = 7.0;
 export const MIN_DIMENSION_SCORE = 6;

@@ -34,6 +34,7 @@ export function useGenerate() {
   const [jdAnalysis, setJdAnalysis] = useState<JdAnalysis | null>(null);
   const [result, setResult] = useState<GenerateResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [limitReached, setLimitReached] = useState(false);
 
   const generate = useCallback(async (request: GenerateRequest) => {
     setStatus("parsing");
@@ -41,6 +42,7 @@ export function useGenerate() {
     setJdAnalysis(null);
     setResult(null);
     setError(null);
+    setLimitReached(false);
 
     try {
       const response = await fetch("/api/generate", {
@@ -51,6 +53,11 @@ export function useGenerate() {
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({ error: "Request failed" }));
+        if (response.status === 429 && err.error === "monthly_limit_reached") {
+          setLimitReached(true);
+          setStatus("error");
+          return;
+        }
         setError(err.error ?? "Something went wrong");
         setStatus("error");
         return;
@@ -128,7 +135,8 @@ export function useGenerate() {
     setJdAnalysis(null);
     setResult(null);
     setError(null);
+    setLimitReached(false);
   }, []);
 
-  return { generate, reset, status, streamText, jdAnalysis, result, error };
+  return { generate, reset, status, streamText, jdAnalysis, result, error, limitReached };
 }

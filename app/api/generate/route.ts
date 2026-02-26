@@ -14,7 +14,7 @@ import {
   stripCodeFences,
   resolveVerdict,
 } from "@/lib/prompts";
-import { MODELS, MAX_RETRIES, PROMPT_VERSIONS } from "@/lib/constants";
+import { MODELS, MAX_RETRIES, PROMPT_VERSIONS, FREE_MONTHLY_LIMIT } from "@/lib/constants";
 import type {
   GenerateRequest,
   JdAnalysis,
@@ -102,6 +102,32 @@ export async function POST(req: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // ── Rate limit check ───────────────────────────────────────────────────────
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.plan === "free") {
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const { count } = await supabase
+        .from("generations")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .gte("created_at", monthStart);
+
+      if ((count ?? 0) >= FREE_MONTHLY_LIMIT) {
+        return NextResponse.json(
+          { error: "monthly_limit_reached" },
+          { status: 429 }
+        );
+      }
+    }
+  }
 
   const startTime = Date.now();
 
