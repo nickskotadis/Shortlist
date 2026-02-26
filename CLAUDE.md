@@ -1,7 +1,7 @@
 # Shortlist — Project Context for Claude
 
 ## What this is
-AI resume + cover letter generator with job description tailoring. Next.js 16, React 19, Supabase, Anthropic SDK, Stripe (not yet wired), Tailwind v4. Deployed to Vercel (not yet deployed).
+AI resume + cover letter generator with job description tailoring. Next.js 16, React 19, Supabase, Anthropic SDK, Stripe, Tailwind v4. Deployed to Vercel at https://shortlist-amber.vercel.app.
 
 ## Architecture prompt (reference for all decisions)
 
@@ -60,11 +60,22 @@ Be decisive. If there are options, pick one and justify it.
 - Export error messages — both `OutputPanel` and dashboard cards now show inline error instead of silent failure
 - `migration_003.sql` — drops unused `feedback_rating smallint` column (was in migration_001, never used); adds `on_generation_created` trigger to increment `profiles.generation_count` on every insert (required for Week 4 rate limiting); backfill: `UPDATE profiles SET generation_count = (SELECT COUNT(*) FROM generations WHERE user_id = profiles.id)`
 
-### Week 4 — TODO
-- Stripe billing (Free / Pro)
-- `/api/stripe/hook` webhook
-- Generation rate limits by plan
-- Usage meter in UI
+### Week 4 — DONE
+- Stripe billing: Free (2 generations/month) and Pro (unlimited, $4.99/mo or $49.99/yr)
+- `lib/stripe.ts` — lazy `getStripe()` singleton; deferred init so builds don't fail when `STRIPE_SECRET_KEY` is unset
+- `/api/stripe/checkout` — POST, accepts `{ billingPeriod: "monthly" | "annual" }`, server resolves price ID from env vars (never exposed to client), returns `{ url }`
+- `/api/stripe/portal` — POST, requires `profiles.stripe_customer_id`, returns `{ url }`
+- `/api/stripe/webhook` — POST, uses `req.text()` for raw body, verifies Stripe signature; handles `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`; uses service-role Supabase client (`createClient` from `@supabase/supabase-js` directly) to bypass RLS
+- Rate limit check in `/api/generate` — before stream starts; returns 429 `{ error: "monthly_limit_reached" }` for free users at limit; counts this month's generations via DB query (no cron)
+- `useGenerate` hook — new `limitReached: boolean` state; 429 + `monthly_limit_reached` sets it; reset on each new generate call
+- Generate page split: `app/generate/page.tsx` is now an async server wrapper that fetches `{ plan, usedThisMonth }` and passes `initialUsage: PlanUsage | null` to `app/generate/GenerateForm.tsx` (client component)
+- Usage meter in generate page section 5: free users see progress bar + "Upgrade to Pro →" link; Pro users see "Pro · Unlimited" pill; unauthenticated users see nothing
+- When `limitReached` is set: generate button replaced with amber upgrade CTA card
+- Dashboard — fetches `profiles.plan` in parallel with generations; shows Free/Pro badge in nav; free users see usage progress bar in header area
+- Pricing page (`/pricing`) — two-column Free vs Pro cards, monthly/annual billing toggle, correct prices displayed via `fmt()` helper
+- `FREE_MONTHLY_LIMIT = 2` added to `lib/constants.ts`
+- Vercel deployment: all env vars added with `printf` (not `echo`) to avoid trailing newline — critical for `STRIPE_WEBHOOK_SECRET` (trailing newline causes signature verification to fail on every webhook delivery)
+- Stripe webhook registered at `https://shortlist-amber.vercel.app/api/stripe/webhook` for `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
 
 ### Week 5 — TODO
 - PostHog event instrumentation (metadata only, never content)
@@ -73,17 +84,23 @@ Be decisive. If there are options, pick one and justify it.
 - A/B test flag for prompt variant
 
 ## Key files
-- `lib/constants.ts` — model names, prompt versions, banned phrases, thresholds
+- `lib/constants.ts` — model names, prompt versions, banned phrases, thresholds, `FREE_MONTHLY_LIMIT`
 - `lib/prompts.ts` — all prompt builders; bump `PROMPT_VERSIONS` on every change
 - `lib/types.ts` — shared types including SSE event shapes
-- `app/api/generate/route.ts` — main LLM pipeline (SSE streaming)
-- `hooks/useGenerate.ts` — client-side SSE consumer
+- `lib/stripe.ts` — lazy `getStripe()` singleton (server only — never import from client)
+- `app/api/generate/route.ts` — main LLM pipeline (SSE streaming) with rate limit check
+- `app/api/stripe/checkout/route.ts` — creates Stripe Checkout Session
+- `app/api/stripe/portal/route.ts` — creates Stripe Customer Portal session
+- `app/api/stripe/webhook/route.ts` — handles Stripe webhook events, service-role Supabase writes
+- `app/generate/page.tsx` — async server wrapper; fetches plan + monthly usage
+- `app/generate/GenerateForm.tsx` — `"use client"` form component; accepts `initialUsage: PlanUsage | null`
+- `app/pricing/page.tsx` — pricing page (Free vs Pro, monthly/annual toggle)
+- `hooks/useGenerate.ts` — SSE consumer; exposes `limitReached: boolean`
 - `supabase/schema.sql` — base schema
 - `supabase/migration_001.sql` — plan/billing + generation metadata columns
 - `supabase/migration_002.sql` — feedback_positive column + UPDATE RLS policy
 - `supabase/migration_003.sql` — drop feedback_rating; generation_count trigger
 - `lib/export.ts` — server-only DOCX + PDF generators (never import from client components)
-- `hooks/useGenerate.ts` — `GenerateResult` includes `generationId: string | null` (null for unauthenticated)
 - `proxy.ts` — Next.js 16 session middleware (note: not `middleware.ts`)
 
 ## Design system
@@ -275,3 +292,8 @@ These have been explicitly decided against. Don't suggest or implement them:
 - Prompt versions must be bumped on every prompt change and stored on the generations row
 - JD parse uses Haiku (`MODELS.parser`), not Sonnet — keep it that way
 - DB save in generate route is fire-and-forget after SSE done event — errors are logged but never surfaced to user
+- Stripe singleton (`lib/stripe.ts`) must be lazy (`getStripe()`) — `new Stripe()` at module level throws if `STRIPE_SECRET_KEY` is unset, breaking Next.js build-time page data collection
+- Webhook route must use `req.text()` not `req.json()` — Stripe signature verification requires the raw body bytes
+- When setting Vercel env vars via CLI, always use `printf '%s' 'value' | vercel env add ...` — `echo` adds a trailing newline which corrupts secrets (especially `STRIPE_WEBHOOK_SECRET`, causing every webhook delivery to fail with signature mismatch)
+- Stripe checkout accepts `billingPeriod: "monthly" | "annual"` — price IDs are resolved server-side from env vars and never sent to the client
+- Webhook service-role client: use `createClient` from `@supabase/supabase-js` directly (not `@supabase/ssr`) — the SSR client requires cookies which don't exist in a webhook context
