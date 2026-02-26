@@ -83,24 +83,44 @@ Be decisive. If there are options, pick one and justify it.
 - Sentry with PII scrubbing
 - A/B test flag for prompt variant
 
+### Post-Week 4 features — DONE
+- **Save master resume** — `profiles.resume_text text` column; GET/PUT `/api/profile/resume`; generate page fetches it server-side and pre-fills the resume textarea; "Save as default resume" button persists on blur; "Saved ✓" badge when populated
+- **PDF/DOCX upload** — `/api/parse-resume` POST accepts multipart `file` field; `pdf-parse` (CommonJS — dynamic import with ESM compat fallback) for PDFs, `mammoth` for DOCX; both in `serverExternalPackages`; shared by `/generate` and `/score`
+- **Named generations** — `generations.label text` column; PATCH `/api/generations/[id]/label`; inline label input in `OutputPanel` (saves on blur/Enter); label shown as card title in dashboard, editable inline in expanded card view
+- **Keyword gap analysis** — `done` SSE event now includes `keywords: string[]` (from `jdAnalysis.key_terminology`); `OutputPanel` shows matched keywords (green ✓) vs missing (grey ✗) using case-insensitive substring match on the output text
+- **LinkedIn doc types** — `DocumentType` extended to include `"linkedin_about" | "linkedin_headline"`; both are JD-optional (`noJd: true` in DOC_TYPES); new prompt builders `buildLinkedInAboutPrompt()` and `buildLinkedInHeadlinePrompt()` in `lib/prompts.ts`; generate route handles both in the switch
+- **Tone selector** — `ToneType = "professional" | "conversational" | "bold"` in `lib/types.ts`; `TONES` config array in `lib/constants.ts`; `buildToneInstruction(tone)` injects tone override block into all generator prompts; `tone` stored on `generations` row; UI in generate form section (3 toggle buttons)
+- **Resume health score** — free page at `/score`; `/api/score` POST uses Haiku (`MODELS.parser`) + `buildHealthScorePrompt()`; scores 5 dimensions (clarity, impact, ats_friendliness, action_verbs, quantification); SVG score ring + dimension cards + 3–5 recommendations; CTA links to `/generate`; PDF/DOCX upload supported
+- **Session expiry UX** — `useGenerate` now sets `sessionExpired: boolean` on 401 response; `GenerateForm` shows "Session expired — log in again" amber card instead of silent failure
+- **Chrome extension JD import** — `GenerateForm` reads `?jd=` URL param on mount via `useEffect` and pre-fills `jdText`; no backend changes needed
+- **Dashboard empty state** — improved with icon, descriptive copy, and "Score my resume" secondary CTA
+- **`migration_004.sql`** — `profiles.resume_text`, `generations.label`, `generations.tone`; applied to production
+
 ## Key files
-- `lib/constants.ts` — model names, prompt versions, banned phrases, thresholds, `FREE_MONTHLY_LIMIT`
-- `lib/prompts.ts` — all prompt builders; bump `PROMPT_VERSIONS` on every change
-- `lib/types.ts` — shared types including SSE event shapes
+- `lib/constants.ts` — model names, prompt versions, banned phrases, thresholds, `FREE_MONTHLY_LIMIT`, `TONES`
+- `lib/prompts.ts` — all prompt builders; bump `PROMPT_VERSIONS` on every change; includes `buildToneInstruction()`, `buildLinkedInAboutPrompt()`, `buildLinkedInHeadlinePrompt()`, `buildHealthScorePrompt()`
+- `lib/types.ts` — shared types including SSE event shapes; `ToneType`, `HealthScoreResult`, updated `DocumentType`
 - `lib/stripe.ts` — lazy `getStripe()` singleton (server only — never import from client)
-- `app/api/generate/route.ts` — main LLM pipeline (SSE streaming) with rate limit check
+- `app/api/generate/route.ts` — main LLM pipeline (SSE streaming) with rate limit check; handles all 5 doc types; sends `keywords` in `done` event; stores `tone` on DB insert
+- `app/api/profile/resume/route.ts` — GET/PUT saved resume text for authenticated user
+- `app/api/generations/[id]/label/route.ts` — PATCH label on a generation (RLS-enforced)
+- `app/api/parse-resume/route.ts` — multipart POST; pdf-parse (PDF) + mammoth (DOCX); max 5 MB
+- `app/api/score/route.ts` — POST resume text, returns `HealthScoreResult` via Haiku
 - `app/api/stripe/checkout/route.ts` — creates Stripe Checkout Session
 - `app/api/stripe/portal/route.ts` — creates Stripe Customer Portal session
 - `app/api/stripe/webhook/route.ts` — handles Stripe webhook events, service-role Supabase writes
-- `app/generate/page.tsx` — async server wrapper; fetches plan + monthly usage
-- `app/generate/GenerateForm.tsx` — `"use client"` form component; accepts `initialUsage: PlanUsage | null`
+- `app/generate/page.tsx` — async server wrapper; fetches plan + monthly usage + `profiles.resume_text`; passes `savedResume: string | null` to GenerateForm
+- `app/generate/GenerateForm.tsx` — `"use client"` form component; accepts `initialUsage: PlanUsage | null` + `savedResume: string | null`; handles PDF upload, save resume, tone selector, LinkedIn types, ?jd= param
+- `app/score/page.tsx` — `"use client"` resume health score page; free, no generation count
 - `app/pricing/page.tsx` — pricing page (Free vs Pro, monthly/annual toggle)
-- `hooks/useGenerate.ts` — SSE consumer; exposes `limitReached: boolean`
+- `hooks/useGenerate.ts` — SSE consumer; exposes `limitReached: boolean`, `sessionExpired: boolean`; `GenerateResult` includes `keywords: string[]`
+- `components/OutputPanel.tsx` — keyword gap panel (`KeywordGap`), label input (`LabelInput`), hiring manager worry box
 - `supabase/schema.sql` — base schema
 - `supabase/migration_001.sql` — plan/billing + generation metadata columns
 - `supabase/migration_002.sql` — feedback_positive column + UPDATE RLS policy
 - `supabase/migration_003.sql` — drop feedback_rating; generation_count trigger
-- `lib/export.ts` — server-only DOCX + PDF generators (never import from client components)
+- `supabase/migration_004.sql` — resume_text, label, tone columns (applied)
+- `lib/export.ts` — server-only DOCX + PDF generators; handles all 5 doc types
 - `proxy.ts` — Next.js 16 session middleware (note: not `middleware.ts`)
 
 ## Design system
@@ -297,3 +317,7 @@ These have been explicitly decided against. Don't suggest or implement them:
 - When setting Vercel env vars via CLI, always use `printf '%s' 'value' | vercel env add ...` — `echo` adds a trailing newline which corrupts secrets (especially `STRIPE_WEBHOOK_SECRET`, causing every webhook delivery to fail with signature mismatch)
 - Stripe checkout accepts `billingPeriod: "monthly" | "annual"` — price IDs are resolved server-side from env vars and never sent to the client
 - Webhook service-role client: use `createClient` from `@supabase/supabase-js` directly (not `@supabase/ssr`) — the SSR client requires cookies which don't exist in a webhook context
+- `pdf-parse` is CommonJS and its ESM shim has no `.default` export — use `(await import("pdf-parse") as any).default ?? module` pattern; add `"pdf-parse"` to `serverExternalPackages` in `next.config.ts`
+- `DocumentType` now includes `"linkedin_about"` and `"linkedin_headline"` — any switch or Record keyed on `DocumentType` must handle all 5 values or TypeScript will error (affects `lib/export.ts` `DOC_TYPE_LABELS` and the generate route switch)
+- `PROMPT_VERSIONS` must have an entry for every doc type used as a key — use `PROMPT_VERSIONS[doc_type as keyof typeof PROMPT_VERSIONS] ?? doc_type` fallback in the generate route to be safe
+- Supabase CLI (v2.75+) installed via `brew install supabase/tap/supabase`; authenticate non-interactively with `SUPABASE_ACCESS_TOKEN=... supabase ...`; run ad-hoc SQL via the Management API: `POST https://api.supabase.com/v1/projects/{ref}/database/query` with `Authorization: Bearer {PAT}`
