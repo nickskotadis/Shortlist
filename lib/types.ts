@@ -100,4 +100,5 @@ export type SseEvent =
   | { type: "text"; content: string }
   | { type: "retry"; message: string }
   | { type: "done"; output: string; jd_analysis: JdAnalysis; scores: ValidatorResult["scores"]; overall: number; verdict: ValidatorVerdict; retry_count: number; prompt_version?: string; issues?: ValidatorIssue[]; generation_id?: string; keywords?: string[] }
+  | { type: "tailoring_suggestions"; suggestions: string[] }
   | { type: "error"; message: string };

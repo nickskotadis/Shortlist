@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 
 const MONTHLY_PRICE_CENTS = 499; // $4.99/mo
 const ANNUAL_PRICE_CENTS = 4999; // $49.99/yr (= ~$4.17/mo, 2 months free)
@@ -33,12 +34,14 @@ const PRO_FEATURES = [
 ];
 
 export default function PricingPage() {
+  const posthog = usePostHog();
   const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleUpgrade = async () => {
+    posthog?.capture("upgrade_clicked", { billing_period: billing, source: "pricing_page" });
     setLoading(true);
     setError(null);
     try {

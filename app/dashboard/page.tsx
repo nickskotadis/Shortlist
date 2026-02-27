@@ -46,12 +46,20 @@ export default async function DashboardPage() {
       {/* Nav */}
       <nav className="bg-white border-b border-slate-100 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-base font-semibold text-slate-900 tracking-tight hover:text-indigo-600 transition-colors"
-          >
-            Shortlist
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link
+              href="/"
+              className="text-base font-semibold text-slate-900 tracking-tight hover:text-indigo-600 transition-colors"
+            >
+              Shortlist
+            </Link>
+            <div className="hidden sm:flex items-center gap-4 text-sm text-slate-500">
+              <span className="font-medium text-slate-900">Dashboard</span>
+              <Link href="/applications" className="hover:text-slate-900 transition-colors">Applications</Link>
+              <Link href="/generate" className="hover:text-slate-900 transition-colors">Generate</Link>
+              <Link href="/score" className="hover:text-slate-900 transition-colors">Score</Link>
+            </div>
+          </div>
           <div className="flex items-center gap-3">
             {/* Plan badge */}
             {plan === "pro" ? (

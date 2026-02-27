@@ -15,6 +15,7 @@ export const PROMPT_VERSIONS = {
   linkedin_headline: "linkedin-headline-v1",
   validator: "validator-v2",
   health_score: "health-score-v1",
+  tailoring: "tailoring-v1",
 } as const;
 
 export const BANNED_PHRASES = [
@@ -71,3 +72,7 @@ export const TONES = [
     description: "High-confidence, punchy — sales, leadership, exec",
   },
 ] as const;
+
+// A/B test variant for prompt experimentation — set PROMPT_AB_VARIANT=B in env to activate variant B
+export const PROMPT_AB_VARIANT: "A" | "B" =
+  (process.env.PROMPT_AB_VARIANT as "A" | "B") === "B" ? "B" : "A";

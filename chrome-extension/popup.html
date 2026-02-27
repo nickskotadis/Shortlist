@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shortlist</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 280px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+
+    .header {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 32px;
+      height: 32px;
+      background: #4f46e5;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo svg { color: white; }
+
+    .brand {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      letter-spacing: -0.02em;
+    }
+
+    .brand span {
+      font-weight: 400;
+      color: #94a3b8;
+      font-size: 12px;
+      display: block;
+    }
+
+    .body {
+      padding: 16px;
+    }
+
+    .description {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+
+    .btn:hover { background: #4338ca; }
+
+    .btn-secondary {
+      background: white;
+      color: #4f46e5;
+      border: 1px solid #e0e7ff;
+      margin-top: 8px;
+    }
+
+    .btn-secondary:hover { background: #eef2ff; }
+
+    .status {
+      font-size: 11px;
+      color: #94a3b8;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .status a {
+      color: #4f46e5;
+      text-decoration: none;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #f1f5f9;
+      margin: 12px 0;
+    }
+
+    .supported {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+    </div>
+    <div class="brand">
+      Shortlist
+      <span>AI-powered career writing</span>
+    </div>
+  </div>
+
+  <div class="body">
+    <p class="description">
+      Visit a job posting and click the <strong>"Shortlist this job"</strong> button to auto-fill the job description.
+    </p>
+
+    <button class="btn" id="open-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 4v16m8-8H4"/>
+      </svg>
+      Open Shortlist
+    </button>
+
+    <hr class="divider" />
+
+    <p class="supported">Works on: Greenhouse · Lever · Workday · Indeed · LinkedIn</p>
+
+    <p class="status" style="margin-top: 10px;">
+      <a href="https://shortlist-amber.vercel.app" target="_blank">shortlist-amber.vercel.app</a>
+    </p>
+  </div>
+
+  <script>
+    document.getElementById("open-btn").addEventListener("click", () => {
+      chrome.tabs.create({ url: "https://shortlist-amber.vercel.app/generate" });
+    });
+  </script>
+</body>
+</html>

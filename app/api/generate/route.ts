@@ -13,10 +13,11 @@ import {
   buildLinkedInHeadlinePrompt,
   buildValidatorPrompt,
   buildRetryPrompt,
+  buildTailoringRecommendationsPrompt,
   stripCodeFences,
   resolveVerdict,
 } from "@/lib/prompts";
-import { MODELS, MAX_RETRIES, PROMPT_VERSIONS, FREE_MONTHLY_LIMIT } from "@/lib/constants";
+import { MODELS, MAX_RETRIES, PROMPT_VERSIONS, FREE_MONTHLY_LIMIT, PROMPT_AB_VARIANT } from "@/lib/constants";
 import type {
   GenerateRequest,
   JdAnalysis,
@@ -348,6 +349,7 @@ export async function POST(req: NextRequest) {
               validator_scores: validatorResult.scores,
               validator_verdict: validatorResult.verdict,
               retry_count: retryCount,
+              ab_variant: PROMPT_AB_VARIANT,
             })
             .select("id")
             .single();
@@ -374,6 +376,28 @@ export async function POST(req: NextRequest) {
           generation_id: generationId ?? undefined,
           keywords: (jdAnalysis as JdAnalysis).key_terminology ?? [],
         });
+
+        // ── Stage 5: Tailoring recommendations (fire-and-forget Haiku call) ──────────
+        // Only when we have resume context (candidate_input is long enough to analyze)
+        if (candidate_input.length > 200 && jdAnalysis.key_terminology) {
+          try {
+            const tailoringResponse = await anthropic.messages.create({
+              model: MODELS.parser,
+              max_tokens: 512,
+              messages: [{
+                role: "user",
+                content: buildTailoringRecommendationsPrompt(candidate_input, jdAnalysis, fullText),
+              }],
+            });
+            const raw = tailoringResponse.content[0].type === "text" ? tailoringResponse.content[0].text : "[]";
+            const suggestions = JSON.parse(stripCodeFences(raw)) as string[];
+            if (Array.isArray(suggestions) && suggestions.length > 0) {
+              send({ type: "tailoring_suggestions", suggestions });
+            }
+          } catch {
+            // Non-critical — tailoring recs are optional
+          }
+        }
       } catch (err) {
         const message = err instanceof Error ? err.message : "Generation failed";
         send({ type: "error", message });

@@ -27,6 +27,7 @@ export interface GenerateResult {
   issues: ValidatorIssue[];
   generationId: string | null;
   keywords: string[];
+  tailoringSuggestions: string[];
 }
 
 export function useGenerate() {
@@ -37,6 +38,7 @@ export function useGenerate() {
   const [error, setError] = useState<string | null>(null);
   const [limitReached, setLimitReached] = useState(false);
   const [sessionExpired, setSessionExpired] = useState(false);
+  const [tailoringSuggestions, setTailoringSuggestions] = useState<string[]>([]);
 
   const generate = useCallback(async (request: GenerateRequest) => {
     setStatus("parsing");
@@ -46,6 +48,7 @@ export function useGenerate() {
     setError(null);
     setLimitReached(false);
     setSessionExpired(false);
+    setTailoringSuggestions([]);
 
     try {
       const response = await fetch("/api/generate", {
@@ -120,8 +123,12 @@ export function useGenerate() {
                   issues: event.issues ?? [],
                   generationId: event.generation_id ?? null,
                   keywords: event.keywords ?? [],
+                  tailoringSuggestions: [],
                 });
                 setStatus("done");
+                break;
+              case "tailoring_suggestions":
+                setTailoringSuggestions(event.suggestions ?? []);
                 break;
               case "error":
                 setError(event.message);
@@ -147,7 +154,8 @@ export function useGenerate() {
     setError(null);
     setLimitReached(false);
     setSessionExpired(false);
+    setTailoringSuggestions([]);
   }, []);
 
-  return { generate, reset, status, streamText, jdAnalysis, result, error, limitReached, sessionExpired };
+  return { generate, reset, status, streamText, jdAnalysis, result, error, limitReached, sessionExpired, tailoringSuggestions };
 }

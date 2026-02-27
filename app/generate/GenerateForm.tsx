@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { usePostHog } from "posthog-js/react";
 import { useGenerate } from "@/hooks/useGenerate";
+import { useBatchGenerate } from "@/hooks/useBatchGenerate";
 import OutputPanel from "@/components/OutputPanel";
 import type { DocumentType, UserType, UserData, ToneType } from "@/lib/types";
 import { FREE_MONTHLY_LIMIT, TONES } from "@/lib/constants";
@@ -275,6 +277,107 @@ function UsageMeter({ usage }: { usage: PlanUsage }) {
   );
 }
 
+// ─── Batch output panel ───────────────────────────────────────────────────────
+
+const BATCH_DOC_LABELS: Record<string, string> = {
+  bullets: "Resume Bullets",
+  cover_letter: "Cover Letter",
+  linkedin_about: "LinkedIn About",
+};
+
+function BatchOutputPanel({
+  states,
+  onDownloadZip,
+  zipLoading,
+}: {
+  states: import("@/hooks/useBatchGenerate").BatchState[];
+  onDownloadZip: () => void;
+  zipLoading: boolean;
+}) {
+  const [activeTab, setActiveTab] = useState<DocumentType>("bullets");
+
+  const active = states.find((s) => s.docType === activeTab) ?? states[0];
+  const allDone = states.every((s) => s.status === "done");
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Tab bar */}
+      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
+        {states.map((s) => {
+          const done = s.status === "done";
+          const running = s.status === "parsing" || s.status === "generating" || s.status === "validating";
+          return (
+            <button
+              key={s.docType}
+              onClick={() => setActiveTab(s.docType)}
+              className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-2 px-2 rounded-lg transition-all ${
+                activeTab === s.docType
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              {running && (
+                <span className="w-2.5 h-2.5 border border-indigo-500 border-t-transparent rounded-full animate-spin shrink-0" />
+              )}
+              {done && (
+                <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0" />
+              )}
+              {!running && !done && (
+                <span className="w-2.5 h-2.5 bg-slate-300 rounded-full shrink-0" />
+              )}
+              <span>{BATCH_DOC_LABELS[s.docType] ?? s.docType}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Active tab output */}
+      {active && (
+        <OutputPanel
+          status={active.status}
+          streamText={active.streamText}
+          jdAnalysis={null}
+          result={active.result
+            ? {
+                output: active.result.output,
+                jdAnalysis: null as never,
+                scores: active.result.scores,
+                overall: active.result.overall,
+                verdict: active.result.verdict,
+                retryCount: 0,
+                issues: active.result.issues,
+                generationId: active.result.generationId,
+                keywords: active.result.keywords,
+                tailoringSuggestions: [],
+              }
+            : null}
+          error={null}
+          documentType={active.docType}
+        />
+      )}
+
+      {/* ZIP download — shown when all done */}
+      {allDone && (
+        <button
+          onClick={onDownloadZip}
+          disabled={zipLoading}
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-indigo-200 text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-colors disabled:opacity-50"
+        >
+          {zipLoading ? (
+            <span className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          )}
+          Download full package (.zip)
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function GenerateForm({
@@ -284,12 +387,15 @@ export default function GenerateForm({
   initialUsage: PlanUsage | null;
   savedResume: string | null;
 }) {
+  const posthog = usePostHog();
   const [userType, setUserType] = useState<UserType | null>(null);
   const [userData, setUserData] = useState<UserData>({});
   const [jdText, setJdText] = useState("");
   const [candidateInput, setCandidateInput] = useState(savedResume ?? "");
   const [documentType, setDocumentType] = useState<DocumentType>("bullets");
   const [tone, setTone] = useState<ToneType>("professional");
+  const [batchMode, setBatchMode] = useState(false);
+  const [zipLoading, setZipLoading] = useState(false);
 
   // Saved resume state
   const [resumeSaved, setResumeSaved] = useState(!!savedResume);
@@ -300,9 +406,14 @@ export default function GenerateForm({
   const [parseError, setParseError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { generate, status, streamText, jdAnalysis, result, error, limitReached, sessionExpired } = useGenerate();
+  const { generate, status, streamText, jdAnalysis, result, error, limitReached, sessionExpired, tailoringSuggestions } = useGenerate();
+  const { generateBatch, running: batchRunning, states: batchStates, limitReached: batchLimitReached, sessionExpired: batchSessionExpired } = useBatchGenerate();
 
-  const isRunning = status === "parsing" || status === "generating" || status === "validating";
+  const isRunning = batchMode
+    ? batchRunning
+    : status === "parsing" || status === "generating" || status === "validating";
+  const effectiveLimitReached = batchMode ? batchLimitReached : limitReached;
+  const effectiveSessionExpired = batchMode ? batchSessionExpired : sessionExpired;
 
   // JD is optional for LinkedIn doc types
   const selectedDocType = DOC_TYPES.find((d) => d.value === documentType);
@@ -310,10 +421,10 @@ export default function GenerateForm({
 
   const canGenerate =
     userType !== null &&
-    (jdRequired ? jdText.trim().length > 0 : true) &&
+    (batchMode ? jdText.trim().length > 0 : (jdRequired ? jdText.trim().length > 0 : true)) &&
     candidateInput.trim().length > 0 &&
     !isRunning &&
-    !limitReached;
+    !effectiveLimitReached;
 
   // Pre-fill JD from URL params (Chrome extension integration)
   useEffect(() => {
@@ -324,15 +435,57 @@ export default function GenerateForm({
 
   const handleGenerate = () => {
     if (!canGenerate || !userType) return;
-    generate({
+    const request = {
       document_type: documentType,
       jd_text: jdRequired ? jdText : undefined,
       user_type: userType,
       user_data: userData,
       candidate_input: candidateInput,
       tone,
+    };
+    posthog?.capture("generation_started", {
+      doc_type: batchMode ? "batch" : documentType,
+      tone,
+      user_type: userType,
+      batch_mode: batchMode,
     });
+    if (batchMode) {
+      generateBatch({ ...request, jd_text: jdText });
+    } else {
+      generate(request);
+    }
   };
+
+  const handleDownloadZip = useCallback(async () => {
+    const doneDocs = batchStates.filter((s) => s.status === "done" && s.result);
+    if (doneDocs.length === 0) return;
+    setZipLoading(true);
+    try {
+      const res = await fetch("/api/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          format: "zip",
+          batch: doneDocs.map((s) => ({
+            output_text: s.result!.output,
+            document_type: s.docType,
+          })),
+        }),
+      });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "shortlist-application-package.zip";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // Silent
+    } finally {
+      setZipLoading(false);
+    }
+  }, [batchStates]);
 
   // ── PDF / DOCX upload ───────────────────────────────────────────────────────
   const handleFileUpload = async (file: File) => {
@@ -566,7 +719,10 @@ export default function GenerateForm({
               {DOC_TYPES.slice(0, 3).map((d) => (
                 <button
                   key={d.value}
-                  onClick={() => setDocumentType(d.value)}
+                  onClick={() => {
+                    setDocumentType(d.value);
+                    posthog?.capture("document_type_selected", { doc_type: d.value });
+                  }}
                   className={`text-left rounded-xl border px-3 py-3 transition-all ${
                     documentType === d.value
                       ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
@@ -584,7 +740,10 @@ export default function GenerateForm({
               {DOC_TYPES.slice(3).map((d) => (
                 <button
                   key={d.value}
-                  onClick={() => setDocumentType(d.value)}
+                  onClick={() => {
+                    setDocumentType(d.value);
+                    posthog?.capture("document_type_selected", { doc_type: d.value });
+                  }}
                   className={`text-left rounded-xl border px-3 py-3 transition-all ${
                     documentType === d.value
                       ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
@@ -604,6 +763,24 @@ export default function GenerateForm({
               ))}
             </div>
 
+            {/* Batch mode toggle */}
+            <div className="mb-4 flex items-start justify-between gap-3 bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-indigo-900">Full application package</p>
+                <p className="text-xs text-indigo-600 mt-0.5">Generate resume bullets, cover letter, and LinkedIn About at once. Counts as 3 generations.</p>
+              </div>
+              <button
+                onClick={() => setBatchMode((b) => !b)}
+                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+                  batchMode ? "bg-indigo-600" : "bg-slate-200"
+                }`}
+                role="switch"
+                aria-checked={batchMode}
+              >
+                <span className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow ring-0 transition-transform ${batchMode ? "translate-x-4" : "translate-x-0"}`} />
+              </button>
+            </div>
+
             {/* Tone selector */}
             <div className="mb-6">
               <p className="text-xs font-medium text-slate-600 mb-2">Writing tone</p>
@@ -611,7 +788,10 @@ export default function GenerateForm({
                 {TONES.map((t) => (
                   <button
                     key={t.value}
-                    onClick={() => setTone(t.value as ToneType)}
+                    onClick={() => {
+                      setTone(t.value as ToneType);
+                      posthog?.capture("tone_selected", { tone: t.value });
+                    }}
                     title={t.description}
                     className={`flex-1 text-center rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
                       tone === t.value
@@ -632,7 +812,7 @@ export default function GenerateForm({
             {initialUsage && <UsageMeter usage={initialUsage} />}
 
             {/* Session expired */}
-            {sessionExpired && (
+            {effectiveSessionExpired && (
               <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
                 <p className="text-sm font-medium text-amber-900 mb-2">Session expired</p>
                 <Link
@@ -645,7 +825,7 @@ export default function GenerateForm({
             )}
 
             {/* Limit reached — replace button with upgrade CTA */}
-            {limitReached ? (
+            {effectiveLimitReached ? (
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
                 <p className="text-sm font-medium text-amber-900 mb-1">
                   Monthly limit reached
@@ -655,6 +835,7 @@ export default function GenerateForm({
                 </p>
                 <Link
                   href="/pricing"
+                  onClick={() => posthog?.capture("upgrade_clicked", { source: "generate_limit" })}
                   className="inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all"
                 >
                   Upgrade to Pro →
@@ -705,8 +886,10 @@ export default function GenerateForm({
         {/* ── RIGHT: Output ──────────────────────────────────────────────── */}
         <div className="lg:sticky lg:top-24">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">Output</h2>
-            {status === "done" && (
+            <h2 className="text-sm font-semibold text-slate-900">
+              {batchMode ? "Application Package" : "Output"}
+            </h2>
+            {!batchMode && status === "done" && (
               <button
                 onClick={() =>
                   generate({
@@ -724,14 +907,24 @@ export default function GenerateForm({
               </button>
             )}
           </div>
-          <OutputPanel
-            status={status}
-            streamText={streamText}
-            jdAnalysis={jdAnalysis}
-            result={result}
-            error={error}
-            documentType={documentType}
-          />
+
+          {batchMode ? (
+            <BatchOutputPanel
+              states={batchStates}
+              onDownloadZip={handleDownloadZip}
+              zipLoading={zipLoading}
+            />
+          ) : (
+            <OutputPanel
+              status={status}
+              streamText={streamText}
+              jdAnalysis={jdAnalysis}
+              result={result}
+              error={error}
+              documentType={documentType}
+              tailoringSuggestions={tailoringSuggestions}
+            />
+          )}
         </div>
       </div>
     </div>

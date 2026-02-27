@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { usePostHog } from "posthog-js/react";
 import type { HealthScoreResult } from "@/lib/types";
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -91,8 +92,14 @@ function DimensionCard({ dimensionKey, score }: { dimensionKey: string; score: n
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function ScorePage() {
+  const posthog = usePostHog();
   const [resumeText, setResumeText] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    posthog?.capture("score_page_viewed");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [parseLoading, setParseLoading] = useState(false);
   const [result, setResult] = useState<HealthScoreResult | null>(null);
   const [error, setError] = useState<string | null>(null);

@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "Shortlist — AI Career Writing",
+  "short_name": "Shortlist",
+  "version": "1.0.0",
+  "description": "One click to tailor your resume, cover letter, and LinkedIn profile to any job posting.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "https://boards.greenhouse.io/*",
+    "https://jobs.lever.co/*",
+    "https://myworkdayjobs.com/*",
+    "https://www.indeed.com/*",
+    "https://www.linkedin.com/*",
+    "https://*.greenhouse.io/*",
+    "https://*.lever.co/*",
+    "https://*.workday.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Shortlist this job",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://boards.greenhouse.io/*",
+        "https://jobs.lever.co/*",
+        "https://*.greenhouse.io/jobs/*",
+        "https://*.lever.co/*",
+        "https://myworkdayjobs.com/*",
+        "https://*.workday.com/*/job/*",
+        "https://www.indeed.com/viewjob*",
+        "https://www.linkedin.com/jobs/view/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

@@ -567,3 +567,37 @@ Rules:
 RESUME:
 ${resumeText}`;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAILORING RECOMMENDATIONS — post-generation checklist
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function buildTailoringRecommendationsPrompt(
+  resumeText: string,
+  jdAnalysis: Partial<JdAnalysis>,
+  generatedOutput: string
+): string {
+  return `You are a professional resume coach. A candidate just generated AI-tailored resume content. Your job is to give them 3–5 specific, actionable changes to make in their actual base resume — so it better matches the target role.
+
+Focus on:
+- Skills or tools from the JD that are missing or underemphasized in the resume
+- Weak or vague bullets that should be replaced with metric-backed versions
+- Section structure improvements (e.g., add quantification, reorder, rename sections)
+- ATS keywords from the JD that don't appear in the resume
+
+Target role: ${jdAnalysis.role_title ?? "the target role"}
+Must-haves from JD: ${(jdAnalysis.must_haves ?? []).join(", ")}
+Key terminology: ${(jdAnalysis.key_terminology ?? []).join(", ")}
+
+CANDIDATE'S RESUME:
+${resumeText || "(no resume provided — give general advice based on the JD)"}
+
+GENERATED OUTPUT (for reference — what we tailored to):
+${generatedOutput.slice(0, 500)}
+
+Return ONLY a JSON array of 3–5 strings. Each string is one specific, actionable recommendation in plain English. No labels, no numbering, no markdown:
+
+["recommendation 1", "recommendation 2", "recommendation 3"]
+
+Make each recommendation concrete and specific to what you see — not generic advice.`;
+}

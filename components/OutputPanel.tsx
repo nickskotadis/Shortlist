@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { usePostHog } from "posthog-js/react";
 import type { GenerateStatus, GenerateResult } from "@/hooks/useGenerate";
 import type { JdAnalysis, ValidatorIssue, DocumentType } from "@/lib/types";
 
@@ -11,6 +12,7 @@ interface OutputPanelProps {
   result: GenerateResult | null;
   error: string | null;
   documentType: DocumentType;
+  tailoringSuggestions?: string[];
 }
 
 const scoreLabels: Record<string, string> = {
@@ -204,6 +206,68 @@ function LabelInput({ generationId }: { generationId: string }) {
   );
 }
 
+function QualityRing({ score }: { score: number }) {
+  const pct = Math.min(100, Math.max(0, score * 10));
+  const radius = 20;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDash = (pct / 100) * circumference;
+  const color = score >= 8 ? "#10b981" : score >= 6 ? "#6366f1" : "#f59e0b";
+
+  return (
+    <div className="relative inline-flex items-center justify-center" title="Generation quality score (1–10)">
+      <svg width="52" height="52" viewBox="0 0 52 52" className="-rotate-90">
+        <circle cx="26" cy="26" r={radius} fill="none" stroke="#f1f5f9" strokeWidth="4" />
+        <circle
+          cx="26" cy="26" r={radius} fill="none"
+          stroke={color} strokeWidth="4"
+          strokeDasharray={`${strokeDash} ${circumference}`}
+          strokeLinecap="round"
+          style={{ transition: "stroke-dasharray 0.7s ease" }}
+        />
+      </svg>
+      <span className="absolute text-xs font-bold text-slate-700">{score.toFixed(1)}</span>
+    </div>
+  );
+}
+
+function TailoringPanel({ suggestions }: { suggestions: string[] }) {
+  const [open, setOpen] = useState(false);
+  if (suggestions.length === 0) return null;
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-slate-50 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+          <span className="text-sm font-semibold text-slate-900">Resume Tailoring Checklist</span>
+          <span className="text-xs font-medium text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full">{suggestions.length} actions</span>
+        </div>
+        <svg className={`w-4 h-4 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div className="px-5 pb-4 border-t border-slate-100 pt-3">
+          <p className="text-xs text-slate-400 mb-3">Specific changes to make in your base resume to better match this role:</p>
+          <ul className="space-y-2">
+            {suggestions.map((s, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                <span className="w-5 h-5 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                <span className="leading-relaxed">{s}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function OutputPanel({
   status,
   streamText,
@@ -211,7 +275,9 @@ export default function OutputPanel({
   result,
   error,
   documentType,
+  tailoringSuggestions,
 }: OutputPanelProps) {
+  const posthog = usePostHog();
   const [copied, setCopied] = useState(false);
   const [exportLoading, setExportLoading] = useState<{ docx: boolean; pdf: boolean }>({
     docx: false,
@@ -227,7 +293,16 @@ export default function OutputPanel({
       setFeedback(null);
       setExportError(null);
     }
-  }, [status]);
+    if (status === "done" && result) {
+      posthog?.capture("generation_completed", {
+        doc_type: documentType,
+        verdict: result.verdict,
+        overall_score: result.overall,
+        retry_count: result.retryCount,
+        keyword_count: result.keywords?.length ?? 0,
+      });
+    }
+  }, [status, result, documentType, posthog]);
 
   const copy = async () => {
     const text = result?.output ?? streamText;
@@ -241,6 +316,7 @@ export default function OutputPanel({
     if (!result?.output) return;
     setExportLoading((prev) => ({ ...prev, [format]: true }));
     setExportError(null);
+    posthog?.capture("export_clicked", { format, doc_type: documentType });
     try {
       const res = await fetch("/api/export", {
         method: "POST",
@@ -384,15 +460,14 @@ export default function OutputPanel({
         <>
           <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                Quality scores
-              </p>
-              <div className="flex items-center gap-2">
-                <StatusBadge verdict={result.verdict} />
-                <span className="text-sm font-bold text-slate-900">
-                  {result.overall.toFixed(1)}/10
-                </span>
+              <div className="flex items-center gap-3">
+                <QualityRing score={result.overall} />
+                <div>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Generation quality</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Shortlist grades every generation for accuracy, relevance, and impact</p>
+                </div>
               </div>
+              <StatusBadge verdict={result.verdict} />
             </div>
             <div className="space-y-3">
               {Object.entries(result.scores).map(([key, score]) => (
@@ -403,6 +478,14 @@ export default function OutputPanel({
               <p className="text-xs text-slate-400 mt-3">
                 ↻ Refined once to improve quality
               </p>
+            )}
+            {result.overall < 7 && (
+              <div className="mt-3 flex items-center gap-2 text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Consider adjusting your inputs and regenerating for a higher score.
+              </div>
             )}
           </div>
 
@@ -439,6 +522,11 @@ export default function OutputPanel({
               </div>
             );
           })()}
+
+          {/* Tailoring recommendations */}
+          {tailoringSuggestions && tailoringSuggestions.length > 0 && (
+            <TailoringPanel suggestions={tailoringSuggestions} />
+          )}
 
           {/* Label this generation */}
           {result.generationId && (
