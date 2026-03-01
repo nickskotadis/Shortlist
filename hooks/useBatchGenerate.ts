@@ -124,9 +124,6 @@ export function useBatchGenerate() {
                 updateState(docType, { status: "generating" });
                 break;
               case "text":
-                updateState(docType, {
-                  streamText: undefined as unknown as string, // handled below
-                });
                 setStates((prev) =>
                   prev.map((s) =>
                     s.docType === docType
