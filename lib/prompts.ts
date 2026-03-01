@@ -163,13 +163,19 @@ ${buildToneInstruction(tone)}
 
 You are an elite career strategist and professional writer. You specialize in resume bullets that make hiring managers stop scanning and start reading.
 
+QUALITY BAR: Every bullet you write must clear this test — "Could this bullet appear on 50 other people's resumes?" If yes, it's not specific enough. Rewrite it until it couldn't.
+
 Your writing standards:
-- Every bullet starts with a strong, specific, past-tense action verb. Vary them. Choose verbs that carry weight: Architected, Negotiated, Reduced, Grew, Rebuilt, Launched, Diagnosed, Secured, Automated, Streamlined, Spearheaded.
-- Quantify every claim that can be quantified. If the candidate did not provide a number, use relative language ("top 10% of team", "within 3 months of joining") — never leave a vague claim unanchored.
-- STAR-lite structure: [Action] + [Context or method] + [Measurable result]. Three components, one sentence.
-- Mirror terminology from the target job description naturally. Sound like an insider.
-- No bullet should describe a task. Every bullet should describe an outcome.
-- Prioritize experiences directly relevant to the target role. Deprioritize or omit tangential work entirely in favor of experience that maps to what the role actually requires.
+- Strong, specific, past-tense action verbs. Vary them widely across the 5 bullets — never open two bullets with the same verb. Choose verbs with weight: Architected, Negotiated, Diagnosed, Rebuilt, Secured, Automated, Spearheaded, Reduced, Grew, Launched, Shipped, Recovered, Standardized.
+- Quantify every claim that can be quantified. If no specific number exists, use a credible relative anchor: "top 10% of the team", "within 6 weeks of joining", "across 4 product lines", "for 3 enterprise clients" — never leave a claim floating in the abstract.
+- STRUCTURAL VARIETY IS REQUIRED. Do not write all 5 bullets in the same [Verb] + [what I did] + [result] pattern — that rhythm exposes template output. Mix it up deliberately:
+  - Some bullets open with scale or scope: "Across a 40-person engineering org, ..."
+  - Some open with a timeframe: "Within 3 months of joining, ..."
+  - Some lead with the outcome first: "Cut deployment time by 60% by redesigning ..."
+  - Some focus tightly on one specific technical or strategic decision
+- Every bullet must describe an outcome, not an activity. "Managed relationships with 12 enterprise clients" is an activity. "Retained 12 enterprise accounts totaling $4M ARR by rebuilding onboarding and cutting time-to-value from 90 to 30 days" is an outcome.
+- Mirror key terminology from the target role naturally — sound like an insider, not a keyword stuffer.
+- Ruthlessly prioritize relevance. If an experience doesn't map directly to what this role needs, omit it.
 
 Banned phrases (automatic failure if any appear):
 ${banned}
@@ -183,7 +189,6 @@ Industry: ${jdAnalysis.industry ?? "the target industry"}
 What they actually need: ${jdAnalysis.implicit_signals?.what_they_actually_need ?? ""}
 Must-haves to address: ${(jdAnalysis.must_haves ?? []).join(", ")}
 Key terminology to mirror: ${(jdAnalysis.key_terminology ?? []).join(", ")}
-Tone: ${jdAnalysis.tone_target ?? "professional"}
 
 ---
 
@@ -193,11 +198,7 @@ ${candidateInput}
 ---
 
 TASK:
-Write 5 resume bullets. Each bullet must:
-1. Be directly relevant to the target role above — omit tangential experience
-2. Demonstrate impact, not activity
-3. Include at least one specific metric, scale indicator, or relative benchmark
-4. Sound like a credible human professional wrote it
+Write 5 resume bullets. Each must be directly relevant to the target role, demonstrate real impact, include at least one specific anchor (number, scale, or relative benchmark), and sound like a credible human professional — not a template.
 
 Return ONLY the bullets, one per line, each starting with •. No numbering, no explanation.`;
 }
@@ -217,15 +218,15 @@ export function buildSummaryPrompt(
 ${buildToneInstruction(tone)}
 ---
 
-Write a professional summary for a resume. This is the most-read section — a hiring manager will spend 10 seconds on it and decide whether to continue.
+Write a professional resume summary. This is the most-read section — a hiring manager spends 10 seconds on it. It either earns more attention or loses it.
 
 Rules:
-- 3–4 sentences. 60–90 words total. COUNT THE WORDS BEFORE RETURNING. If over 90, cut until under. This is a hard constraint, not a guideline.
-- No "I" statements. Written in implied third person.
-- First sentence: who they are at their highest level — role, years, domain. Specific and non-generic.
-- Second sentence: what they are specifically excellent at. Must be specific enough that it could not describe anyone else.
-- Third sentence: forward-looking, connects background to target role explicitly.
-- Optional fourth sentence: a genuine differentiator. Only include if real and specific.
+- 3–4 sentences. 60–90 words total. COUNT BEFORE RETURNING. Hard limit.
+- No "I" statements. Written in implied third person (no subject pronoun).
+- FIRST SENTENCE is the most important. It must NOT be a generic formula like "[Title] with [N] years of experience in [industry]" — that sentence exists on millions of resumes and earns zero attention. Instead: lead with the most compelling, specific thing about this person — their most impressive scope, an unusual combination of skills, or the scale of their best work. If you can imagine it on anyone else's resume, rewrite it.
+- Second sentence: the specific thing they are unusually good at. Narrow enough that it couldn't describe a different person.
+- Third sentence: connects their background explicitly to the target role — what they bring to this problem specifically.
+- Optional fourth sentence: a genuine differentiator (specific credential, unusual background, notable achievement). Only include if it's real and specific — otherwise cut it.
 
 Banned phrases:
 ${banned}
@@ -236,7 +237,6 @@ TARGET ROLE:
 Role: ${jdAnalysis.role_title ?? "the target role"}
 What they actually need: ${jdAnalysis.implicit_signals?.what_they_actually_need ?? ""}
 Hiring manager's worry: ${jdAnalysis.hiring_manager_worry ?? ""}
-Tone: ${jdAnalysis.tone_target ?? "professional"}
 
 ---
 
@@ -273,29 +273,29 @@ ${buildToneInstruction(tone)}
 
 You are writing a cover letter. This is not a template. It is a specific, personal letter from a real person to a real hiring manager at a real company. It must read that way.
 
+VOICE: Write entirely in FIRST PERSON — this letter is from the candidate. Use "I", "my", "me" throughout. The candidate is speaking directly to the hiring manager. The only exception: Paragraph 1's very first sentence must not begin with the word "I" — but the candidate is still the narrator.
+
 STRUCTURE (follow exactly):
 
 Paragraph 1 — The Hook (2–3 sentences)
-Do NOT start with "I." Do NOT open with the candidate's name. Do NOT use a generic opener.
-Start with an insight about the company's challenge, market position, or the problem this role solves. Then introduce the candidate in relation to that problem.
+First sentence: Do NOT start with "I". Do NOT open with the candidate's name. Do NOT use "I am writing to apply." Lead with something sharp — an insight about the company's challenge, where the market is going, or what this role is really solving. The second and third sentences introduce the candidate as the person for that specific problem.
 
 Paragraph 2 — The Evidence (3–4 sentences)
-The 1–2 most relevant achievements from the candidate's background, connected explicitly to this specific role. At least one metric. This paragraph must address the hiring manager's core worry: ${jdAnalysis.hiring_manager_worry ?? ""}
+The 1–2 most relevant, specific achievements from the candidate's background — directly tied to what this role requires. At least one concrete metric or scale indicator. This paragraph must directly address the hiring manager's core concern: ${jdAnalysis.hiring_manager_worry ?? "whether this candidate can hit the ground running"}
 
-Paragraph 3 — Why This Company (3–4 sentences)
-Specific to this company — not generic praise. Reference what the JD reveals about where the company is going, what they're solving, or what kind of person they're building toward.
+Paragraph 3 — Why This Company (2–3 sentences)
+This is where most cover letters fail — they write generic praise ("I admire your mission" is worthless). Write something specific to what this company is building, solving, or navigating based on what the JD reveals. Show that the candidate actually understands the company's position, not just the job title.
 
 Paragraph 4 — The Close (2 sentences)
-Confident. Not "I hope to hear from you." Express genuine interest and forward momentum.
+Direct and confident. Not "I hope to hear from you" — that's passive and weak. Express clear forward interest.
 
 RULES:
-- Total length: 250–350 words. Hard limit.
-- Tone: ${jdAnalysis.tone_target ?? "professional"}
-- No clichés from the banned list
-- No passive voice
-- Every sentence earns its place
-- NO square bracket notes, annotations, or editorial comments of any kind — not even [Note: ...] or [Based on available information...]
-- Output only the letter. Nothing before the first paragraph, nothing after the last.
+- Total length: 250–350 words. Hard limit. Count before returning.
+- No passive voice. Every sentence is active.
+- No clichés from the banned list.
+- Every sentence earns its place. Cut anything that doesn't add specific signal.
+- NO square bracket notes, annotations, or editorial comments of any kind.
+- Output only the letter body. Nothing before the first paragraph, nothing after the last.
 
 ---
 
@@ -311,7 +311,7 @@ ${additionalNotes ? `Additional notes: ${additionalNotes}` : ""}
 
 ---
 
-Start directly with the first sentence of the letter. Do not label paragraphs. Do not add any meta-commentary.`;
+Start directly with the first sentence of Paragraph 1. Do not label paragraphs. Do not add any meta-commentary.`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
