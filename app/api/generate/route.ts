@@ -325,11 +325,22 @@ export async function POST(req: NextRequest) {
           const candidateWordCount = candidate_input.trim().split(/\s+/).length;
           const jdWordCount = jd_text ? jd_text.trim().split(/\s+/).length : 0;
 
-          const { data: insertData, error: dbError } = await supabase
+          // Verify job_application_id belongs to this user before linking
+        let verifiedJobApplicationId: string | null = null;
+        if (body.job_application_id) {
+          const { count } = await supabase
+            .from("job_applications")
+            .select("id", { count: "exact", head: true })
+            .eq("id", body.job_application_id)
+            .eq("user_id", user.id);
+          if (count && count > 0) verifiedJobApplicationId = body.job_application_id;
+        }
+
+        const { data: insertData, error: dbError } = await supabase
             .from("generations")
             .insert({
               user_id: user.id,
-              job_application_id: body.job_application_id ?? null,
+              job_application_id: verifiedJobApplicationId,
               document_type,
               user_type,
               tone: tone ?? "professional",

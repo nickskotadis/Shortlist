@@ -15,8 +15,19 @@ export async function GET() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Failed to load applications" }, { status: 500 });
   return NextResponse.json({ applications: data });
+}
+
+function sanitizeUrl(raw: unknown): string | null {
+  if (!raw || typeof raw !== "string") return null;
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+    return raw;
+  } catch {
+    return null;
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -29,21 +40,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "company_name and job_title are required" }, { status: 400 });
   }
 
+  const status = VALID_STATUSES.includes(body.status) ? body.status : "applied";
+
   const { data, error } = await supabase
     .from("job_applications")
     .insert({
       user_id: user.id,
-      company_name: body.company_name,
-      job_title: body.job_title,
-      status: body.status ?? "applied",
-      url: body.url ?? null,
-      notes: body.notes ?? null,
+      company_name: String(body.company_name).slice(0, 200),
+      job_title: String(body.job_title).slice(0, 200),
+      status,
+      url: sanitizeUrl(body.url),
+      notes: body.notes ? String(body.notes).slice(0, 2000) : null,
       jd_raw: body.jd_raw ?? null,
     })
     .select("id, company_name, job_title, status, url, notes, created_at")
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Failed to create application" }, { status: 500 });
   return NextResponse.json({ application: data }, { status: 201 });
 }
 
@@ -70,6 +83,6 @@ export async function PATCH(req: NextRequest) {
     .eq("id", body.id)
     .eq("user_id", user.id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Failed to update application" }, { status: 500 });
   return NextResponse.json({ success: true });
 }

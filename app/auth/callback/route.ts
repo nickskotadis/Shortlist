@@ -6,7 +6,9 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as "email" | "recovery" | null;
-  const next = searchParams.get("next") ?? "/generate";
+  // Validate next is a same-origin relative path — prevent open redirect
+  const rawNext = searchParams.get("next") ?? "/generate";
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/generate";
 
   const supabase = await createClient();
 

@@ -48,11 +48,7 @@ export default function PricingPage() {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          billingPeriod: billing,
-          successUrl: `${window.location.origin}/dashboard?upgraded=1`,
-          cancelUrl: `${window.location.origin}/pricing`,
-        }),
+        body: JSON.stringify({ billingPeriod: billing }),
       });
 
       if (res.status === 401) {

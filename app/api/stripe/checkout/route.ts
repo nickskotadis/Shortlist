@@ -12,23 +12,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: { billingPeriod: "monthly" | "annual"; successUrl: string; cancelUrl: string };
+  let body: { billingPeriod: "monthly" | "annual" };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { billingPeriod, successUrl, cancelUrl } = body;
-  if (!billingPeriod || !successUrl || !cancelUrl) {
-    return NextResponse.json(
-      { error: "Missing required fields: billingPeriod, successUrl, cancelUrl" },
-      { status: 400 }
-    );
+  const { billingPeriod } = body;
+  if (!billingPeriod) {
+    return NextResponse.json({ error: "Missing required field: billingPeriod" }, { status: 400 });
   }
   if (!["monthly", "annual"].includes(billingPeriod)) {
     return NextResponse.json({ error: "Invalid billingPeriod" }, { status: 400 });
   }
+
+  // Derive redirect URLs server-side — never accept them from the client
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const host = forwardedHost ? `https://${forwardedHost}` : "https://shortlist-amber.vercel.app";
+  const successUrl = `${host}/dashboard?upgraded=1`;
+  const cancelUrl = `${host}/pricing`;
 
   const priceId =
     billingPeriod === "monthly"

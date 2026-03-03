@@ -23,8 +23,15 @@ export async function POST(req: NextRequest) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const name = file.name.toLowerCase();
 
+  // Validate magic bytes — prevent extension spoofing
+  const isPdf  = buffer.length >= 4 && buffer.slice(0, 4).toString("ascii") === "%PDF";
+  const isDocx = buffer.length >= 4 && buffer[0] === 0x50 && buffer[1] === 0x4b && buffer[2] === 0x03 && buffer[3] === 0x04;
+
   try {
     if (name.endsWith(".pdf")) {
+      if (!isPdf) {
+        return NextResponse.json({ error: "File does not appear to be a valid PDF." }, { status: 400 });
+      }
       // Dynamic import — pdf-parse is CommonJS; use default with ESM compat fallback
       const pdfModule = await import("pdf-parse");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,6 +45,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (name.endsWith(".docx")) {
+      if (!isDocx) {
+        return NextResponse.json({ error: "File does not appear to be a valid DOCX." }, { status: 400 });
+      }
       const mammoth = await import("mammoth");
       const result = await mammoth.extractRawText({ buffer });
       const text = result.value?.trim() ?? "";
