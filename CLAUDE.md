@@ -114,10 +114,19 @@ Be decisive. If there are options, pick one and justify it.
 
 ### Auth UX — DONE
 - **UserMenu** — `components/UserMenu.tsx`; client component; indigo initials avatar (2-char derived from email local part); click opens dropdown with "Signed in as [email]" + "Sign out" link; outside-click dismiss via `useEffect`
-- **Nav** — `components/Nav.tsx`; async server component; fetches user + plan from Supabase; props: `activePage`, `maxWidth` (default `max-w-7xl`), `actions: React.ReactNode`; shows nav links (Dashboard/Applications/Generate/Score) only when authed; right side: `actions` + plan badge + `<UserMenu>` when authed, "Sign in" link when not; replaces inline navs in dashboard, applications, score, and landing pages
+- **Nav** — `components/Nav.tsx`; async server component; fetches user + plan from Supabase; props: `activePage`, `actions: React.ReactNode`; always uses `max-w-7xl` inner container (no `maxWidth` prop — was removed to prevent layout shift between pages); shows nav links (Dashboard/Applications/Generate/Score) only when authed; right side: `actions` + plan badge + `<UserMenu>` when authed, "Sign in" link when not
 - **Logout route** — `app/auth/logout/route.ts`; GET handler; calls `supabase.auth.signOut()` then redirects to `/`
 - **Social sign-in** — Google, LinkedIn (OIDC), GitHub OAuth buttons added to `app/auth/login/page.tsx`; each calls `supabase.auth.signInWithOAuth({ provider, options: { redirectTo: window.location.origin + '/auth/callback' } })`; existing `/auth/callback/route.ts` handles code exchange unchanged; providers must be enabled in Supabase Dashboard → Authentication → Providers
-- **Score page restructured** — `app/score/page.tsx` is now an async server wrapper rendering `<Nav activePage="score" maxWidth="max-w-6xl" />`; interactive content extracted to `app/score/ScoreClient.tsx` (`"use client"`)
+- **Score page restructured** — `app/score/page.tsx` is now an async server wrapper rendering `<Nav activePage="score" />`; interactive content extracted to `app/score/ScoreClient.tsx` (`"use client"`)
+
+### UI Redesign — DONE
+- **Full dark theme** — all pages and components converted from light (`slate-50`/`bg-white`) to deep navy dark theme; see Design System below for the complete palette
+- **Pages updated** — `app/page.tsx`, `app/dashboard/page.tsx`, `app/dashboard/GenerationsClient.tsx`, `app/generate/GenerateForm.tsx`, `app/applications/page.tsx`, `app/applications/ApplicationsClient.tsx`, `app/score/page.tsx`, `app/score/ScoreClient.tsx`, `app/pricing/page.tsx`, `app/auth/login/page.tsx`, `app/admin/quality/page.tsx`, `app/admin/quality/QualityClient.tsx`
+- **Components updated** — `components/Nav.tsx`, `components/UserMenu.tsx`, `components/OutputPanel.tsx`
+- **globals.css** — added indigo aurora radial gradient on `body`, SVG grain texture via `body::before` at 2.8% opacity; both give depth and atmosphere to the dark background
+- **Nav pill buttons** — nav links converted from plain text to `px-3 py-1.5 rounded-lg` pill buttons; active page has `bg-[#13182C] border border-[#232548]` filled state; inactive has hover fill only; `h-14` fixed height on all navs
+- **Nav alignment fix** — `px-6` moved from `<nav>` element to the inner `<div>` so `mx-auto` centers against the full viewport; `maxWidth` prop removed entirely — all navs use `max-w-7xl` so buttons never shift between pages
+- **Generate page inline nav** — mirrors the shared Nav styles exactly (client component can't import async server Nav)
 
 ## Key files
 - `lib/constants.ts` — model names, prompt versions, banned phrases, thresholds, `FREE_MONTHLY_LIMIT`, `TONES`, `PROMPT_AB_VARIANT`
@@ -141,11 +150,11 @@ Be decisive. If there are options, pick one and justify it.
 - `app/applications/page.tsx` — server component; fetches applications + generation counts; uses `<Nav activePage="applications" />`
 - `app/applications/ApplicationsClient.tsx` — client; status updates, follow-up email panel, add form
 - `app/admin/quality/page.tsx` — protected by `ADMIN_EMAILS`; aggregates generations by prompt_version + ab_variant
-- `app/score/page.tsx` — async server wrapper; renders `<Nav activePage="score" maxWidth="max-w-6xl" />` + `<ScoreClient />`
+- `app/score/page.tsx` — async server wrapper; renders `<Nav activePage="score" />` + `<ScoreClient />`
 - `app/score/ScoreClient.tsx` — `"use client"` resume health score interactive content; `score_page_viewed` PostHog event
 - `app/auth/logout/route.ts` — GET; signs out via Supabase, redirects to `/`
 - `app/pricing/page.tsx` — pricing page; `upgrade_clicked` PostHog event
-- `components/Nav.tsx` — async server component; shared nav with user auth + plan fetch; accepts `activePage`, `maxWidth`, `actions` props
+- `components/Nav.tsx` — async server component; shared nav with user auth + plan fetch; accepts `activePage`, `actions` props; always `max-w-7xl` inner container; pill-button nav links
 - `components/UserMenu.tsx` — `"use client"`; indigo initials avatar + dropdown (email display + sign out)
 - `hooks/useGenerate.ts` — SSE consumer; `tailoringSuggestions: string[]` state
 - `hooks/useBatchGenerate.ts` — sequential batch SSE consumer; `BatchState` per doc type
@@ -171,80 +180,117 @@ Be decisive. If there are options, pick one and justify it.
 
 ## Design system
 
-### Colors
-- **Primary:** `indigo-600` (hover: `indigo-700`), light tint `indigo-50`, text `indigo-700`
-- **Page background:** `slate-50` (not white — use `bg-slate-50` on page wrappers)
-- **Card background:** `bg-white`
-- **Text hierarchy:** `slate-900` headings, `slate-700` labels/body, `slate-500` secondary, `slate-400` hints/placeholders/meta
-- **Borders:** `border-slate-200` default, `border-slate-100` subtle (nav dividers)
-- **Status colors:** `emerald` = pass/success, `amber` = warning/review, `red` = error/reject
+**Theme:** Deep navy dark. All pages use hex-based Tailwind arbitrary values — no light mode.
+
+### Colors (hex palette)
+| Role | Value | Usage |
+|---|---|---|
+| Page background | `#090C18` | `bg-[#090C18]` on every page wrapper |
+| Card surface | `#0D1122` | `bg-[#0D1122]` on cards, panels |
+| Deep inset | `#0B0E1E` | `bg-[#0B0E1E]` for pre blocks, inset areas |
+| Elevated / inputs | `#13182C` | `bg-[#13182C]` on inputs, textareas, hover states |
+| Disabled button bg | `#141830` | `bg-[#141830]` |
+| Border default | `#232548` | `border-[#232548]` — main card borders (visible) |
+| Border subtle | `#1A1D38` | `border-[#1A1D38]` — dividers inside cards |
+| Border strong | `#2E3165` | `border-[#2E3165]` — hover state border |
+| Dim separator | `#363960` | `text-[#363960]` on `·` separators |
+| Text primary | `#EEEEFC` | headings, active labels |
+| Text secondary | `#8888A8` | body, meta, inactive nav links |
+| Text tertiary | `#5A5A80` | hints, timestamps, icons |
+| Text placeholder | `#4A4A68` | `placeholder-[#4A4A68]` |
+| Text output | `#C8C8F0` | generated content, pre blocks |
+| Text label | `#E0E0F8` | form field labels |
+
+**Accent — indigo:**
+- Primary button: `bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/20`
+- Generate button: `.btn-shimmer` class (animated gradient in globals.css)
+- Active nav pill / selected card: `border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400`
+- Badges / tags: `text-indigo-400 bg-indigo-950/40 border border-indigo-900/50`
+
+**Status colors (dark variants):**
+- Success/pass: `text-emerald-400 bg-emerald-950/30 border border-emerald-900/40`
+- Warning/review: `text-amber-400 bg-amber-950/30 border border-amber-900/40`
+- Error/reject: `text-red-400 bg-red-950/30 border border-red-900/40`
+- Neutral/withdrawn: `text-[#5A5A80] bg-[#13182C] border border-[#232548]`
+
+**globals.css effects:**
+- Aurora glow: `body { background-image: radial-gradient(ellipse 90% 55% at 50% -10%, rgba(99,102,241,0.18)...) }` — indigo bleed from top
+- Grain texture: `body::before` SVG fractalNoise at 2.8% opacity — eliminates flat/plastic feel
+- `.btn-shimmer` — animated indigo shimmer for the active generate button
+- `.animate-fade-up` + `.animate-delay-1/2/3/4` — staggered entrance animations
+- `.text-gradient` — indigo→violet gradient text for hero headlines
+- `.cursor-blink::after` — streaming cursor in `#818CF8`
 
 ### Typography
 - Font: Geist Sans (body), Geist Mono (generated output only — `font-mono`)
-- Section headings: `text-sm font-semibold text-slate-900`
-- Section subtext: `text-xs text-slate-400`
-- Labels: `text-sm font-medium text-slate-700 mb-1.5`
-- Hint text below inputs: `text-xs text-slate-400 mt-1.5`
-- Nav brand: `text-lg font-semibold text-slate-900 tracking-tight`
+- Section headings: `text-sm font-semibold text-[#EEEEFC] mb-1`
+- Section subtext: `text-xs text-[#5A5A80] mb-4`
+- Labels: `text-sm font-medium text-[#E0E0F8] mb-1.5`
+- Hint text: `text-xs text-[#5A5A80] mt-1.5`
+- Nav brand: `text-base font-semibold text-[#EEEEFC] tracking-tight`
 
 ### Components
 
 **Cards (content sections):**
 ```
-bg-white rounded-2xl border border-slate-200 p-6 shadow-sm
+bg-[#0D1122] rounded-2xl border border-[#232548] p-6
 ```
 
 **Form inputs:**
 ```
-w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900
-placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500
-focus:border-transparent bg-white transition
+w-full border border-[#232548] rounded-lg px-4 py-2.5 text-sm text-[#EEEEFC]
+placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500
+focus:border-transparent bg-[#13182C] transition
 ```
 
 **Textareas:** same as input but `px-4 py-3` and `resize-none`
 
 **Primary button (active):**
 ```
-bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-sm transition-all
+bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl
+shadow-sm shadow-indigo-600/20 hover:-translate-y-px transition-all
 ```
 
 **Primary button (disabled):**
 ```
-bg-slate-100 text-slate-400 cursor-not-allowed
+bg-[#141830] text-[#4A4A68] cursor-not-allowed
 ```
+
+**Generate button (active):** use `.btn-shimmer` class instead of `bg-indigo-600`
 
 **Selected/active card state** (user type selector, doc type selector):
 ```
-border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500
+border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500
 ```
-Text inside selected card: `text-indigo-700`
+Text inside selected card: `text-indigo-400`
 
 **Unselected card state:**
 ```
-border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50
+border-[#232548] bg-[#13182C] hover:border-[#2E3165]
 ```
+
+**Nav pill buttons:**
+- Active: `px-3 py-1.5 rounded-lg text-sm font-medium text-[#EEEEFC] bg-[#13182C] border border-[#232548]`
+- Inactive: `px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all`
 
 **Pills/badges:**
 ```
-inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full
+inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border
 ```
-- Success: `text-emerald-700 bg-emerald-50` with `w-1.5 h-1.5 bg-emerald-500 rounded-full` dot
-- Warning: `text-amber-700 bg-amber-50` with amber dot
-- Error: `text-red-700 bg-red-50` with red dot
-- Neutral (JD tags): `text-indigo-700 bg-indigo-50` or `text-slate-500 bg-slate-100`
+See status colors above for each variant's classes.
 
 **Loading spinner:**
 ```
 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin
 ```
-(Use `border-indigo-500` when on a light background)
+(Use `border-indigo-400` when on a dark surface without a solid button bg)
 
 **Streaming cursor:** apply `.cursor-blink` class (defined in globals.css) to output text while streaming
 
 ### Layout
-- Max width: `max-w-7xl mx-auto` for app pages, `max-w-6xl` for landing nav, `max-w-4xl` for landing hero
+- Max width: `max-w-7xl mx-auto` for all pages **and** the shared Nav (fixed — no variation)
 - Page padding: `px-4 sm:px-6 py-8`
-- Nav: `bg-white border-b border-slate-100 px-6 py-4 sticky top-0 z-10`
+- Nav: `bg-[#090C18]/80 backdrop-blur-xl border-b border-[#1A1D38] sticky top-0 z-10` with inner `max-w-7xl mx-auto px-6 h-14`
 - Two-column generate layout: `lg:grid lg:grid-cols-[1fr_1fr] lg:gap-8 lg:items-start`
 - Sticky right panel: `lg:sticky lg:top-24`
 - Section spacing inside a card: `space-y-6`
@@ -256,7 +302,7 @@ w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin
 - `rounded-2xl` — cards, output panels, user type selectors
 
 ### Section numbering pattern
-Form sections on the generate page are numbered (1., 2., 3. etc.) with the heading `text-sm font-semibold text-slate-900 mb-1` and a one-line description `text-xs text-slate-400 mb-4` below it. Follow this pattern for any new form sections.
+Form sections on the generate page are numbered (1., 2., 3. etc.) with the heading `text-sm font-semibold text-[#EEEEFC] mb-1` and a one-line description `text-xs text-[#5A5A80] mb-4` below it. Follow this pattern for any new form sections.
 
 ---
 
@@ -419,4 +465,6 @@ These have been explicitly decided against. Don't suggest or implement them:
 - `Nav` is an async server component — cannot be imported directly into client components (`"use client"`). For client pages (e.g. `GenerateForm`), pass `userEmail` as a prop from the server wrapper and render `<UserMenu>` inline instead
 - LinkedIn OAuth uses provider name `'linkedin_oidc'` (not deprecated `'linkedin'`) — the OIDC integration supports email + profile scopes and doesn't require a verified company page
 - Social OAuth providers (Google, LinkedIn, GitHub) must be enabled in Supabase Dashboard → Authentication → Providers with client ID + secret before the buttons do anything
+- Nav `maxWidth` prop was removed — all pages must use the shared `max-w-7xl` inner container. Do not add per-page width overrides to Nav or the buttons will shift between pages. Page content can use its own max-width independently.
+- Nav `px-6` must be on the inner `<div>` not the `<nav>` element — if moved to `<nav>`, `mx-auto` centers within a narrowed viewport and content shifts relative to page body.
 - **Security hardening (applied)**: open redirect in `auth/callback` prevented by validating `next` param starts with `/` and not `//`; Stripe checkout redirect URLs derived server-side from `x-forwarded-host` (never trust client); `follow-up` route requires auth + `MAX_FIELD_LEN=200` limits; `generate` route verifies `job_application_id` ownership before linking; `parse-resume` validates magic bytes (`%PDF` / `PK\x03\x04`) before passing to parsers; `applications` route uses `sanitizeUrl()` (rejects `javascript:` URIs), validates status enum, enforces field length limits, returns generic error messages; global security headers set in `next.config.ts` (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`)
