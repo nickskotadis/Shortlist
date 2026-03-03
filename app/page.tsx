@@ -25,7 +25,7 @@ const exampleBullets = [
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#090C18]">
-      <Nav maxWidth="max-w-6xl" />
+      <Nav />
 
       {/* Hero */}
       <section className="relative max-w-4xl mx-auto px-6 pt-28 pb-24 text-center overflow-hidden">

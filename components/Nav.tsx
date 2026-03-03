@@ -4,7 +4,6 @@ import UserMenu from "./UserMenu";
 
 interface NavProps {
   activePage?: "dashboard" | "applications" | "generate" | "score";
-  maxWidth?: string;
   actions?: React.ReactNode;
 }
 
@@ -15,7 +14,7 @@ const NAV_LINKS = [
   { href: "/score", label: "Score", page: "score" },
 ] as const;
 
-export default async function Nav({ activePage, maxWidth = "max-w-7xl", actions }: NavProps) {
+export default async function Nav({ activePage, actions }: NavProps) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -33,7 +32,7 @@ export default async function Nav({ activePage, maxWidth = "max-w-7xl", actions 
 
   return (
     <nav className="bg-[#090C18]/80 backdrop-blur-xl border-b border-[#1A1D38] sticky top-0 z-10">
-      <div className={`${maxWidth} mx-auto px-6 flex items-center justify-between h-14`}>
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
         <div className="flex items-center gap-1">
           <Link
             href="/"
