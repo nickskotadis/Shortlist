@@ -140,6 +140,33 @@ function MiniSpinner() {
   );
 }
 
+// ── FilterPill ────────────────────────────────────────────────────────────────
+
+function FilterPill({
+  label,
+  active,
+  activeClass,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  activeClass?: string;
+  onClick: () => void;
+}) {
+  const base = "px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer";
+  const activeStyle = activeClass ?? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500 text-indigo-700";
+  const inactiveStyle = "border-slate-200 bg-white text-slate-600 hover:border-slate-300";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`${base} ${active ? activeStyle : inactiveStyle}`}
+    >
+      {label}
+    </button>
+  );
+}
+
 // ── Generation card ───────────────────────────────────────────────────────────
 
 function GenerationCard({ gen }: { gen: Generation }) {
@@ -412,7 +439,52 @@ function GenerationCard({ gen }: { gen: Generation }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+const DOC_TYPE_FILTER_OPTIONS: Array<{ value: DocumentType | "all"; label: string }> = [
+  { value: "all", label: "All" },
+  { value: "bullets", label: "Bullets" },
+  { value: "summary", label: "Summary" },
+  { value: "cover_letter", label: "Cover Letter" },
+  { value: "linkedin_about", label: "LI About" },
+  { value: "linkedin_headline", label: "LI Headline" },
+];
+
+const VERDICT_FILTER_OPTIONS: Array<{
+  value: ValidatorVerdict | "all";
+  label: string;
+  activeClass?: string;
+}> = [
+  { value: "all", label: "All" },
+  { value: "PASS", label: "PASS", activeClass: "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 text-emerald-700" },
+  { value: "REVISE", label: "REVISE", activeClass: "border-amber-500 bg-amber-50 ring-1 ring-amber-500 text-amber-700" },
+  { value: "REJECT", label: "REJECT", activeClass: "border-red-500 bg-red-50 ring-1 ring-red-500 text-red-700" },
+];
+
 export default function GenerationsClient({ generations }: { generations: Generation[] }) {
+  const [search, setSearch] = useState("");
+  const [docTypeFilter, setDocTypeFilter] = useState<DocumentType | "all">("all");
+  const [verdictFilter, setVerdictFilter] = useState<ValidatorVerdict | "all">("all");
+
+  const clearFilters = () => {
+    setSearch("");
+    setDocTypeFilter("all");
+    setVerdictFilter("all");
+  };
+
+  const filtered = generations.filter((gen) => {
+    if (search) {
+      const q = search.toLowerCase();
+      const label = gen.label?.toLowerCase() ?? "";
+      const jobTitle = gen.job_applications?.job_title?.toLowerCase() ?? "";
+      const company = gen.job_applications?.company_name?.toLowerCase() ?? "";
+      if (!label.includes(q) && !jobTitle.includes(q) && !company.includes(q)) return false;
+    }
+    if (docTypeFilter !== "all" && gen.document_type !== docTypeFilter) return false;
+    if (verdictFilter !== "all" && gen.validator_verdict !== verdictFilter) return false;
+    return true;
+  });
+
+  const isFiltered = search !== "" || docTypeFilter !== "all" || verdictFilter !== "all";
+
   if (generations.length === 0) {
     return (
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-16 text-center">
@@ -449,9 +521,88 @@ export default function GenerationsClient({ generations }: { generations: Genera
 
   return (
     <div className="space-y-3">
-      {generations.map((gen) => (
-        <GenerationCard key={gen.id} gen={gen} />
-      ))}
+      {/* Filter toolbar */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+        {/* Search row */}
+        <div className="relative mb-3">
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+              d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search by label or job..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition"
+          />
+        </div>
+
+        {/* Pills row */}
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          {/* Doc type pills */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {DOC_TYPE_FILTER_OPTIONS.map((opt) => (
+              <FilterPill
+                key={opt.value}
+                label={opt.label}
+                active={docTypeFilter === opt.value}
+                onClick={() => setDocTypeFilter(opt.value)}
+              />
+            ))}
+          </div>
+
+          {/* Verdict pills */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {VERDICT_FILTER_OPTIONS.map((opt) => (
+              <FilterPill
+                key={opt.value}
+                label={opt.label}
+                active={verdictFilter === opt.value}
+                activeClass={opt.activeClass}
+                onClick={() => setVerdictFilter(opt.value as ValidatorVerdict | "all")}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Result count + clear */}
+        {isFiltered && (
+          <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+            <span>Showing {filtered.length} of {generations.length}</span>
+            <span className="text-slate-300">·</span>
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="text-indigo-600 hover:text-indigo-700 font-medium"
+            >
+              Clear filters ×
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* No-results state */}
+      {filtered.length === 0 && isFiltered ? (
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
+          <p className="text-sm font-semibold text-slate-900 mb-1">No generations match your filters</p>
+          <p className="text-xs text-slate-500 mb-4">Try adjusting your search or filter criteria.</p>
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition-all"
+          >
+            Clear filters
+          </button>
+        </div>
+      ) : (
+        filtered.map((gen) => (
+          <GenerationCard key={gen.id} gen={gen} />
+        ))
+      )}
     </div>
   );
 }
