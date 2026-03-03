@@ -346,7 +346,8 @@ interface Props {
 
 export default function ApplicationsClient({ initialApplications }: Props) {
   const [applications, setApplications] = useState(initialApplications);
-  const [filter, setFilter] = useState<ApplicationStatus | "all">("all");
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "all">("all");
 
   const handleAdd = useCallback((app: Application) => {
     setApplications((prev) => [app, ...prev]);
@@ -356,54 +357,125 @@ export default function ApplicationsClient({ initialApplications }: Props) {
     setApplications((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
   }, []);
 
-  const filtered = filter === "all" ? applications : applications.filter((a) => a.status === filter);
+  const clearFilters = () => {
+    setSearch("");
+    setStatusFilter("all");
+  };
+
+  const filtered = applications.filter((a) => {
+    if (search) {
+      const q = search.toLowerCase();
+      if (!a.company_name.toLowerCase().includes(q) && !a.job_title.toLowerCase().includes(q)) return false;
+    }
+    if (statusFilter !== "all" && a.status !== statusFilter) return false;
+    return true;
+  });
+
+  const isFiltered = search !== "" || statusFilter !== "all";
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Add form */}
       <AddForm onAdd={handleAdd} />
 
-      {/* Filter tabs */}
+      {/* Search + filter toolbar */}
       {applications.length > 0 && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={() => setFilter("all")}
-            className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${
-              filter === "all"
-                ? "text-slate-900 bg-white border-slate-300 shadow-sm"
-                : "text-slate-500 bg-white border-slate-200 hover:border-slate-300"
-            }`}
-          >
-            All ({applications.length})
-          </button>
-          {(Object.keys(STATUS_CONFIG) as ApplicationStatus[]).map((s) => {
-            const count = applications.filter((a) => a.status === s).length;
-            if (count === 0) return null;
-            return (
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+          {/* Search row */}
+          <div className="relative mb-3">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search by company or role..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition"
+            />
+          </div>
+
+          {/* Status pills row */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setStatusFilter("all")}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                statusFilter === "all"
+                  ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500 text-indigo-700"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+              }`}
+            >
+              All ({applications.length})
+            </button>
+            {(Object.keys(STATUS_CONFIG) as ApplicationStatus[]).map((s) => {
+              const count = applications.filter((a) => a.status === s).length;
+              if (count === 0) return null;
+              const activeColors: Record<ApplicationStatus, string> = {
+                applied:   "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500 text-indigo-700",
+                interview: "border-amber-500 bg-amber-50 ring-1 ring-amber-500 text-amber-700",
+                offer:     "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 text-emerald-700",
+                rejected:  "border-red-500 bg-red-50 ring-1 ring-red-500 text-red-700",
+                withdrawn: "border-slate-400 bg-slate-50 ring-1 ring-slate-400 text-slate-600",
+              };
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStatusFilter(s)}
+                  className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                    statusFilter === s
+                      ? activeColors[s]
+                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                  }`}
+                >
+                  {STATUS_CONFIG[s].label} ({count})
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Result count + clear */}
+          {isFiltered && (
+            <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+              <span>Showing {filtered.length} of {applications.length}</span>
+              <span className="text-slate-300">·</span>
               <button
-                key={s}
-                onClick={() => setFilter(s)}
-                className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${
-                  filter === s
-                    ? STATUS_CONFIG[s].color + " shadow-sm"
-                    : "text-slate-500 bg-white border-slate-200 hover:border-slate-300"
-                }`}
+                type="button"
+                onClick={clearFilters}
+                className="text-indigo-600 hover:text-indigo-700 font-medium"
               >
-                {STATUS_CONFIG[s].label} ({count})
+                Clear filters ×
               </button>
-            );
-          })}
+            </div>
+          )}
         </div>
       )}
 
       {/* Application list */}
-      {filtered.length === 0 ? (
+      {applications.length === 0 ? (
         <div className="text-center py-16 text-slate-400">
           <svg className="w-10 h-10 mx-auto mb-3 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
           <p className="text-sm font-medium text-slate-500">No applications yet</p>
           <p className="text-xs text-slate-400 mt-1">Add your first application above to start tracking.</p>
+        </div>
+      ) : filtered.length === 0 && isFiltered ? (
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
+          <p className="text-sm font-semibold text-slate-900 mb-1">No applications match your filters</p>
+          <p className="text-xs text-slate-500 mb-4">Try adjusting your search or status filter.</p>
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition-all"
+          >
+            Clear filters
+          </button>
         </div>
       ) : (
         <div className="space-y-3">
