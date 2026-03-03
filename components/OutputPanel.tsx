@@ -30,14 +30,14 @@ function ScoreBar({ label, score }: { label: string; score: number }) {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-slate-500 w-24 shrink-0">{label}</span>
-      <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+      <span className="text-xs text-[#8888A8] w-24 shrink-0">{label}</span>
+      <div className="flex-1 bg-[#232548] rounded-full h-1.5 overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-700 ${color}`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-xs font-medium text-slate-700 w-8 text-right">{score}/10</span>
+      <span className="text-xs font-medium text-[#E0E0F8] w-8 text-right">{score}/10</span>
     </div>
   );
 }
@@ -45,20 +45,20 @@ function ScoreBar({ label, score }: { label: string; score: number }) {
 function StatusBadge({ verdict }: { verdict: string }) {
   if (verdict === "PASS")
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400 bg-emerald-950/30 border border-emerald-900/40 px-2.5 py-1 rounded-full">
         <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
         Passed quality check
       </span>
     );
   if (verdict === "REVISE")
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-400 bg-amber-950/30 border border-amber-900/40 px-2.5 py-1 rounded-full">
         <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
         Review before using
       </span>
     );
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-700 bg-red-50 px-2.5 py-1 rounded-full">
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-400 bg-red-950/30 border border-red-900/40 px-2.5 py-1 rounded-full">
       <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
       Needs editing
     </span>
@@ -76,7 +76,7 @@ function DownloadIcon() {
 
 function Spinner() {
   return (
-    <span className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+    <span className="w-4 h-4 border-2 border-[#4A4A68] border-t-transparent rounded-full animate-spin" />
   );
 }
 
@@ -110,12 +110,12 @@ function KeywordGap({ keywords, output }: { keywords: string[]; output: string }
   if (matched.length === 0 && missing.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+    <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-5">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+        <p className="text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">
           Keyword match
         </p>
-        <span className="text-xs font-medium text-slate-600">
+        <span className="text-xs font-medium text-[#8888A8]">
           {matched.length}/{keywords.length} keywords
         </span>
       </div>
@@ -123,7 +123,7 @@ function KeywordGap({ keywords, output }: { keywords: string[]; output: string }
         {matched.map((k) => (
           <span
             key={k}
-            className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full"
+            className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400 bg-emerald-950/30 border border-emerald-900/40 px-2 py-0.5 rounded-full"
           >
             <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -134,7 +134,7 @@ function KeywordGap({ keywords, output }: { keywords: string[]; output: string }
         {missing.map((k) => (
           <span
             key={k}
-            className="inline-flex items-center gap-1 text-xs font-medium text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full"
+            className="inline-flex items-center gap-1 text-xs font-medium text-[#5A5A80] bg-[#13182C] border border-[#232548] px-2 py-0.5 rounded-full"
           >
             <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -144,7 +144,7 @@ function KeywordGap({ keywords, output }: { keywords: string[]; output: string }
         ))}
       </div>
       {missing.length > 0 && (
-        <p className="text-xs text-slate-400 mt-2">
+        <p className="text-xs text-[#5A5A80] mt-2">
           Missing keywords can be added to your resume or cover letter where accurate.
         </p>
       )}
@@ -194,13 +194,13 @@ function LabelInput({ generationId }: { generationId: string }) {
         onBlur={() => label && save(label)}
         onKeyDown={handleKeyDown}
         maxLength={200}
-        className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition"
+        className="flex-1 border border-[#232548] rounded-lg px-3 py-2 text-xs text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
       />
       {saving && (
-        <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-transparent rounded-full animate-spin" />
+        <span className="w-3.5 h-3.5 border-2 border-[#4A4A68] border-t-transparent rounded-full animate-spin" />
       )}
       {saved && (
-        <span className="text-xs text-emerald-600 font-medium">Saved</span>
+        <span className="text-xs text-emerald-400 font-medium">Saved</span>
       )}
     </div>
   );
@@ -216,7 +216,7 @@ function QualityRing({ score }: { score: number }) {
   return (
     <div className="relative inline-flex items-center justify-center" title="Generation quality score (1–10)">
       <svg width="52" height="52" viewBox="0 0 52 52" className="-rotate-90">
-        <circle cx="26" cy="26" r={radius} fill="none" stroke="#f1f5f9" strokeWidth="4" />
+        <circle cx="26" cy="26" r={radius} fill="none" stroke="#232548" strokeWidth="4" />
         <circle
           cx="26" cy="26" r={radius} fill="none"
           stroke={color} strokeWidth="4"
@@ -225,7 +225,7 @@ function QualityRing({ score }: { score: number }) {
           style={{ transition: "stroke-dasharray 0.7s ease" }}
         />
       </svg>
-      <span className="absolute text-xs font-bold text-slate-700">{score.toFixed(1)}</span>
+      <span className="absolute text-xs font-bold text-[#E0E0F8]">{score.toFixed(1)}</span>
     </div>
   );
 }
@@ -235,29 +235,29 @@ function TailoringPanel({ suggestions }: { suggestions: string[] }) {
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="bg-[#0D1122] rounded-2xl border border-[#232548] overflow-hidden">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-slate-50 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#13182C] transition-colors"
       >
         <div className="flex items-center gap-2">
-          <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
-          <span className="text-sm font-semibold text-slate-900">Resume Tailoring Checklist</span>
-          <span className="text-xs font-medium text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full">{suggestions.length} actions</span>
+          <span className="text-sm font-semibold text-[#EEEEFC]">Resume Tailoring Checklist</span>
+          <span className="text-xs font-medium text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-2 py-0.5 rounded-full">{suggestions.length} actions</span>
         </div>
-        <svg className={`w-4 h-4 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-4 h-4 text-[#5A5A80] transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
       {open && (
-        <div className="px-5 pb-4 border-t border-slate-100 pt-3">
-          <p className="text-xs text-slate-400 mb-3">Specific changes to make in your base resume to better match this role:</p>
+        <div className="px-5 pb-4 border-t border-[#1A1D38] pt-3">
+          <p className="text-xs text-[#5A5A80] mb-3">Specific changes to make in your base resume to better match this role:</p>
           <ul className="space-y-2">
             {suggestions.map((s, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
-                <span className="w-5 h-5 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+              <li key={i} className="flex items-start gap-2 text-sm text-[#E0E0F8]">
+                <span className="w-5 h-5 rounded-full bg-indigo-950/40 border border-indigo-900/50 text-indigo-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
                 <span className="leading-relaxed">{s}</span>
               </li>
             ))}
@@ -367,15 +367,15 @@ export default function OutputPanel({
   // ── Idle state ─────────────────────────────────────────────────────────────
   if (status === "idle") {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border-2 border-dashed border-slate-200 bg-white">
-        <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center mb-4">
+      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border-2 border-dashed border-[#232548] bg-[#0D1122]">
+        <div className="w-12 h-12 rounded-xl bg-indigo-950/40 flex items-center justify-center mb-4">
           <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
-        <p className="text-sm font-medium text-slate-500">Your output will appear here</p>
-        <p className="text-xs text-slate-400 mt-1">Fill in the form and click Generate</p>
+        <p className="text-sm font-medium text-[#8888A8]">Your output will appear here</p>
+        <p className="text-xs text-[#5A5A80] mt-1">Fill in the form and click Generate</p>
       </div>
     );
   }
@@ -383,15 +383,15 @@ export default function OutputPanel({
   // ── Error state ────────────────────────────────────────────────────────────
   if (status === "error") {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border border-red-100 bg-red-50">
-        <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center mb-4">
-          <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border border-red-900/40 bg-red-950/20">
+        <div className="w-12 h-12 rounded-xl bg-red-950/40 flex items-center justify-center mb-4">
+          <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <p className="text-sm font-medium text-red-800">Something went wrong</p>
-        <p className="text-xs text-red-500 mt-1 max-w-xs">{error}</p>
+        <p className="text-sm font-medium text-red-300">Something went wrong</p>
+        <p className="text-xs text-red-400/80 mt-1 max-w-xs">{error}</p>
       </div>
     );
   }
@@ -399,10 +399,10 @@ export default function OutputPanel({
   // ── Parsing state ──────────────────────────────────────────────────────────
   if (status === "parsing") {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border border-slate-200 bg-white">
+      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border border-[#232548] bg-[#0D1122]">
         <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-sm font-medium text-slate-600">Analyzing job description...</p>
-        <p className="text-xs text-slate-400 mt-1">Extracting role signals and requirements</p>
+        <p className="text-sm font-medium text-[#E0E0F8]">Analyzing job description...</p>
+        <p className="text-xs text-[#5A5A80] mt-1">Extracting role signals and requirements</p>
       </div>
     );
   }
@@ -417,17 +417,17 @@ export default function OutputPanel({
       {/* JD Analysis chip — shown once parsed */}
       {jdAnalysis?.role_title && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-slate-500">Targeting:</span>
-          <span className="text-xs font-medium text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full">
+          <span className="text-xs text-[#8888A8]">Targeting:</span>
+          <span className="text-xs font-medium text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-2.5 py-1 rounded-full">
             {jdAnalysis.role_title}
           </span>
           {jdAnalysis.seniority_level && (
-            <span className="text-xs text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full capitalize">
+            <span className="text-xs text-[#8888A8] bg-[#13182C] border border-[#232548] px-2.5 py-1 rounded-full capitalize">
               {jdAnalysis.seniority_level}
             </span>
           )}
           {jdAnalysis.company_type && (
-            <span className="text-xs text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full capitalize">
+            <span className="text-xs text-[#8888A8] bg-[#13182C] border border-[#232548] px-2.5 py-1 rounded-full capitalize">
               {jdAnalysis.company_type}
             </span>
           )}
@@ -438,19 +438,19 @@ export default function OutputPanel({
       {(isStreaming || isValidating) && (
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin shrink-0" />
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-[#8888A8]">
             {isValidating ? "Checking quality..." : "Generating..."}
           </span>
         </div>
       )}
 
       {/* Output text */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6">
         <div
-          className={`text-sm text-slate-800 leading-relaxed whitespace-pre-wrap font-mono ${isStreaming ? "cursor-blink" : ""}`}
+          className={`text-sm text-[#C8C8F0] leading-relaxed whitespace-pre-wrap font-mono ${isStreaming ? "cursor-blink" : ""}`}
         >
           {displayText || (
-            <span className="text-slate-300 italic">Generating...</span>
+            <span className="text-[#3A3A55] italic">Generating...</span>
           )}
         </div>
       </div>
@@ -458,13 +458,13 @@ export default function OutputPanel({
       {/* Scores — shown when done */}
       {status === "done" && result && (
         <>
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <QualityRing score={result.overall} />
                 <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Generation quality</p>
-                  <p className="text-xs text-slate-400 mt-0.5">Shortlist grades every generation for accuracy, relevance, and impact</p>
+                  <p className="text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">Generation quality</p>
+                  <p className="text-xs text-[#5A5A80] mt-0.5">Shortlist grades every generation for accuracy, relevance, and impact</p>
                 </div>
               </div>
               <StatusBadge verdict={result.verdict} />
@@ -475,12 +475,12 @@ export default function OutputPanel({
               ))}
             </div>
             {result.retryCount > 0 && (
-              <p className="text-xs text-slate-400 mt-3">
+              <p className="text-xs text-[#5A5A80] mt-3">
                 ↻ Refined once to improve quality
               </p>
             )}
             {result.overall < 7 && (
-              <div className="mt-3 flex items-center gap-2 text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
+              <div className="mt-3 flex items-center gap-2 text-xs text-amber-400 bg-amber-950/20 border border-amber-900/30 rounded-lg px-3 py-2">
                 <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -501,21 +501,21 @@ export default function OutputPanel({
             );
             if (flags.length === 0) return null;
             return (
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+              <div className="bg-amber-950/20 border border-amber-900/40 rounded-2xl p-5">
                 <div className="flex items-center gap-2 mb-3">
-                  <svg className="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
-                  <p className="text-xs font-semibold text-amber-800">Verify before submitting</p>
+                  <p className="text-xs font-semibold text-amber-300">Verify before submitting</p>
                 </div>
                 <div className="space-y-3">
                   {flags.map((flag: ValidatorIssue, i: number) => (
                     <div key={i}>
-                      <p className="text-xs font-mono text-amber-900 bg-amber-100 px-2 py-1 rounded mb-1 break-words">
+                      <p className="text-xs font-mono text-amber-200 bg-amber-950/50 border border-amber-900/40 px-2 py-1 rounded mb-1 break-words">
                         &ldquo;{flag.location}&rdquo;
                       </p>
-                      <p className="text-xs text-amber-700 leading-relaxed">{flag.fix}</p>
+                      <p className="text-xs text-amber-400/80 leading-relaxed">{flag.fix}</p>
                     </div>
                   ))}
                 </div>
@@ -538,11 +538,11 @@ export default function OutputPanel({
             {/* Copy */}
             <button
               onClick={copy}
-              className="flex items-center gap-2 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 text-sm font-medium text-[#E0E0F8] bg-[#13182C] hover:bg-[#232548] border border-[#232548] hover:border-[#2E3165] px-4 py-2 rounded-lg transition-colors"
             >
               {copied ? (
                 <>
-                  <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   Copied
@@ -562,7 +562,7 @@ export default function OutputPanel({
             <button
               onClick={() => downloadExport("docx")}
               disabled={exportLoading.docx}
-              className="flex items-center gap-2 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 text-sm font-medium text-[#E0E0F8] bg-[#13182C] hover:bg-[#232548] border border-[#232548] hover:border-[#2E3165] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {exportLoading.docx ? <Spinner /> : <DownloadIcon />}
               DOCX
@@ -572,7 +572,7 @@ export default function OutputPanel({
             <button
               onClick={() => downloadExport("pdf")}
               disabled={exportLoading.pdf}
-              className="flex items-center gap-2 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 text-sm font-medium text-[#E0E0F8] bg-[#13182C] hover:bg-[#232548] border border-[#232548] hover:border-[#2E3165] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {exportLoading.pdf ? <Spinner /> : <DownloadIcon />}
               PDF
@@ -581,7 +581,7 @@ export default function OutputPanel({
             {/* Feedback — only shown for authenticated users (generationId present) */}
             {result.generationId && (
               <>
-                <span className="text-slate-200 text-sm">|</span>
+                <span className="text-[#232548] text-sm">|</span>
 
                 <button
                   onClick={() => submitFeedback(true)}
@@ -589,8 +589,8 @@ export default function OutputPanel({
                   aria-label="Helpful"
                   className={`inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg border text-xs font-medium transition-all disabled:cursor-not-allowed ${
                     feedback === true
-                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                      : "bg-white border-slate-200 text-slate-500 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600"
+                      ? "bg-emerald-950/30 border-emerald-800/40 text-emerald-400"
+                      : "bg-transparent border-[#232548] text-[#5A5A80] hover:border-emerald-800/50 hover:bg-emerald-950/20 hover:text-emerald-400"
                   }`}
                 >
                   <ThumbsUpIcon />
@@ -603,8 +603,8 @@ export default function OutputPanel({
                   aria-label="Not helpful"
                   className={`inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg border text-xs font-medium transition-all disabled:cursor-not-allowed ${
                     feedback === false
-                      ? "bg-red-50 border-red-200 text-red-600"
-                      : "bg-white border-slate-200 text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                      ? "bg-red-950/30 border-red-800/40 text-red-400"
+                      : "bg-transparent border-[#232548] text-[#5A5A80] hover:border-red-800/50 hover:bg-red-950/20 hover:text-red-400"
                   }`}
                 >
                   <ThumbsDownIcon />
@@ -616,9 +616,9 @@ export default function OutputPanel({
 
           {/* Hiring manager worry */}
           {jdAnalysis?.hiring_manager_worry && (
-            <div className="bg-slate-50 rounded-lg px-4 py-3 border border-slate-100">
-              <p className="text-xs text-slate-400 font-medium mb-0.5">What they worry about</p>
-              <p className="text-xs text-slate-600 leading-relaxed">
+            <div className="bg-[#0B0E1E] rounded-lg px-4 py-3 border border-[#232548]">
+              <p className="text-xs text-[#5A5A80] font-medium mb-0.5">What they worry about</p>
+              <p className="text-xs text-[#8888A8] leading-relaxed">
                 {jdAnalysis.hiring_manager_worry}
               </p>
             </div>
@@ -626,7 +626,7 @@ export default function OutputPanel({
 
           {/* Export error */}
           {exportError && (
-            <p className="text-xs text-red-500">{exportError}</p>
+            <p className="text-xs text-red-400">{exportError}</p>
           )}
         </>
       )}

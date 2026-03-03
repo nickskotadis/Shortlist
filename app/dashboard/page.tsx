@@ -43,13 +43,13 @@ export default async function DashboardPage() {
   const usedThisMonth = usageResult.count ?? 0;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#090C18]">
       <Nav
         activePage="dashboard"
         actions={
           <Link
             href="/generate"
-            className="text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl shadow-sm transition-all"
+            className="text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl shadow-sm shadow-indigo-600/20 transition-all hover:-translate-y-px"
           >
             New generation
           </Link>
@@ -61,8 +61,8 @@ export default async function DashboardPage() {
         <div className="mb-6">
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">Your generations</h1>
-              <p className="text-sm text-slate-500 mt-0.5">
+              <h1 className="text-lg font-semibold text-[#EEEEFC]">Your generations</h1>
+              <p className="text-sm text-[#8888A8] mt-0.5">
                 {generations.length}{" "}
                 {generations.length === 1 ? "generation" : "generations"} saved
               </p>
@@ -72,14 +72,14 @@ export default async function DashboardPage() {
             {plan === "free" && (
               <div className="min-w-[200px] max-w-xs w-full sm:w-auto">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className={`text-xs font-medium ${usedThisMonth >= FREE_MONTHLY_LIMIT ? "text-amber-700" : "text-slate-600"}`}>
+                  <span className={`text-xs font-medium ${usedThisMonth >= FREE_MONTHLY_LIMIT ? "text-amber-400" : "text-[#8888A8]"}`}>
                     {usedThisMonth} of {FREE_MONTHLY_LIMIT} used this month
                   </span>
                 </div>
-                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-[#232548] rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all ${
-                      usedThisMonth >= FREE_MONTHLY_LIMIT ? "bg-amber-400" : "bg-indigo-400"
+                      usedThisMonth >= FREE_MONTHLY_LIMIT ? "bg-amber-500" : "bg-indigo-500"
                     }`}
                     style={{ width: `${Math.min((usedThisMonth / FREE_MONTHLY_LIMIT) * 100, 100)}%` }}
                   />

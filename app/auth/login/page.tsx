@@ -80,24 +80,24 @@ export default function LoginPage() {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-6">
+      <div className="min-h-screen bg-[#090C18] flex items-center justify-center px-6">
         <div className="max-w-md w-full text-center">
-          <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mx-auto mb-6">
-            <svg className="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-12 h-12 bg-indigo-950/50 border border-indigo-900/50 rounded-xl flex items-center justify-center mx-auto mb-6">
+            <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Check your email</h1>
-          <p className="text-slate-500 text-sm leading-relaxed">
+          <h1 className="text-2xl font-bold text-[#EEEEFC] mb-2">Check your email</h1>
+          <p className="text-[#8888A8] text-sm leading-relaxed">
             We sent a login link to{" "}
-            <span className="font-medium text-slate-700">{email}</span>.
+            <span className="font-medium text-[#EEEEFC]">{email}</span>.
             <br />
             Click it to sign in — no password needed.
           </p>
           <button
             onClick={() => { setSent(false); setEmail(""); }}
-            className="mt-6 text-sm text-slate-400 hover:text-slate-600 transition-colors"
+            className="mt-6 text-sm text-[#5A5A80] hover:text-[#8888A8] transition-colors"
           >
             Use a different email
           </button>
@@ -107,21 +107,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-6">
+    <div className="min-h-screen bg-[#090C18] flex items-center justify-center px-6">
       <div className="max-w-md w-full">
         <div className="mb-8 text-center">
-          <Link href="/" className="text-lg font-semibold text-slate-900 tracking-tight">
+          <Link href="/" className="text-lg font-semibold text-[#EEEEFC] tracking-tight hover:text-indigo-400 transition-colors">
             Shortlist
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900 mt-6 mb-2">Sign in</h1>
-          <p className="text-slate-500 text-sm">
+          <h1 className="text-2xl font-bold text-[#EEEEFC] mt-6 mb-2">Sign in</h1>
+          <p className="text-[#8888A8] text-sm">
             Enter your email and we&apos;ll send you a login link.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            <label className="block text-sm font-medium text-[#E0E0F8] mb-1.5">
               Email address
             </label>
             <input
@@ -131,12 +131,12 @@ export default function LoginPage() {
               placeholder="you@example.com"
               required
               autoFocus
-              className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full border border-[#232548] rounded-lg px-4 py-2.5 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+            <p className="text-sm text-red-400 bg-red-950/20 border border-red-900/40 rounded-lg px-3 py-2">
               {error}
             </p>
           )}
@@ -146,26 +146,26 @@ export default function LoginPage() {
             disabled={loading || !email.trim()}
             className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${
               loading || !email.trim()
-                ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+                ? "bg-[#141830] text-[#4A4A68] cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
             }`}
           >
             {loading ? "Sending..." : "Send login link"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-slate-400">
+        <p className="mt-6 text-center text-xs text-[#5A5A80]">
           No account?{" "}
-          <span className="text-slate-500">Signing in creates one automatically.</span>
+          <span className="text-[#8888A8]">Signing in creates one automatically.</span>
         </p>
 
         {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200" />
+            <div className="w-full border-t border-[#232548]" />
           </div>
-          <div className="relative flex justify-center text-xs text-slate-400 bg-white px-3">
-            <span className="bg-white px-3">or continue with</span>
+          <div className="relative flex justify-center text-xs text-[#5A5A80]">
+            <span className="bg-[#090C18] px-3">or continue with</span>
           </div>
         </div>
 
@@ -177,10 +177,10 @@ export default function LoginPage() {
               type="button"
               onClick={() => handleOAuth(provider)}
               disabled={oauthLoading !== null}
-              className="w-full flex items-center justify-center gap-3 border border-slate-200 bg-white hover:bg-slate-50 text-sm font-medium text-slate-700 px-4 py-2.5 rounded-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-3 border border-[#232548] bg-[#13182C] hover:bg-[#232548] text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] px-4 py-2.5 rounded-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {oauthLoading === provider ? (
-                <span className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-[#8888A8] border-t-transparent rounded-full animate-spin" />
               ) : (
                 icon
               )}

@@ -44,7 +44,7 @@ function ScoreRing({ score, size = 80 }: { score: number; size?: number }) {
         cy={size / 2}
         r={radius}
         fill="none"
-        stroke="#f1f5f9"
+        stroke="#232548"
         strokeWidth={6}
       />
       <circle
@@ -66,17 +66,17 @@ function ScoreRing({ score, size = 80 }: { score: number; size?: number }) {
 function DimensionCard({ dimensionKey, score }: { dimensionKey: string; score: number }) {
   const meta = SCORE_META[dimensionKey] ?? { label: dimensionKey, description: "" };
   const color =
-    score >= 8 ? "text-emerald-700" : score >= 6 ? "text-indigo-700" : score >= 4 ? "text-amber-700" : "text-red-700";
+    score >= 8 ? "text-emerald-400" : score >= 6 ? "text-indigo-400" : score >= 4 ? "text-amber-400" : "text-red-400";
   const bg =
-    score >= 8 ? "bg-emerald-50 border-emerald-100" : score >= 6 ? "bg-indigo-50 border-indigo-100" : score >= 4 ? "bg-amber-50 border-amber-100" : "bg-red-50 border-red-100";
+    score >= 8 ? "bg-emerald-950/20 border-emerald-900/30" : score >= 6 ? "bg-indigo-950/20 border-indigo-900/30" : score >= 4 ? "bg-amber-950/20 border-amber-900/30" : "bg-red-950/20 border-red-900/30";
 
   return (
     <div className={`rounded-2xl border p-5 ${bg}`}>
       <div className="flex items-center justify-between mb-2">
-        <p className="text-sm font-semibold text-slate-900">{meta.label}</p>
-        <span className={`text-xl font-bold ${color}`}>{score}<span className="text-sm font-normal text-slate-400">/10</span></span>
+        <p className="text-sm font-semibold text-[#EEEEFC]">{meta.label}</p>
+        <span className={`text-xl font-bold ${color}`}>{score}<span className="text-sm font-normal text-[#5A5A80]">/10</span></span>
       </div>
-      <div className="h-1.5 bg-white/70 rounded-full overflow-hidden mb-2">
+      <div className="h-1.5 bg-[#232548] rounded-full overflow-hidden mb-2">
         <div
           className={`h-full rounded-full transition-all duration-700 ${
             score >= 8 ? "bg-emerald-500" : score >= 6 ? "bg-indigo-500" : score >= 4 ? "bg-amber-500" : "bg-red-500"
@@ -84,7 +84,7 @@ function DimensionCard({ dimensionKey, score }: { dimensionKey: string; score: n
           style={{ width: `${score * 10}%` }}
         />
       </div>
-      <p className="text-xs text-slate-500">{meta.description}</p>
+      <p className="text-xs text-[#8888A8]">{meta.description}</p>
     </div>
   );
 }
@@ -155,28 +155,28 @@ export default function ScoreClient() {
 
   const overallColor =
     !result ? ""
-    : result.overall >= 8 ? "text-emerald-600"
-    : result.overall >= 6 ? "text-indigo-600"
-    : result.overall >= 4 ? "text-amber-600"
-    : "text-red-600";
+    : result.overall >= 8 ? "text-emerald-400"
+    : result.overall >= 6 ? "text-indigo-400"
+    : result.overall >= 4 ? "text-amber-400"
+    : "text-red-400";
 
   return (
     <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
       {/* Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-full mb-4">
+        <div className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-full mb-4">
           Free · No generation count used
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-3">Resume Health Score</h1>
-        <p className="text-base text-slate-500 max-w-xl mx-auto">
+        <h1 className="text-3xl font-bold text-[#EEEEFC] mb-3">Resume Health Score</h1>
+        <p className="text-base text-[#8888A8] max-w-xl mx-auto">
           Paste your resume and get an instant AI critique across 5 dimensions — before you apply anywhere.
         </p>
       </div>
 
       {/* Input card */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mb-6">
+      <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <label className="block text-sm font-medium text-slate-700">
+          <label className="block text-sm font-medium text-[#E0E0F8]">
             Your resume
           </label>
           <div className="flex items-center gap-2">
@@ -194,10 +194,10 @@ export default function ScoreClient() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={parseLoading}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-[#8888A8] hover:text-indigo-400 bg-[#13182C] hover:bg-indigo-950/40 border border-[#232548] hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
             >
               {parseLoading ? (
-                <span className="w-3 h-3 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+                <span className="w-3 h-3 border-2 border-[#8888A8] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 8l-4-4m0 0L8 8m4-4v12" />
@@ -207,7 +207,7 @@ export default function ScoreClient() {
             </button>
           </div>
         </div>
-        {parseError && <p className="text-xs text-red-500 mb-2">{parseError}</p>}
+        {parseError && <p className="text-xs text-red-400 mb-2">{parseError}</p>}
         <textarea
           value={resumeText}
           onChange={(e) => {
@@ -216,10 +216,10 @@ export default function ScoreClient() {
           }}
           rows={12}
           placeholder="Paste your full resume here — all sections, all roles..."
-          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition resize-none"
+          className="w-full border border-[#232548] rounded-lg px-4 py-3 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition resize-none"
         />
         <div className="flex items-center justify-between mt-3">
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#5A5A80]">
             {resumeText.trim().split(/\s+/).filter(Boolean).length} words
           </p>
           <button
@@ -227,8 +227,8 @@ export default function ScoreClient() {
             disabled={!resumeText.trim() || loading}
             className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               resumeText.trim() && !loading
-                ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
-                : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
+                : "bg-[#141830] text-[#4A4A68] cursor-not-allowed"
             }`}
           >
             {loading ? (
@@ -245,8 +245,8 @@ export default function ScoreClient() {
 
       {/* Error */}
       {error && (
-        <div className="bg-red-50 border border-red-100 rounded-2xl p-5 mb-6 text-center">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="bg-red-950/20 border border-red-900/40 rounded-2xl p-5 mb-6 text-center">
+          <p className="text-sm text-red-400">{error}</p>
         </div>
       )}
 
@@ -254,7 +254,7 @@ export default function ScoreClient() {
       {result && (
         <div className="space-y-6">
           {/* Overall score */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm text-center">
+          <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-8 text-center">
             <div className="flex items-center justify-center mb-4">
               <div className="relative">
                 <ScoreRing score={result.overall} size={120} />
@@ -265,7 +265,7 @@ export default function ScoreClient() {
                 </div>
               </div>
             </div>
-            <p className="text-lg font-semibold text-slate-900 mb-1">
+            <p className="text-lg font-semibold text-[#EEEEFC] mb-1">
               {result.overall >= 8
                 ? "Strong resume — ready to send"
                 : result.overall >= 6
@@ -274,7 +274,7 @@ export default function ScoreClient() {
                 ? "Needs work before applying"
                 : "Significant gaps to address"}
             </p>
-            <p className="text-sm text-slate-400">{result.word_count} words</p>
+            <p className="text-sm text-[#5A5A80]">{result.word_count} words</p>
           </div>
 
           {/* Dimension scores */}
@@ -285,33 +285,33 @@ export default function ScoreClient() {
           </div>
 
           {/* Recommendations */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-slate-900 mb-4">
+          <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6">
+            <h2 className="text-sm font-semibold text-[#EEEEFC] mb-4">
               Actionable improvements
             </h2>
             <ul className="space-y-3">
               {result.recommendations.map((rec, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center mt-0.5">
+                  <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-950/50 border border-indigo-900/50 text-indigo-400 text-xs font-bold flex items-center justify-center mt-0.5">
                     {i + 1}
                   </span>
-                  <p className="text-sm text-slate-700 leading-relaxed">{rec}</p>
+                  <p className="text-sm text-[#C8C8F0] leading-relaxed">{rec}</p>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* CTA */}
-          <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 text-center">
-            <p className="text-sm font-semibold text-indigo-900 mb-1">
+          <div className="bg-indigo-950/30 border border-indigo-900/40 rounded-2xl p-6 text-center">
+            <p className="text-sm font-semibold text-[#EEEEFC] mb-1">
               Ready to tailor for a specific role?
             </p>
-            <p className="text-xs text-indigo-600 mb-4">
+            <p className="text-xs text-indigo-400 mb-4">
               Generate targeted resume bullets, summaries, and cover letters in 30 seconds.
             </p>
             <Link
               href="/generate"
-              className="inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-sm transition-all"
+              className="inline-flex items-center bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-sm shadow-indigo-600/20 transition-all hover:-translate-y-px"
             >
               Generate tailored content →
             </Link>

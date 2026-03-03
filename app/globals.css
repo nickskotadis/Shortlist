@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
+/* ── Design tokens ─────────────────────────────────────────── */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #090C18;
+  --foreground: #EEEEFC;
 }
 
 @theme inline {
@@ -12,13 +13,31 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* ── Base ──────────────────────────────────────────────────── */
 body {
-  background: var(--background);
+  background-color: var(--background);
+  /* Indigo aurora bleeding in from top */
+  background-image:
+    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(99,102,241,0.18) 0%, transparent 65%);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Grain texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: 0.028;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ── Cursor blink ──────────────────────────────────────────── */
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
@@ -28,6 +47,45 @@ body {
   content: "▋";
   display: inline-block;
   animation: blink 0.9s step-start infinite;
-  color: #6366f1;
+  color: #818CF8;
   margin-left: 1px;
+}
+
+/* ── Shimmer — active generate button ──────────────────────── */
+@keyframes shimmer-slide {
+  from { background-position: 200% center; }
+  to { background-position: -200% center; }
+}
+
+.btn-shimmer {
+  background: linear-gradient(
+    90deg,
+    #4338CA 0%,
+    #6366F1 30%,
+    #818CF8 50%,
+    #6366F1 70%,
+    #4338CA 100%
+  );
+  background-size: 300% auto;
+  animation: shimmer-slide 3.5s linear infinite;
+}
+
+/* ── Fade-up entrance ──────────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.animate-fade-up  { animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-delay-1  { animation-delay: 0.06s; }
+.animate-delay-2  { animation-delay: 0.13s; }
+.animate-delay-3  { animation-delay: 0.20s; }
+.animate-delay-4  { animation-delay: 0.28s; }
+
+/* ── Gradient text ─────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(130deg, #C7D2FE 0%, #818CF8 40%, #6366F1 75%, #7C3AED 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

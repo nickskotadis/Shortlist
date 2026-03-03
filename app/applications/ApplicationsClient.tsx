@@ -17,11 +17,11 @@ interface Application {
 }
 
 const STATUS_CONFIG: Record<ApplicationStatus, { label: string; color: string; dot: string }> = {
-  applied:    { label: "Applied",    color: "text-indigo-700 bg-indigo-50 border-indigo-100",   dot: "bg-indigo-500" },
-  interview:  { label: "Interview",  color: "text-amber-700 bg-amber-50 border-amber-100",     dot: "bg-amber-500" },
-  offer:      { label: "Offer",      color: "text-emerald-700 bg-emerald-50 border-emerald-100", dot: "bg-emerald-500" },
-  rejected:   { label: "Rejected",   color: "text-red-700 bg-red-50 border-red-100",           dot: "bg-red-400" },
-  withdrawn:  { label: "Withdrawn",  color: "text-slate-500 bg-slate-50 border-slate-200",     dot: "bg-slate-400" },
+  applied:    { label: "Applied",    color: "text-indigo-400 bg-indigo-950/40 border-indigo-900/50",   dot: "bg-indigo-400" },
+  interview:  { label: "Interview",  color: "text-amber-400 bg-amber-950/30 border-amber-900/40",     dot: "bg-amber-400" },
+  offer:      { label: "Offer",      color: "text-emerald-400 bg-emerald-950/30 border-emerald-900/40", dot: "bg-emerald-400" },
+  rejected:   { label: "Rejected",   color: "text-red-400 bg-red-950/30 border-red-900/40",           dot: "bg-red-400" },
+  withdrawn:  { label: "Withdrawn",  color: "text-[#5A5A80] bg-[#13182C] border-[#232548]",           dot: "bg-[#5A5A80]" },
 };
 
 function StatusBadge({ status }: { status: ApplicationStatus }) {
@@ -73,7 +73,7 @@ function AddForm({ onAdd }: AddFormProps) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl px-4 py-2 shadow-sm transition-all"
+        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl px-4 py-2 shadow-sm shadow-indigo-600/20 transition-all hover:-translate-y-px"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -84,45 +84,45 @@ function AddForm({ onAdd }: AddFormProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
-      <p className="text-sm font-semibold text-slate-900">Add application</p>
+    <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-5 space-y-4">
+      <p className="text-sm font-semibold text-[#EEEEFC]">Add application</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="text-xs font-medium text-slate-700 mb-1 block">Company *</label>
+          <label className="text-xs font-medium text-[#8888A8] mb-1 block">Company *</label>
           <input
             type="text"
             placeholder="Acme Corp"
             value={form.company_name}
             onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition"
+            className="w-full border border-[#232548] rounded-lg px-3 py-2 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-700 mb-1 block">Role *</label>
+          <label className="text-xs font-medium text-[#8888A8] mb-1 block">Role *</label>
           <input
             type="text"
             placeholder="Product Manager"
             value={form.job_title}
             onChange={(e) => setForm((f) => ({ ...f, job_title: e.target.value }))}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition"
+            className="w-full border border-[#232548] rounded-lg px-3 py-2 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-700 mb-1 block">Job URL</label>
+          <label className="text-xs font-medium text-[#8888A8] mb-1 block">Job URL</label>
           <input
             type="url"
             placeholder="https://..."
             value={form.url}
             onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition"
+            className="w-full border border-[#232548] rounded-lg px-3 py-2 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-700 mb-1 block">Status</label>
+          <label className="text-xs font-medium text-[#8888A8] mb-1 block">Status</label>
           <select
             value={form.status}
             onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as ApplicationStatus }))}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition"
+            className="w-full border border-[#232548] rounded-lg px-3 py-2 text-sm text-[#EEEEFC] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
           >
             {Object.entries(STATUS_CONFIG).map(([val, cfg]) => (
               <option key={val} value={val}>{cfg.label}</option>
@@ -130,16 +130,16 @@ function AddForm({ onAdd }: AddFormProps) {
           </select>
         </div>
       </div>
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs text-red-400">{error}</p>}
       <div className="flex items-center gap-3">
         <button
           onClick={submit}
           disabled={loading}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl px-4 py-2 transition-all disabled:opacity-50"
+          className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl px-4 py-2 transition-all disabled:opacity-50"
         >
           {loading ? "Adding..." : "Add"}
         </button>
-        <button onClick={() => setOpen(false)} className="text-sm text-slate-500 hover:text-slate-700">Cancel</button>
+        <button onClick={() => setOpen(false)} className="text-sm text-[#8888A8] hover:text-[#EEEEFC] transition-colors">Cancel</button>
       </div>
     </div>
   );
@@ -186,15 +186,15 @@ function FollowUpPanel({ application }: FollowUpPanelProps) {
   };
 
   return (
-    <div className="mt-3 border-t border-slate-100 pt-3">
+    <div className="mt-3 border-t border-[#1A1D38] pt-3">
       {!email ? (
         <button
           onClick={generate}
           disabled={loading}
-          className="text-xs font-medium text-indigo-600 hover:text-indigo-700 disabled:opacity-50 flex items-center gap-1.5"
+          className="text-xs font-medium text-indigo-400 hover:text-indigo-300 disabled:opacity-50 flex items-center gap-1.5 transition-colors"
         >
           {loading ? (
-            <span className="w-3 h-3 border border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <span className="w-3 h-3 border border-indigo-400 border-t-transparent rounded-full animate-spin" />
           ) : (
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -205,19 +205,19 @@ function FollowUpPanel({ application }: FollowUpPanelProps) {
       ) : (
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <p className="text-xs font-medium text-slate-500">Follow-up email</p>
+            <p className="text-xs font-medium text-[#5A5A80]">Follow-up email</p>
             <button
               onClick={copy}
-              className="text-xs font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+              className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
             >
               {copied ? "Copied ✓" : "Copy"}
             </button>
           </div>
-          <pre className="text-xs text-slate-700 whitespace-pre-wrap font-mono bg-slate-50 rounded-lg p-3 border border-slate-100">{email}</pre>
-          <button onClick={() => setEmail(null)} className="text-xs text-slate-400 hover:text-slate-600 mt-1.5">Regenerate</button>
+          <pre className="text-xs text-[#C8C8F0] whitespace-pre-wrap font-mono bg-[#0B0E1E] rounded-lg p-3 border border-[#232548]">{email}</pre>
+          <button onClick={() => setEmail(null)} className="text-xs text-[#5A5A80] hover:text-[#8888A8] mt-1.5 transition-colors">Regenerate</button>
         </div>
       )}
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
     </div>
   );
 }
@@ -251,22 +251,22 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
   const date = new Date(application.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="bg-[#0D1122] rounded-2xl border border-[#232548] hover:border-[#2E3165] overflow-hidden transition-colors">
       <div
-        className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-slate-50 transition-colors"
+        className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-[#13182C] transition-colors"
         onClick={() => setExpanded((e) => !e)}
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold text-slate-900 truncate">{application.company_name}</span>
-            <span className="text-slate-300">·</span>
-            <span className="text-sm text-slate-600 truncate">{application.job_title}</span>
+            <span className="text-sm font-semibold text-[#EEEEFC] truncate">{application.company_name}</span>
+            <span className="text-[#363960]">·</span>
+            <span className="text-sm text-[#8888A8] truncate">{application.job_title}</span>
           </div>
           <div className="flex items-center gap-3 mt-1.5 flex-wrap">
             <StatusBadge status={application.status} />
-            <span className="text-xs text-slate-400">{date}</span>
+            <span className="text-xs text-[#5A5A80]">{date}</span>
             {application.generation_count > 0 && (
-              <span className="text-xs text-slate-400">{application.generation_count} doc{application.generation_count !== 1 ? "s" : ""} generated</span>
+              <span className="text-xs text-[#5A5A80]">{application.generation_count} doc{application.generation_count !== 1 ? "s" : ""} generated</span>
             )}
             {application.url && (
               <a
@@ -274,7 +274,7 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-xs text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -284,37 +284,46 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
             )}
           </div>
         </div>
-        <svg className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-4 h-4 text-[#5A5A80] shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </div>
 
       {expanded && (
-        <div className="px-5 pb-5 border-t border-slate-100">
+        <div className="px-5 pb-5 border-t border-[#1A1D38]">
           <div className="mt-4">
-            <p className="text-xs font-medium text-slate-500 mb-2">Update status</p>
+            <p className="text-xs font-medium text-[#5A5A80] mb-2">Update status</p>
             <div className="flex flex-wrap gap-2">
-              {(Object.keys(STATUS_CONFIG) as ApplicationStatus[]).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => updateStatus(s)}
-                  disabled={updating || application.status === s}
-                  className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-all disabled:cursor-not-allowed ${
-                    application.status === s
-                      ? STATUS_CONFIG[s].color + " ring-1 ring-offset-1 ring-current"
-                      : "border-slate-200 text-slate-500 hover:border-slate-300 bg-white"
-                  }`}
-                >
-                  {STATUS_CONFIG[s].label}
-                </button>
-              ))}
+              {(Object.keys(STATUS_CONFIG) as ApplicationStatus[]).map((s) => {
+                const activeColors: Record<ApplicationStatus, string> = {
+                  applied:   "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400",
+                  interview: "border-amber-500 bg-amber-950/30 ring-1 ring-amber-500 text-amber-400",
+                  offer:     "border-emerald-500 bg-emerald-950/30 ring-1 ring-emerald-500 text-emerald-400",
+                  rejected:  "border-red-500 bg-red-950/30 ring-1 ring-red-500 text-red-400",
+                  withdrawn: "border-[#5A5A80] bg-[#13182C] ring-1 ring-[#5A5A80] text-[#8888A8]",
+                };
+                return (
+                  <button
+                    key={s}
+                    onClick={() => updateStatus(s)}
+                    disabled={updating || application.status === s}
+                    className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-all disabled:cursor-not-allowed ${
+                      application.status === s
+                        ? activeColors[s]
+                        : "border-[#232548] text-[#8888A8] hover:border-[#2E3165] bg-transparent"
+                    }`}
+                  >
+                    {STATUS_CONFIG[s].label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {application.notes && (
             <div className="mt-3">
-              <p className="text-xs font-medium text-slate-500 mb-1">Notes</p>
-              <p className="text-xs text-slate-600 leading-relaxed">{application.notes}</p>
+              <p className="text-xs font-medium text-[#5A5A80] mb-1">Notes</p>
+              <p className="text-xs text-[#8888A8] leading-relaxed">{application.notes}</p>
             </div>
           )}
 
@@ -326,7 +335,7 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
           <div className="mt-3 flex items-center gap-3">
             <Link
               href={`/generate`}
-              className="text-xs font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+              className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -380,11 +389,11 @@ export default function ApplicationsClient({ initialApplications }: Props) {
 
       {/* Search + filter toolbar */}
       {applications.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+        <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-4">
           {/* Search row */}
           <div className="relative mb-3">
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A5A80] pointer-events-none"
               fill="none" stroke="currentColor" viewBox="0 0 24 24"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -395,7 +404,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               placeholder="Search by company or role..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition"
+              className="w-full border border-[#232548] rounded-lg pl-9 pr-4 py-2 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
             />
           </div>
 
@@ -406,8 +415,8 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               onClick={() => setStatusFilter("all")}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                 statusFilter === "all"
-                  ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500 text-indigo-700"
-                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                  ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400"
+                  : "border-[#232548] bg-transparent text-[#8888A8] hover:border-[#2E3165]"
               }`}
             >
               All ({applications.length})
@@ -416,11 +425,11 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               const count = applications.filter((a) => a.status === s).length;
               if (count === 0) return null;
               const activeColors: Record<ApplicationStatus, string> = {
-                applied:   "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500 text-indigo-700",
-                interview: "border-amber-500 bg-amber-50 ring-1 ring-amber-500 text-amber-700",
-                offer:     "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 text-emerald-700",
-                rejected:  "border-red-500 bg-red-50 ring-1 ring-red-500 text-red-700",
-                withdrawn: "border-slate-400 bg-slate-50 ring-1 ring-slate-400 text-slate-600",
+                applied:   "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400",
+                interview: "border-amber-500 bg-amber-950/30 ring-1 ring-amber-500 text-amber-400",
+                offer:     "border-emerald-500 bg-emerald-950/30 ring-1 ring-emerald-500 text-emerald-400",
+                rejected:  "border-red-500 bg-red-950/30 ring-1 ring-red-500 text-red-400",
+                withdrawn: "border-[#5A5A80] bg-[#13182C] ring-1 ring-[#5A5A80] text-[#8888A8]",
               };
               return (
                 <button
@@ -430,7 +439,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
                   className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                     statusFilter === s
                       ? activeColors[s]
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                      : "border-[#232548] bg-transparent text-[#8888A8] hover:border-[#2E3165]"
                   }`}
                 >
                   {STATUS_CONFIG[s].label} ({count})
@@ -441,13 +450,13 @@ export default function ApplicationsClient({ initialApplications }: Props) {
 
           {/* Result count + clear */}
           {isFiltered && (
-            <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+            <div className="mt-3 flex items-center gap-2 text-xs text-[#8888A8]">
               <span>Showing {filtered.length} of {applications.length}</span>
-              <span className="text-slate-300">·</span>
+              <span className="text-[#363960]">·</span>
               <button
                 type="button"
                 onClick={clearFilters}
-                className="text-indigo-600 hover:text-indigo-700 font-medium"
+                className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
               >
                 Clear filters ×
               </button>
@@ -458,21 +467,21 @@ export default function ApplicationsClient({ initialApplications }: Props) {
 
       {/* Application list */}
       {applications.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
-          <svg className="w-10 h-10 mx-auto mb-3 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-16 text-[#5A5A80]">
+          <svg className="w-10 h-10 mx-auto mb-3 text-[#2E3165]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
-          <p className="text-sm font-medium text-slate-500">No applications yet</p>
-          <p className="text-xs text-slate-400 mt-1">Add your first application above to start tracking.</p>
+          <p className="text-sm font-medium text-[#8888A8]">No applications yet</p>
+          <p className="text-xs text-[#5A5A80] mt-1">Add your first application above to start tracking.</p>
         </div>
       ) : filtered.length === 0 && isFiltered ? (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
-          <p className="text-sm font-semibold text-slate-900 mb-1">No applications match your filters</p>
-          <p className="text-xs text-slate-500 mb-4">Try adjusting your search or status filter.</p>
+        <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-12 text-center">
+          <p className="text-sm font-semibold text-[#EEEEFC] mb-1">No applications match your filters</p>
+          <p className="text-xs text-[#8888A8] mb-4">Try adjusting your search or status filter.</p>
           <button
             type="button"
             onClick={clearFilters}
-            className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition-all"
+            className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm shadow-indigo-600/20 transition-all hover:-translate-y-px"
           >
             Clear filters
           </button>
