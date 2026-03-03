@@ -77,11 +77,27 @@ Be decisive. If there are options, pick one and justify it.
 - Vercel deployment: all env vars added with `printf` (not `echo`) to avoid trailing newline — critical for `STRIPE_WEBHOOK_SECRET` (trailing newline causes signature verification to fail on every webhook delivery)
 - Stripe webhook registered at `https://shortlist-amber.vercel.app/api/stripe/webhook` for `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
 
-### Week 5 — TODO
-- PostHog event instrumentation (metadata only, never content)
-- Internal quality dashboard (scores by prompt version)
-- Sentry with PII scrubbing
-- A/B test flag for prompt variant
+### Week 5 — DONE
+- **PostHog event instrumentation** — `posthog-js/react` on client; `usePostHog()` hook in `GenerateForm`, `OutputPanel`, `app/score/page.tsx`, `app/pricing/page.tsx`; events: `generation_started`, `generation_completed`, `document_type_selected`, `tone_selected`, `export_clicked`, `upgrade_clicked`, `score_page_viewed`; metadata only, never content fields
+- **Sentry** — `@sentry/nextjs`; `sentry.client.config.ts` + `sentry.server.config.ts` with `beforeSend` PII scrubbing (strips `candidate_input`, `jd_text`, `resume_text`, `output_text`); `next.config.ts` wrapped with `withSentryConfig`; source maps only upload when `SENTRY_AUTH_TOKEN` is set
+- **Admin quality dashboard** — `app/admin/quality/page.tsx`; protected by `ADMIN_EMAILS` env var (comma-separated); aggregates `generations` by `prompt_version` + `ab_variant`; shows count, avg score, pass rate, 👍 rate
+- **A/B test flag** — `PROMPT_AB_VARIANT: "A" | "B"` in `lib/constants.ts`; read from `process.env.PROMPT_AB_VARIANT`; stored as `ab_variant` on every `generations` row; `migration_005.sql`
+- **PostHog provider** — `components/PostHogProvider.tsx` wraps `app/layout.tsx`; env vars `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`
+
+### Differentiating features — DONE
+- **Quality score ring** — SVG ring in `OutputPanel` showing generation quality (1–10); colour-coded: emerald ≥8, indigo ≥6, amber <6; amber nudge shown when overall <7
+- **Tailoring recommendations** — 4th Haiku call (fire-and-forget) after `done` SSE event; `buildTailoringRecommendationsPrompt()` in `lib/prompts.ts`; `tailoring_suggestions` SSE event type; collapsible `TailoringPanel` in `OutputPanel`; only fires when `candidate_input.length > 200` and JD has `key_terminology`
+- **Job Application Tracker** — `app/applications/page.tsx` (server) + `app/applications/ApplicationsClient.tsx` (client); `app/api/applications/route.ts` (GET/POST/PATCH); statuses: `applied | interview | offer | rejected | withdrawn`; links to generated docs via `job_application_id` FK; `migration_006.sql` adds `status`, `url`, `notes` to `job_applications`
+- **Follow-up email generator** — `app/api/follow-up/route.ts` POST; Haiku model; available from Applications tracker on "applied" status entries; generates 3–4 sentence email with subject line
+- **Batch mode generation** — `hooks/useBatchGenerate.ts`; sequential bullets → cover_letter → linkedin_about; JD analysis cached after first doc; `BatchOutputPanel` in `GenerateForm` with tab UI + streaming indicators; ZIP export via jszip
+- **ZIP export** — `app/api/export/route.ts` supports `format: "zip"` with `batch` array; uses `jszip` with `arraybuffer` type (not `nodebuffer` — TypeScript compat); `Content-Length` uses `zipBytes.byteLength`
+- **Chrome extension** — `chrome-extension/` directory; Manifest V3; `content.js` extracts JD from Greenhouse, Lever, Workday, Indeed, LinkedIn; floating indigo button opens `/generate?jd=<encoded>`; `background.js` + `popup.html`
+
+### Prompt quality improvements — DONE (prompt versions bumped)
+- **bullets-v2** — structural variety required (no all-same [Verb+what+result] pattern); "50 other resumes" quality bar test; scope/timeframe/outcome-first opening examples
+- **summary-v2** — first sentence formula explicitly banned ("Experienced X with N years..."); must lead with most compelling specific thing
+- **cover-letter-v2** — explicit first-person instruction throughout; Paragraph 1 avoids opening with "I" but rest uses I/my/me; "Why This Company" paragraph calls out generic praise as worthless; closer must be direct, not "I hope to hear from you"
+- **System prompt** — upgraded from "You are an expert career writer" to full elite career strategist persona emphasising human-sounding, specific output
 
 ### Post-Week 4 features — DONE
 - **Save master resume** — `profiles.resume_text text` column; GET/PUT `/api/profile/resume`; generate page fetches it server-side and pre-fills the resume textarea; "Save as default resume" button persists on blur; "Saved ✓" badge when populated
@@ -97,11 +113,14 @@ Be decisive. If there are options, pick one and justify it.
 - **`migration_004.sql`** — `profiles.resume_text`, `generations.label`, `generations.tone`; applied to production
 
 ## Key files
-- `lib/constants.ts` — model names, prompt versions, banned phrases, thresholds, `FREE_MONTHLY_LIMIT`, `TONES`
-- `lib/prompts.ts` — all prompt builders; bump `PROMPT_VERSIONS` on every change; includes `buildToneInstruction()`, `buildLinkedInAboutPrompt()`, `buildLinkedInHeadlinePrompt()`, `buildHealthScorePrompt()`
-- `lib/types.ts` — shared types including SSE event shapes; `ToneType`, `HealthScoreResult`, updated `DocumentType`
+- `lib/constants.ts` — model names, prompt versions, banned phrases, thresholds, `FREE_MONTHLY_LIMIT`, `TONES`, `PROMPT_AB_VARIANT`
+- `lib/prompts.ts` — all prompt builders; bump `PROMPT_VERSIONS` on every change; includes `buildToneInstruction()`, `buildLinkedInAboutPrompt()`, `buildLinkedInHeadlinePrompt()`, `buildHealthScorePrompt()`, `buildTailoringRecommendationsPrompt()`
+- `lib/types.ts` — shared types including SSE event shapes; `ToneType`, `HealthScoreResult`, updated `DocumentType`; `tailoring_suggestions` in `SseEvent` union
 - `lib/stripe.ts` — lazy `getStripe()` singleton (server only — never import from client)
-- `app/api/generate/route.ts` — main LLM pipeline (SSE streaming) with rate limit check; handles all 5 doc types; sends `keywords` in `done` event; stores `tone` on DB insert
+- `app/api/generate/route.ts` — main LLM pipeline (SSE streaming); rate limit check; 5 doc types; `ab_variant` stored on DB insert; Stage 5 tailoring Haiku call (fire-and-forget)
+- `app/api/export/route.ts` — DOCX/PDF/ZIP export; ZIP uses jszip `arraybuffer` type
+- `app/api/applications/route.ts` — GET/POST/PATCH job applications (RLS-enforced)
+- `app/api/follow-up/route.ts` — POST follow-up email generation via Haiku
 - `app/api/profile/resume/route.ts` — GET/PUT saved resume text for authenticated user
 - `app/api/generations/[id]/label/route.ts` — PATCH label on a generation (RLS-enforced)
 - `app/api/parse-resume/route.ts` — multipart POST; pdf-parse (PDF) + mammoth (DOCX); max 5 MB
@@ -109,18 +128,27 @@ Be decisive. If there are options, pick one and justify it.
 - `app/api/stripe/checkout/route.ts` — creates Stripe Checkout Session
 - `app/api/stripe/portal/route.ts` — creates Stripe Customer Portal session
 - `app/api/stripe/webhook/route.ts` — handles Stripe webhook events, service-role Supabase writes
-- `app/generate/page.tsx` — async server wrapper; fetches plan + monthly usage + `profiles.resume_text`; passes `savedResume: string | null` to GenerateForm
-- `app/generate/GenerateForm.tsx` — `"use client"` form component; accepts `initialUsage: PlanUsage | null` + `savedResume: string | null`; handles PDF upload, save resume, tone selector, LinkedIn types, ?jd= param
-- `app/score/page.tsx` — `"use client"` resume health score page; free, no generation count
-- `app/pricing/page.tsx` — pricing page (Free vs Pro, monthly/annual toggle)
-- `hooks/useGenerate.ts` — SSE consumer; exposes `limitReached: boolean`, `sessionExpired: boolean`; `GenerateResult` includes `keywords: string[]`
-- `components/OutputPanel.tsx` — keyword gap panel (`KeywordGap`), label input (`LabelInput`), hiring manager worry box
+- `app/generate/page.tsx` — async server wrapper; fetches plan + monthly usage + `profiles.resume_text`
+- `app/generate/GenerateForm.tsx` — `"use client"` form; batch mode toggle + `BatchOutputPanel`; `generatingRef` prevents double-fire on rapid clicks; PostHog events
+- `app/applications/page.tsx` — server component; fetches applications + generation counts
+- `app/applications/ApplicationsClient.tsx` — client; status updates, follow-up email panel, add form
+- `app/admin/quality/page.tsx` — protected by `ADMIN_EMAILS`; aggregates generations by prompt_version + ab_variant
+- `app/score/page.tsx` — `"use client"` resume health score page; `score_page_viewed` PostHog event
+- `app/pricing/page.tsx` — pricing page; `upgrade_clicked` PostHog event
+- `hooks/useGenerate.ts` — SSE consumer; `tailoringSuggestions: string[]` state
+- `hooks/useBatchGenerate.ts` — sequential batch SSE consumer; `BatchState` per doc type
+- `components/OutputPanel.tsx` — `QualityRing` SVG, `TailoringPanel` collapsible, keyword gap, label input
+- `components/PostHogProvider.tsx` — initialises posthog on mount; wraps `app/layout.tsx`
+- `sentry.client.config.ts` / `sentry.server.config.ts` — Sentry init with PII scrubbing
 - `supabase/schema.sql` — base schema
 - `supabase/migration_001.sql` — plan/billing + generation metadata columns
 - `supabase/migration_002.sql` — feedback_positive column + UPDATE RLS policy
 - `supabase/migration_003.sql` — drop feedback_rating; generation_count trigger
-- `supabase/migration_004.sql` — resume_text, label, tone columns (applied)
+- `supabase/migration_004.sql` — resume_text, label, tone columns
+- `supabase/migration_005.sql` — ab_variant column on generations
+- `supabase/migration_006.sql` — status, url, notes columns on job_applications
 - `lib/export.ts` — server-only DOCX + PDF generators; handles all 5 doc types
+- `chrome-extension/` — Manifest V3 extension; content.js, background.js, popup.html
 - `proxy.ts` — Next.js 16 session middleware (note: not `middleware.ts`)
 
 ## Design system
@@ -321,3 +349,8 @@ These have been explicitly decided against. Don't suggest or implement them:
 - `DocumentType` now includes `"linkedin_about"` and `"linkedin_headline"` — any switch or Record keyed on `DocumentType` must handle all 5 values or TypeScript will error (affects `lib/export.ts` `DOC_TYPE_LABELS` and the generate route switch)
 - `PROMPT_VERSIONS` must have an entry for every doc type used as a key — use `PROMPT_VERSIONS[doc_type as keyof typeof PROMPT_VERSIONS] ?? doc_type` fallback in the generate route to be safe
 - Supabase CLI (v2.75+) installed via `brew install supabase/tap/supabase`; authenticate non-interactively with `SUPABASE_ACCESS_TOKEN=... supabase ...`; run ad-hoc SQL via the Management API: `POST https://api.supabase.com/v1/projects/{ref}/database/query` with `Authorization: Bearer {PAT}`
+- JSZip: use `type: "arraybuffer"` not `"nodebuffer"` or `"uint8array"` — only `arraybuffer` is TypeScript-compatible with `Response` body; wrap result in `new Uint8Array()` and use `zipBytes.byteLength` for `Content-Length`
+- Double-generation prevention: React state updates are async — a second click can fire before `isRunning` becomes `true`. Use a `useRef` lock set synchronously in the handler and reset in a `useEffect` when `isRunning` becomes false
+- Cover letter must be explicitly instructed to use first person; the user type context block describes the candidate in third person which can bleed into the output if not overridden
+- `NEXT_PUBLIC_*` env vars are baked in at build time — adding them in Vercel requires a redeploy to take effect; runtime-only vars (like `ADMIN_EMAILS`) do not require a redeploy
+- LinkedIn About and Headline are JD-optional: `noJd: true` in `DOC_TYPES`, `JD_OPTIONAL_TYPES` set in generate route, JD section hidden in `GenerateForm` when these types are selected
