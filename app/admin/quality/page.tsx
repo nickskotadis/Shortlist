@@ -1,15 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-
-interface VersionStats {
-  prompt_version: string;
-  ab_variant: string | null;
-  count: number;
-  avg_overall: number;
-  pass_rate: number;
-  feedback_positive_rate: number;
-}
+import QualityClient from "./QualityClient";
+import type { VersionStats } from "./QualityClient";
 
 export default async function AdminQualityPage() {
   const supabase = await createClient();
@@ -98,104 +91,7 @@ export default async function AdminQualityPage() {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-slate-100">
-                <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Prompt Version
-                </th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Variant
-                </th>
-                <th className="text-right px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Count
-                </th>
-                <th className="text-right px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Avg Score
-                </th>
-                <th className="text-right px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Pass Rate
-                </th>
-                <th className="text-right px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  👍 Rate
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {stats.map((row, i) => (
-                <tr key={i} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 font-mono text-xs text-slate-700">
-                    {row.prompt_version}
-                  </td>
-                  <td className="px-6 py-4">
-                    {row.ab_variant ? (
-                      <span
-                        className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full ${
-                          row.ab_variant === "B"
-                            ? "text-indigo-700 bg-indigo-50"
-                            : "text-slate-500 bg-slate-100"
-                        }`}
-                      >
-                        {row.ab_variant ?? "A"}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-slate-400">—</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-right text-slate-600">{row.count}</td>
-                  <td className="px-6 py-4 text-right">
-                    <span
-                      className={`font-medium ${
-                        row.avg_overall >= 7
-                          ? "text-emerald-600"
-                          : row.avg_overall >= 5.5
-                          ? "text-amber-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {row.avg_overall}/10
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <span
-                      className={`font-medium ${
-                        row.pass_rate >= 80
-                          ? "text-emerald-600"
-                          : row.pass_rate >= 60
-                          ? "text-amber-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {row.pass_rate}%
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <span
-                      className={`font-medium ${
-                        row.feedback_positive_rate >= 70 ? "text-emerald-600" : "text-slate-500"
-                      }`}
-                    >
-                      {row.feedback_positive_rate > 0
-                        ? `${row.feedback_positive_rate}%`
-                        : "—"}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-              {stats.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-6 py-12 text-center text-sm text-slate-400"
-                  >
-                    No generation data yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <QualityClient stats={stats} totalGens={totalGens} />
       </main>
     </div>
   );
