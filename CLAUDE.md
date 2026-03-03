@@ -79,7 +79,7 @@ Be decisive. If there are options, pick one and justify it.
 
 ### Week 5 — DONE
 - **PostHog event instrumentation** — `posthog-js/react` on client; `usePostHog()` hook in `GenerateForm`, `OutputPanel`, `app/score/page.tsx`, `app/pricing/page.tsx`; events: `generation_started`, `generation_completed`, `document_type_selected`, `tone_selected`, `export_clicked`, `upgrade_clicked`, `score_page_viewed`; metadata only, never content fields
-- **Sentry** — `@sentry/nextjs`; `sentry.client.config.ts` + `sentry.server.config.ts` with `beforeSend` PII scrubbing (strips `candidate_input`, `jd_text`, `resume_text`, `output_text`); `next.config.ts` wrapped with `withSentryConfig`; source maps only upload when `SENTRY_AUTH_TOKEN` is set
+- **Sentry** — `@sentry/nextjs` v10.42; `sentry.client.config.ts` (renamed to `instrumentation-client.ts`) + `sentry.server.config.ts` + `sentry.edge.config.ts`; loaded via `instrumentation.ts` (Next.js 15+ pattern); `app/global-error.tsx` error boundary; org `sko-ft`, project `javascript-nextjs`; DSN hardcoded (not secret); `tunnelRoute: "/monitoring"`, `widenClientFileUpload: true`; source maps upload on every build via `SENTRY_AUTH_TOKEN`; `sendDefaultPii: true`, `tracesSampleRate: 1` (consider reducing in production)
 - **Admin quality dashboard** — `app/admin/quality/page.tsx`; protected by `ADMIN_EMAILS` env var (comma-separated); aggregates `generations` by `prompt_version` + `ab_variant`; shows count, avg score, pass rate, 👍 rate
 - **A/B test flag** — `PROMPT_AB_VARIANT: "A" | "B"` in `lib/constants.ts`; read from `process.env.PROMPT_AB_VARIANT`; stored as `ab_variant` on every `generations` row; `migration_005.sql`
 - **PostHog provider** — `components/PostHogProvider.tsx` wraps `app/layout.tsx`; env vars `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`
@@ -140,7 +140,10 @@ Be decisive. If there are options, pick one and justify it.
 - `hooks/useBatchGenerate.ts` — sequential batch SSE consumer; `BatchState` per doc type
 - `components/OutputPanel.tsx` — `QualityRing` SVG, `TailoringPanel` collapsible, keyword gap, label input
 - `components/PostHogProvider.tsx` — initialises posthog on mount; wraps `app/layout.tsx`
-- `sentry.client.config.ts` / `sentry.server.config.ts` — Sentry init with PII scrubbing
+- `instrumentation.ts` — Next.js instrumentation hook; loads `sentry.server.config.ts` (nodejs) or `sentry.edge.config.ts` (edge) at runtime
+- `instrumentation-client.ts` — client-side Sentry init with Session Replay; `onRouterTransitionStart` export
+- `sentry.server.config.ts` / `sentry.edge.config.ts` — server + edge Sentry init
+- `app/global-error.tsx` — Sentry error boundary for unhandled app-level errors
 - `supabase/schema.sql` — base schema
 - `supabase/verify.ts` — ad-hoc schema verification utility (Supabase CLI)
 - `supabase/migration_001.sql` — plan/billing + generation metadata columns
@@ -266,8 +269,7 @@ Form sections on the generate page are numbered (1., 2., 3. etc.) with the headi
 |---|---|---|
 | `NEXT_PUBLIC_POSTHOG_KEY` | public | PostHog analytics key |
 | `NEXT_PUBLIC_POSTHOG_HOST` | public | PostHog host |
-| `NEXT_PUBLIC_SENTRY_DSN` | public | Sentry project DSN |
-| `SENTRY_AUTH_TOKEN` | server | Source map upload (build) |
+| `SENTRY_AUTH_TOKEN` | server | Source map upload (every build — now always active) |
 | `ADMIN_EMAILS` | server | Comma-separated admin emails for /admin/quality |
 | `PROMPT_AB_VARIANT` | server | "A" or "B" — A/B test flag |
 
