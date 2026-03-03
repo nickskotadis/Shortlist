@@ -6,6 +6,7 @@ import { usePostHog } from "posthog-js/react";
 import { useGenerate } from "@/hooks/useGenerate";
 import { useBatchGenerate } from "@/hooks/useBatchGenerate";
 import OutputPanel from "@/components/OutputPanel";
+import UserMenu from "@/components/UserMenu";
 import type { DocumentType, UserType, UserData, ToneType } from "@/lib/types";
 import { FREE_MONTHLY_LIMIT, TONES } from "@/lib/constants";
 
@@ -383,9 +384,11 @@ function BatchOutputPanel({
 export default function GenerateForm({
   initialUsage,
   savedResume,
+  userEmail,
 }: {
   initialUsage: PlanUsage | null;
   savedResume: string | null;
+  userEmail?: string | null;
 }) {
   const posthog = usePostHog();
   const [userType, setUserType] = useState<UserType | null>(null);
@@ -549,16 +552,25 @@ export default function GenerateForm({
       {/* Nav */}
       <nav className="bg-white border-b border-slate-100 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-base font-semibold text-slate-900 tracking-tight hover:text-indigo-600 transition-colors">
-            Shortlist
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/score" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
-              Resume Score
+          <div className="flex items-center gap-6">
+            <Link href="/" className="text-base font-semibold text-slate-900 tracking-tight hover:text-indigo-600 transition-colors">
+              Shortlist
             </Link>
-            <Link href="/dashboard" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">
-              Dashboard
-            </Link>
+            <div className="hidden sm:flex items-center gap-4 text-sm text-slate-500">
+              <Link href="/dashboard" className="hover:text-slate-900 transition-colors">Dashboard</Link>
+              <Link href="/applications" className="hover:text-slate-900 transition-colors">Applications</Link>
+              <span className="font-medium text-slate-900">Generate</span>
+              <Link href="/score" className="hover:text-slate-900 transition-colors">Score</Link>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {userEmail ? (
+              <UserMenu email={userEmail} />
+            ) : (
+              <Link href="/auth/login" className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
+                Sign in
+              </Link>
+            )}
           </div>
         </div>
       </nav>

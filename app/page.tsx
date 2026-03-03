@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Nav from "@/components/Nav";
 
 const features = [
   {
@@ -24,28 +25,7 @@ const exampleBullets = [
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Nav */}
-      <nav className="border-b border-slate-100 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <span className="text-lg font-semibold text-slate-900 tracking-tight">
-            Shortlist
-          </span>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/auth/login"
-              className="text-sm text-slate-500 hover:text-slate-700 transition-colors"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/generate"
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
-            >
-              Try it free →
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Nav maxWidth="max-w-6xl" />
 
       {/* Hero */}
       <section className="max-w-4xl mx-auto px-6 pt-24 pb-20 text-center">

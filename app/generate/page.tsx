@@ -47,5 +47,5 @@ export default async function GeneratePage() {
     }
   }
 
-  return <GenerateForm initialUsage={initialUsage} savedResume={savedResume} />;
+  return <GenerateForm initialUsage={initialUsage} savedResume={savedResume} userEmail={user?.email ?? null} />;
 }

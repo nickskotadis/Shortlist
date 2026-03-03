@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import ApplicationsClient from "./ApplicationsClient";
+import Nav from "@/components/Nav";
 
 export default async function ApplicationsPage() {
   const supabase = await createClient();
@@ -35,19 +35,7 @@ export default async function ApplicationsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <nav className="bg-white border-b border-slate-100 px-6 py-4 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="text-lg font-semibold text-slate-900 tracking-tight">Shortlist</Link>
-            <div className="hidden sm:flex items-center gap-4 text-sm text-slate-500">
-              <Link href="/dashboard" className="hover:text-slate-900 transition-colors">Dashboard</Link>
-              <span className="font-medium text-slate-900">Applications</span>
-              <Link href="/generate" className="hover:text-slate-900 transition-colors">Generate</Link>
-              <Link href="/score" className="hover:text-slate-900 transition-colors">Score</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Nav activePage="applications" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-6">
