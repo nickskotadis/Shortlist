@@ -123,6 +123,7 @@ Be decisive. If there are options, pick one and justify it.
 - `app/api/follow-up/route.ts` — POST follow-up email generation via Haiku
 - `app/api/profile/resume/route.ts` — GET/PUT saved resume text for authenticated user
 - `app/api/generations/[id]/label/route.ts` — PATCH label on a generation (RLS-enforced)
+- `app/api/generations/[id]/feedback/route.ts` — PATCH feedback_positive (thumbs up/down); RLS-enforced
 - `app/api/parse-resume/route.ts` — multipart POST; pdf-parse (PDF) + mammoth (DOCX); max 5 MB
 - `app/api/score/route.ts` — POST resume text, returns `HealthScoreResult` via Haiku
 - `app/api/stripe/checkout/route.ts` — creates Stripe Checkout Session
@@ -141,6 +142,7 @@ Be decisive. If there are options, pick one and justify it.
 - `components/PostHogProvider.tsx` — initialises posthog on mount; wraps `app/layout.tsx`
 - `sentry.client.config.ts` / `sentry.server.config.ts` — Sentry init with PII scrubbing
 - `supabase/schema.sql` — base schema
+- `supabase/verify.ts` — ad-hoc schema verification utility (Supabase CLI)
 - `supabase/migration_001.sql` — plan/billing + generation metadata columns
 - `supabase/migration_002.sql` — feedback_positive column + UPDATE RLS policy
 - `supabase/migration_003.sql` — drop feedback_rating; generation_count trigger
@@ -239,6 +241,50 @@ w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin
 
 ### Section numbering pattern
 Form sections on the generate page are numbered (1., 2., 3. etc.) with the heading `text-sm font-semibold text-slate-900 mb-1` and a one-line description `text-xs text-slate-400 mb-4` below it. Follow this pattern for any new form sections.
+
+---
+
+## Environment variables
+
+### Local (`.env.local`)
+| Variable | Scope | Purpose |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | server | Anthropic SDK auth |
+| `NEXT_PUBLIC_SUPABASE_URL` | public | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | public | Supabase anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | server | Bypass RLS (webhook only) |
+| `STRIPE_SECRET_KEY` | server | Stripe API |
+| `STRIPE_WEBHOOK_SECRET` | server | Stripe signature verify |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | public | Stripe.js init |
+| `STRIPE_PRICE_ID_PRO_MONTHLY` | server | Pro monthly price ID |
+| `STRIPE_PRICE_ID_PRO_ANNUAL` | server | Pro annual price ID |
+| `UPSTASH_REDIS_REST_URL` | server | JD analysis cache (optional) |
+| `UPSTASH_REDIS_REST_TOKEN` | server | JD analysis cache (optional) |
+
+### Vercel-only (not in local `.env.local`)
+| Variable | Scope | Purpose |
+|---|---|---|
+| `NEXT_PUBLIC_POSTHOG_KEY` | public | PostHog analytics key |
+| `NEXT_PUBLIC_POSTHOG_HOST` | public | PostHog host |
+| `NEXT_PUBLIC_SENTRY_DSN` | public | Sentry project DSN |
+| `SENTRY_AUTH_TOKEN` | server | Source map upload (build) |
+| `ADMIN_EMAILS` | server | Comma-separated admin emails for /admin/quality |
+| `PROMPT_AB_VARIANT` | server | "A" or "B" — A/B test flag |
+
+> `NEXT_PUBLIC_*` vars are baked in at build time — adding them in Vercel requires a redeploy. Runtime-only vars (`ADMIN_EMAILS`, `PROMPT_AB_VARIANT`) do not.
+
+---
+
+## Project directories
+
+- `prompts/` — markdown source files for prompt engineering; **not imported at runtime**; used for iteration + version control of prompt logic before moving content into `lib/prompts.ts`
+  - `prompts/generators/` — bullets.md, cover-letter.md, summary.md
+  - `prompts/parsers/` — jd-parser.md
+  - `prompts/user-types/` — career-switcher.md, executive.md, mid-career.md, student.md
+  - `prompts/validators/` — quality-check.md
+  - `prompts/tests/` — test cases + Python test runner
+- `chrome-extension/` — Manifest V3 browser extension (see Key Files above)
+- `supabase/` — schema + migrations + verify utility
 
 ---
 
