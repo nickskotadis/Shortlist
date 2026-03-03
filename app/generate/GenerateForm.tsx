@@ -405,6 +405,7 @@ export default function GenerateForm({
   const [parseLoading, setParseLoading] = useState(false);
   const [parseError, setParseError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const generatingRef = useRef(false);
 
   const { generate, status, streamText, jdAnalysis, result, error, limitReached, sessionExpired, tailoringSuggestions } = useGenerate();
   const { generateBatch, running: batchRunning, states: batchStates, limitReached: batchLimitReached, sessionExpired: batchSessionExpired } = useBatchGenerate();
@@ -426,6 +427,11 @@ export default function GenerateForm({
     !isRunning &&
     !effectiveLimitReached;
 
+  // Release the generation lock once the run finishes (done, error, or idle)
+  useEffect(() => {
+    if (!isRunning) generatingRef.current = false;
+  }, [isRunning]);
+
   // Pre-fill JD from URL params (Chrome extension integration)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -434,7 +440,8 @@ export default function GenerateForm({
   }, []);
 
   const handleGenerate = () => {
-    if (!canGenerate || !userType) return;
+    if (!canGenerate || !userType || generatingRef.current) return;
+    generatingRef.current = true;
     const request = {
       document_type: documentType,
       jd_text: jdRequired ? jdText : undefined,
