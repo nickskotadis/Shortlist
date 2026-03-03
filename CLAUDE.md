@@ -176,7 +176,8 @@ Be decisive. If there are options, pick one and justify it.
 - `chrome-extension/` — Manifest V3 extension; content.js, background.js, popup.html, icons/
 - `chrome-extension/generate-icons.js` — run with `node chrome-extension/generate-icons.js` to regenerate PNG icons; zero dependencies (zlib only)
 - `app/privacy/page.tsx` — static privacy policy page at `/privacy`; required by Chrome Web Store
-- `proxy.ts` — Next.js 16 session middleware (note: not `middleware.ts`)
+- `proxy.ts` — session refresh logic (exports `proxy` function + `config` matcher)
+- `middleware.ts` — Next.js middleware entry point; re-exports `proxy as middleware` and `config` from `proxy.ts`
 
 ## Design system
 
@@ -441,7 +442,7 @@ These have been explicitly decided against. Don't suggest or implement them:
 - Default exports for anything other than page/layout/route components
 
 ## Known gotchas
-- Next.js 16: middleware file is `proxy.ts` exporting `async function proxy()`, not `middleware.ts`
+- Next.js middleware: `proxy.ts` contains the session refresh logic (exports `proxy`); `middleware.ts` at the root re-exports it as `middleware` so Next.js picks it up. Both files are needed — don't delete either. (Historical note: the project previously had only `proxy.ts` with no `middleware.ts`, which meant middleware never ran and OAuth sessions expired after ~1 hour without refresh.)
 - Supabase `SECURITY DEFINER` triggers must include `SET search_path = public` and use fully qualified table names (`public.profiles`) or they fail with "Database error saving new user"
 - Never log `candidate_input` or `jd_text` — PII
 - Prompt versions must be bumped on every prompt change and stored on the generations row
