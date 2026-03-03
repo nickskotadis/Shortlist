@@ -78,7 +78,7 @@ Be decisive. If there are options, pick one and justify it.
 - Stripe webhook registered at `https://shortlist-amber.vercel.app/api/stripe/webhook` for `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
 
 ### Week 5 — DONE
-- **PostHog event instrumentation** — `posthog-js/react` on client; `usePostHog()` hook in `GenerateForm`, `OutputPanel`, `app/score/page.tsx`, `app/pricing/page.tsx`; events: `generation_started`, `generation_completed`, `document_type_selected`, `tone_selected`, `export_clicked`, `upgrade_clicked`, `score_page_viewed`; metadata only, never content fields
+- **PostHog event instrumentation** — `posthog-js/react` on client; `usePostHog()` hook in `GenerateForm`, `OutputPanel`, `app/score/ScoreClient.tsx`, `app/pricing/page.tsx`; events: `generation_started`, `generation_completed`, `document_type_selected`, `tone_selected`, `export_clicked`, `upgrade_clicked`, `score_page_viewed`; metadata only, never content fields
 - **Sentry** — `@sentry/nextjs` v10.42; `sentry.client.config.ts` (renamed to `instrumentation-client.ts`) + `sentry.server.config.ts` + `sentry.edge.config.ts`; loaded via `instrumentation.ts` (Next.js 15+ pattern); `app/global-error.tsx` error boundary; org `sko-ft`, project `javascript-nextjs`; DSN hardcoded (not secret); `tunnelRoute: "/monitoring"`, `widenClientFileUpload: true`; source maps upload on every build via `SENTRY_AUTH_TOKEN`; `sendDefaultPii: true`, `tracesSampleRate: 1` (consider reducing in production)
 - **Admin quality dashboard** — `app/admin/quality/page.tsx`; protected by `ADMIN_EMAILS` env var (comma-separated); aggregates `generations` by `prompt_version` + `ab_variant`; shows count, avg score, pass rate, 👍 rate
 - **A/B test flag** — `PROMPT_AB_VARIANT: "A" | "B"` in `lib/constants.ts`; read from `process.env.PROMPT_AB_VARIANT`; stored as `ab_variant` on every `generations` row; `migration_005.sql`
@@ -112,6 +112,13 @@ Be decisive. If there are options, pick one and justify it.
 - **Dashboard empty state** — improved with icon, descriptive copy, and "Score my resume" secondary CTA
 - **`migration_004.sql`** — `profiles.resume_text`, `generations.label`, `generations.tone`; applied to production
 
+### Auth UX — DONE
+- **UserMenu** — `components/UserMenu.tsx`; client component; indigo initials avatar (2-char derived from email local part); click opens dropdown with "Signed in as [email]" + "Sign out" link; outside-click dismiss via `useEffect`
+- **Nav** — `components/Nav.tsx`; async server component; fetches user + plan from Supabase; props: `activePage`, `maxWidth` (default `max-w-7xl`), `actions: React.ReactNode`; shows nav links (Dashboard/Applications/Generate/Score) only when authed; right side: `actions` + plan badge + `<UserMenu>` when authed, "Sign in" link when not; replaces inline navs in dashboard, applications, score, and landing pages
+- **Logout route** — `app/auth/logout/route.ts`; GET handler; calls `supabase.auth.signOut()` then redirects to `/`
+- **Social sign-in** — Google, LinkedIn (OIDC), GitHub OAuth buttons added to `app/auth/login/page.tsx`; each calls `supabase.auth.signInWithOAuth({ provider, options: { redirectTo: window.location.origin + '/auth/callback' } })`; existing `/auth/callback/route.ts` handles code exchange unchanged; providers must be enabled in Supabase Dashboard → Authentication → Providers
+- **Score page restructured** — `app/score/page.tsx` is now an async server wrapper rendering `<Nav activePage="score" maxWidth="max-w-6xl" />`; interactive content extracted to `app/score/ScoreClient.tsx` (`"use client"`)
+
 ## Key files
 - `lib/constants.ts` — model names, prompt versions, banned phrases, thresholds, `FREE_MONTHLY_LIMIT`, `TONES`, `PROMPT_AB_VARIANT`
 - `lib/prompts.ts` — all prompt builders; bump `PROMPT_VERSIONS` on every change; includes `buildToneInstruction()`, `buildLinkedInAboutPrompt()`, `buildLinkedInHeadlinePrompt()`, `buildHealthScorePrompt()`, `buildTailoringRecommendationsPrompt()`
@@ -129,13 +136,17 @@ Be decisive. If there are options, pick one and justify it.
 - `app/api/stripe/checkout/route.ts` — creates Stripe Checkout Session
 - `app/api/stripe/portal/route.ts` — creates Stripe Customer Portal session
 - `app/api/stripe/webhook/route.ts` — handles Stripe webhook events, service-role Supabase writes
-- `app/generate/page.tsx` — async server wrapper; fetches plan + monthly usage + `profiles.resume_text`
-- `app/generate/GenerateForm.tsx` — `"use client"` form; batch mode toggle + `BatchOutputPanel`; `generatingRef` prevents double-fire on rapid clicks; PostHog events
-- `app/applications/page.tsx` — server component; fetches applications + generation counts
+- `app/generate/page.tsx` — async server wrapper; fetches plan + monthly usage + `profiles.resume_text` + `user.email`; passes all as props to `GenerateForm`
+- `app/generate/GenerateForm.tsx` — `"use client"` form; accepts `userEmail?: string | null`; renders `<UserMenu>` in nav when authed; batch mode toggle + `BatchOutputPanel`; `generatingRef` prevents double-fire on rapid clicks; PostHog events
+- `app/applications/page.tsx` — server component; fetches applications + generation counts; uses `<Nav activePage="applications" />`
 - `app/applications/ApplicationsClient.tsx` — client; status updates, follow-up email panel, add form
 - `app/admin/quality/page.tsx` — protected by `ADMIN_EMAILS`; aggregates generations by prompt_version + ab_variant
-- `app/score/page.tsx` — `"use client"` resume health score page; `score_page_viewed` PostHog event
+- `app/score/page.tsx` — async server wrapper; renders `<Nav activePage="score" maxWidth="max-w-6xl" />` + `<ScoreClient />`
+- `app/score/ScoreClient.tsx` — `"use client"` resume health score interactive content; `score_page_viewed` PostHog event
+- `app/auth/logout/route.ts` — GET; signs out via Supabase, redirects to `/`
 - `app/pricing/page.tsx` — pricing page; `upgrade_clicked` PostHog event
+- `components/Nav.tsx` — async server component; shared nav with user auth + plan fetch; accepts `activePage`, `maxWidth`, `actions` props
+- `components/UserMenu.tsx` — `"use client"`; indigo initials avatar + dropdown (email display + sign out)
 - `hooks/useGenerate.ts` — SSE consumer; `tailoringSuggestions: string[]` state
 - `hooks/useBatchGenerate.ts` — sequential batch SSE consumer; `BatchState` per doc type
 - `components/OutputPanel.tsx` — `QualityRing` SVG, `TailoringPanel` collapsible, keyword gap, label input
@@ -405,4 +416,7 @@ These have been explicitly decided against. Don't suggest or implement them:
 - `NEXT_PUBLIC_*` env vars are baked in at build time — adding them in Vercel requires a redeploy to take effect; runtime-only vars (like `ADMIN_EMAILS`) do not require a redeploy
 - LinkedIn About and Headline are JD-optional: `noJd: true` in `DOC_TYPES`, `JD_OPTIONAL_TYPES` set in generate route, JD section hidden in `GenerateForm` when these types are selected
 - Supabase magic link redirects to localhost in production if the dashboard isn't configured: set **Site URL** to `https://shortlist-amber.vercel.app` and add `https://shortlist-amber.vercel.app/**` to **Redirect URLs** in Supabase Dashboard → Authentication → URL Configuration. The `emailRedirectTo` in `signInWithOtp` uses `window.location.origin` (correct), but Supabase ignores it unless the URL is in the allowlist.
+- `Nav` is an async server component — cannot be imported directly into client components (`"use client"`). For client pages (e.g. `GenerateForm`), pass `userEmail` as a prop from the server wrapper and render `<UserMenu>` inline instead
+- LinkedIn OAuth uses provider name `'linkedin_oidc'` (not deprecated `'linkedin'`) — the OIDC integration supports email + profile scopes and doesn't require a verified company page
+- Social OAuth providers (Google, LinkedIn, GitHub) must be enabled in Supabase Dashboard → Authentication → Providers with client ID + secret before the buttons do anything
 - **Security hardening (applied)**: open redirect in `auth/callback` prevented by validating `next` param starts with `/` and not `//`; Stripe checkout redirect URLs derived server-side from `x-forwarded-host` (never trust client); `follow-up` route requires auth + `MAX_FIELD_LEN=200` limits; `generate` route verifies `job_application_id` ownership before linking; `parse-resume` validates magic bytes (`%PDF` / `PK\x03\x04`) before passing to parsers; `applications` route uses `sanitizeUrl()` (rejects `javascript:` URIs), validates status enum, enforces field length limits, returns generic error messages; global security headers set in `next.config.ts` (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`)
