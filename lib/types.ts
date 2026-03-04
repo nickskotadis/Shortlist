@@ -94,6 +94,13 @@ export interface InterviewPrepResult {
   questions: InterviewQuestion[];
 }
 
+export interface AnswerCoachResult {
+  score: number;
+  feedback: string;
+  what_worked: string[];
+  what_to_improve: string[];
+}
+
 export interface GenerateRequest {
   document_type: DocumentType;
   jd_text?: string;

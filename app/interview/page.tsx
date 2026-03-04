@@ -9,20 +9,22 @@ export default async function InterviewPage() {
   } = await supabase.auth.getUser();
 
   let savedResume: string | null = null;
+  let plan: "free" | "pro" = "free";
 
   if (user) {
     const { data } = await supabase
       .from("profiles")
-      .select("resume_text")
+      .select("plan, resume_text")
       .eq("id", user.id)
       .single();
     savedResume = data?.resume_text ?? null;
+    plan = (data?.plan as "free" | "pro") ?? "free";
   }
 
   return (
     <div className="min-h-screen bg-[#090C18]">
       <Nav activePage="interview" />
-      <InterviewClient savedResume={savedResume} />
+      <InterviewClient savedResume={savedResume} plan={plan} />
     </div>
   );
 }

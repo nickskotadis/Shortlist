@@ -621,6 +621,66 @@ CANDIDATE RESUME:
 ${resumeText.trim()}`;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// ANSWER COACH — score a practice answer against STAR + resume context
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function buildAnswerCoachPrompt(
+  question: string,
+  userAnswer: string,
+  framework: string,
+  resumeText?: string,
+  jdText?: string
+): string {
+  const resumeSection = resumeText?.trim()
+    ? `\nCANDIDATE RESUME (use this to ground your feedback in their actual background):\n${resumeText.trim()}`
+    : "";
+  const jdSection = jdText?.trim()
+    ? `\nJOB DESCRIPTION CONTEXT (tailor feedback to what this role needs):\n${jdText.trim().slice(0, 2000)}`
+    : "";
+
+  return `You are an expert interview coach. A candidate is practicing their answer to an interview question. Evaluate their answer rigorously and honestly.
+
+INTERVIEW QUESTION:
+${question}
+
+EXPECTED ANSWER FRAMEWORK (STAR guidance):
+${framework}
+
+CANDIDATE'S ANSWER:
+${userAnswer}
+${resumeSection}${jdSection}
+
+EVALUATION CRITERIA:
+- STAR structure: Does the answer cover Situation, Task, Action, and Result clearly?
+- Specificity: Are concrete details, metrics, or examples provided (not vague claims)?
+- Relevance: Does the answer directly address what the question is asking?
+- Delivery: Is it concise, confident, and free of filler? Does it land on the result?
+- Resume alignment: Is the answer consistent with and grounded in the candidate's actual experience?
+
+SCORING (1–10):
+- 8–10: Interview-ready — compelling, specific, well-structured
+- 6–7: Solid foundation but needs sharper details or stronger result
+- 4–5: Recognizable structure but too vague or missing key elements
+- 1–3: Needs significant rework — missing STAR components or off-topic
+
+Return ONLY valid JSON. No text outside the JSON, no markdown code fences:
+
+{
+  "score": 7,
+  "feedback": "2–3 sentences of direct, specific feedback on what works and what to improve. Reference their actual answer, not generic advice.",
+  "what_worked": ["specific strength 1", "specific strength 2", "specific strength 3"],
+  "what_to_improve": ["specific improvement 1", "specific improvement 2", "specific improvement 3"]
+}
+
+Rules:
+- score: integer 1–10
+- feedback: 2–3 sentences, direct and specific — reference the candidate's actual words and their resume background
+- what_worked: 3–4 items, each a concrete observation about what they did well
+- what_to_improve: 3–4 items, each a specific, actionable instruction (not generic advice like "be more specific")
+- No text outside the JSON`;
+}
+
 export function buildTailoringRecommendationsPrompt(
   resumeText: string,
   jdAnalysis: Partial<JdAnalysis>,

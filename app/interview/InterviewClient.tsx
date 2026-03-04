@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
-import type { InterviewPrepResult, InterviewQuestion } from "@/lib/types";
+import type { InterviewPrepResult, InterviewQuestion, AnswerCoachResult } from "@/lib/types";
 
 // ── Category config ───────────────────────────────────────────────────────────
 
@@ -28,10 +29,56 @@ const CATEGORY_STYLES: Record<
   },
 };
 
+// ── Score ring (reuse pattern from ScoreClient) ───────────────────────────────
+
+function ScoreRing({ score }: { score: number }) {
+  const radius = 28;
+  const circumference = 2 * Math.PI * radius;
+  const pct = Math.max(0, Math.min(score, 10)) / 10;
+  const offset = circumference * (1 - pct);
+  const color = score >= 8 ? "#34d399" : score >= 6 ? "#818cf8" : "#fbbf24";
+
+  return (
+    <div className="relative inline-flex items-center justify-center w-16 h-16 shrink-0">
+      <svg className="w-16 h-16 -rotate-90" viewBox="0 0 72 72">
+        <circle cx="36" cy="36" r={radius} fill="none" stroke="#1A1D38" strokeWidth="6" />
+        <circle
+          cx="36"
+          cy="36"
+          r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth="6"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+        />
+      </svg>
+      <span className="absolute text-base font-bold" style={{ color }}>{score}</span>
+    </div>
+  );
+}
+
 // ── Question card ─────────────────────────────────────────────────────────────
 
-function QuestionCard({ q }: { q: InterviewQuestion }) {
+function QuestionCard({
+  q,
+  plan,
+  resumeText,
+  jdText,
+}: {
+  q: InterviewQuestion;
+  plan: "free" | "pro";
+  resumeText: string;
+  jdText: string;
+}) {
+  const posthog = usePostHog();
   const [copied, setCopied] = useState(false);
+  const [practiceOpen, setPracticeOpen] = useState(false);
+  const [answerText, setAnswerText] = useState("");
+  const [evaluating, setEvaluating] = useState(false);
+  const [evalResult, setEvalResult] = useState<AnswerCoachResult | null>(null);
+  const [evalError, setEvalError] = useState<string | null>(null);
   const style = CATEGORY_STYLES[q.category] ?? CATEGORY_STYLES.behavioral;
 
   const handleCopy = async () => {
@@ -42,6 +89,38 @@ function QuestionCard({ q }: { q: InterviewQuestion }) {
       setTimeout(() => setCopied(false), 1800);
     } catch {
       // clipboard unavailable
+    }
+  };
+
+  const handleEvaluate = async () => {
+    if (!answerText.trim() || evaluating) return;
+    setEvaluating(true);
+    setEvalError(null);
+    setEvalResult(null);
+
+    try {
+      const res = await fetch("/api/interview/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: q.question,
+          user_answer: answerText,
+          framework: q.framework,
+          ...(resumeText.trim() ? { resume_text: resumeText } : {}),
+          ...(jdText.trim() ? { jd_text: jdText } : {}),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setEvalError(data.error ?? "Evaluation failed — please try again.");
+        return;
+      }
+      setEvalResult(data as AnswerCoachResult);
+      posthog?.capture("interview_answer_evaluated", { score: (data as AnswerCoachResult).score });
+    } catch {
+      setEvalError("Something went wrong — please try again.");
+    } finally {
+      setEvaluating(false);
     }
   };
 
@@ -91,6 +170,126 @@ function QuestionCard({ q }: { q: InterviewQuestion }) {
           </p>
           <p className="text-sm text-[#C8C8F0] leading-relaxed">{q.framework}</p>
         </div>
+
+        {/* Answer coach section */}
+        <div className="border-t border-[#1A1D38] pt-3">
+          {plan === "pro" ? (
+            <>
+              <button
+                onClick={() => {
+                  setPracticeOpen((o) => !o);
+                  if (practiceOpen) {
+                    setEvalResult(null);
+                    setEvalError(null);
+                  }
+                }}
+                className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+              >
+                {practiceOpen ? "Hide practice" : "Practice your answer"}
+                <span className="ml-1">{practiceOpen ? "↑" : "↓"}</span>
+              </button>
+
+              {practiceOpen && (
+                <div className="mt-3 space-y-3">
+                  <textarea
+                    value={answerText}
+                    onChange={(e) => {
+                      setAnswerText(e.target.value);
+                      if (evalResult) setEvalResult(null);
+                      if (evalError) setEvalError(null);
+                    }}
+                    rows={4}
+                    placeholder="Type your answer here..."
+                    className="w-full border border-[#232548] rounded-lg px-4 py-3 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition resize-none"
+                  />
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-[#5A5A80]">{answerText.trim().length} / 3000 chars</span>
+                    <button
+                      onClick={handleEvaluate}
+                      disabled={!answerText.trim() || evaluating || answerText.trim().length < 10}
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+                        answerText.trim().length >= 10 && !evaluating
+                          ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
+                          : "bg-[#141830] text-[#4A4A68] cursor-not-allowed"
+                      }`}
+                    >
+                      {evaluating ? (
+                        <>
+                          <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Evaluating...
+                        </>
+                      ) : (
+                        "Get AI feedback →"
+                      )}
+                    </button>
+                  </div>
+
+                  {evalError && (
+                    <p className="text-xs text-red-400">{evalError}</p>
+                  )}
+
+                  {evalResult && (
+                    <div className="bg-[#0B0E1E] rounded-xl border border-[#232548] p-4 space-y-4">
+                      <div className="flex items-start gap-4">
+                        <ScoreRing score={evalResult.score} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-[#5A5A80] uppercase tracking-wide mb-1">
+                            Feedback
+                          </p>
+                          <p className="text-sm text-[#C8C8F0] leading-relaxed">{evalResult.feedback}</p>
+                        </div>
+                      </div>
+
+                      {evalResult.what_worked.length > 0 && (
+                        <div>
+                          <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wide mb-2">
+                            What worked
+                          </p>
+                          <ul className="space-y-1">
+                            {evalResult.what_worked.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2 text-sm text-[#C8C8F0]">
+                                <span className="text-emerald-400 shrink-0 mt-0.5">•</span>
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {evalResult.what_to_improve.length > 0 && (
+                        <div>
+                          <p className="text-xs font-semibold text-amber-400 uppercase tracking-wide mb-2">
+                            What to improve
+                          </p>
+                          <ul className="space-y-1">
+                            {evalResult.what_to_improve.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2 text-sm text-[#C8C8F0]">
+                                <span className="text-amber-400 shrink-0 mt-0.5">•</span>
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex items-center gap-2">
+              <svg className="w-3 h-3 text-[#5A5A80] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <span className="text-xs text-[#5A5A80]">
+                Pro ·{" "}
+                <Link href="/pricing" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+                  Practice your answer
+                </Link>
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -98,7 +297,13 @@ function QuestionCard({ q }: { q: InterviewQuestion }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function InterviewClient({ savedResume }: { savedResume: string | null }) {
+export default function InterviewClient({
+  savedResume,
+  plan,
+}: {
+  savedResume: string | null;
+  plan: "free" | "pro";
+}) {
   const posthog = usePostHog();
   const [jdText, setJdText] = useState("");
   const [resumeText, setResumeText] = useState(savedResume ?? "");
@@ -286,7 +491,7 @@ export default function InterviewClient({ savedResume }: { savedResume: string |
             {result.questions.length} questions generated
           </p>
           {result.questions.map((q, i) => (
-            <QuestionCard key={i} q={q} />
+            <QuestionCard key={i} q={q} plan={plan} resumeText={resumeText} jdText={jdText} />
           ))}
         </div>
       )}

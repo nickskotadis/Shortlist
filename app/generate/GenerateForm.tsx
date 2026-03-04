@@ -788,22 +788,32 @@ export default function GenerateForm({
             </div>
 
             {/* Batch mode toggle */}
-            <div className="mb-4 flex items-start justify-between gap-3 bg-indigo-950/20 border border-indigo-900/30 rounded-xl px-4 py-3">
-              <div>
-                <p className="text-sm font-medium text-indigo-300">Full application package</p>
-                <p className="text-xs text-indigo-400/70 mt-0.5">Generate resume bullets, cover letter, and LinkedIn About at once. Counts as 3 generations.</p>
+            {initialUsage?.plan === "pro" ? (
+              <div className="mb-4 flex items-start justify-between gap-3 bg-indigo-950/20 border border-indigo-900/30 rounded-xl px-4 py-3">
+                <div>
+                  <p className="text-sm font-medium text-indigo-300">Full application package</p>
+                  <p className="text-xs text-indigo-400/70 mt-0.5">Generate resume bullets, cover letter, and LinkedIn About at once. Counts as 3 generations.</p>
+                </div>
+                <button
+                  onClick={() => setBatchMode((b) => !b)}
+                  className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+                    batchMode ? "bg-indigo-600" : "bg-[#2E3165]"
+                  }`}
+                  role="switch"
+                  aria-checked={batchMode}
+                >
+                  <span className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow ring-0 transition-transform ${batchMode ? "translate-x-4" : "translate-x-0"}`} />
+                </button>
               </div>
-              <button
-                onClick={() => setBatchMode((b) => !b)}
-                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                  batchMode ? "bg-indigo-600" : "bg-[#2E3165]"
-                }`}
-                role="switch"
-                aria-checked={batchMode}
-              >
-                <span className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow ring-0 transition-transform ${batchMode ? "translate-x-4" : "translate-x-0"}`} />
-              </button>
-            </div>
+            ) : (
+              <Link href="/pricing" className="mb-4 flex items-start justify-between gap-3 bg-indigo-950/20 border border-indigo-900/30 rounded-xl px-4 py-3 hover:border-indigo-900/60 transition-colors">
+                <div>
+                  <p className="text-sm font-medium text-indigo-300">Full application package</p>
+                  <p className="text-xs text-indigo-400/50 mt-0.5">Generate resume bullets, cover letter, and LinkedIn About at once. Counts as 3 generations.</p>
+                </div>
+                <span className="shrink-0 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-2 py-0.5 rounded-full self-center">Pro</span>
+              </Link>
+            )}
 
             {/* Tone selector */}
             <div className="mb-6">
