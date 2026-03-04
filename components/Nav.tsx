@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import UserMenu from "./UserMenu";
+import NavMobileMenu from "./NavMobileMenu";
 
 interface NavProps {
   activePage?: "dashboard" | "applications" | "generate" | "score";
@@ -85,6 +86,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
                 </span>
               )}
               <UserMenu email={user.email!} />
+              <NavMobileMenu activePage={activePage} />
             </>
           ) : (
             <Link
