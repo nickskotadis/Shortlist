@@ -4,12 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 function getInitials(email: string): string {
-  const local = email.split("@")[0];
-  const parts = local.split(/[._-]/);
-  if (parts.length >= 2 && parts[0].length > 0 && parts[1].length > 0) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-  return local.substring(0, 2).toUpperCase();
+  return email[0].toUpperCase();
 }
 
 export default function UserMenu({ email }: { email: string }) {
