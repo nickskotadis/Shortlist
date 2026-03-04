@@ -92,8 +92,8 @@ Authenticated users see their last 50 generations with expandable cards showing 
 | Plan | Price | Generations |
 |------|-------|-------------|
 | Free | $0 | 2/month |
-| Pro (monthly) | $4.99/mo | Unlimited + batch mode + answer coach |
-| Pro (annual) | $49.99/yr | Same, ~17% saving |
+| Pro (monthly) | $7/mo | Unlimited + batch mode + answer coach |
+| Pro (annual) | $63/yr | Same, 25% off (3 months free) |
 
 Stripe Checkout for upgrades, Stripe Customer Portal for billing management. Webhook handles `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
 

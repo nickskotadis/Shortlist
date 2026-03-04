@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 
-const MONTHLY_PRICE_CENTS = 499; // $4.99/mo
-const ANNUAL_PRICE_CENTS = 4999; // $49.99/yr (= ~$4.17/mo, 2 months free)
+const MONTHLY_PRICE_CENTS = 700;  // $7.00/mo
+const ANNUAL_PRICE_CENTS = 6300;  // $63.00/yr ($5.25/mo, 3 months free)
 
 function CheckIcon() {
   return (
@@ -206,7 +206,7 @@ export default function PricingPage() {
               </div>
               {billing === "annual" && (
                 <p className="text-sm text-indigo-200 mt-2">
-                  {fmt(ANNUAL_PRICE_CENTS)}/year — 2 months free
+                  {fmt(ANNUAL_PRICE_CENTS)}/year — 3 months free
                 </p>
               )}
             </div>
