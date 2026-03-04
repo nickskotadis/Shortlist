@@ -18,6 +18,9 @@ export const PROMPT_VERSIONS = {
   tailoring: "tailoring-v1",
   interview_prep: "interview-prep-v1",
   answer_coach: "answer-coach-v1",
+  mock_interview: "mock-interview-v1",
+  negotiation: "negotiation-v1",
+  fit_score: "fit-score-v1",
 } as const;
 
 export const BANNED_PHRASES = [
@@ -52,6 +55,7 @@ export const BANNED_PHRASES = [
 ] as const;
 
 export const FREE_MONTHLY_LIMIT = 2;
+export const FREE_FIT_LIMIT = 1;
 
 export const MAX_RETRIES = 1;
 export const PASS_THRESHOLD = 7.0;

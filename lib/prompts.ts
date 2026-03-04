@@ -1,4 +1,4 @@
-import { DocumentType, JdAnalysis, ToneType, UserData, UserType, ValidatorVerdict } from "./types";
+import { DocumentType, JdAnalysis, MockInterviewMessage, ToneType, UserData, UserType, ValidatorVerdict } from "./types";
 import { BANNED_PHRASES } from "./constants";
 
 const banned = BANNED_PHRASES.join(", ");
@@ -679,6 +679,228 @@ Rules:
 - what_worked: 3–4 items, each a concrete observation about what they did well
 - what_to_improve: 3–4 items, each a specific, actionable instruction (not generic advice like "be more specific")
 - No text outside the JSON`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MOCK INTERVIEW SIMULATOR
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function buildMockInterviewSystemPrompt(
+  resumeText: string,
+  jdText: string,
+  categoryFocus: "all" | "behavioral" | "technical" | "situational" = "all"
+): string {
+  const focusInstruction =
+    categoryFocus === "all"
+      ? "Cover a natural mix of behavioral, technical, situational, and culture questions across the session — don't announce category labels."
+      : `Focus primarily on ${categoryFocus} questions for this session.`;
+
+  const jdSection = jdText.trim()
+    ? `\nJOB DESCRIPTION:\n${jdText.trim().slice(0, 3000)}`
+    : "\nNo job description provided — infer the target role from the resume and calibrate questions accordingly.";
+
+  return `You are conducting a realistic job interview. Stay fully in character as a professional interviewer — not a coach, not an evaluator.
+
+SESSION RULES:
+- Ask ONE question at a time. Never ask multiple questions in the same message.
+- After each candidate answer, ask a natural follow-up or probing question that shows you actually processed what they said.
+- Vary between opening a new topic and drilling deeper into a prior answer.
+- Use natural, professional interview phrasing. No formulaic openers like "Great answer!" or "Excellent point!" — brief acknowledgments like "Got it" or "Thanks for the context" are fine when natural.
+- ${focusInstruction}
+- Keep your messages concise: one question plus brief framing context if needed. No preamble, no summaries.
+- After 5–6 exchanges, ask questions that synthesize themes from earlier in the session.
+
+CANDIDATE BACKGROUND:
+${resumeText.trim().slice(0, 2000)}${jdSection}`;
+}
+
+export function buildMockInterviewDebriefPrompt(
+  conversation: MockInterviewMessage[],
+  resumeText: string,
+  jdText: string
+): string {
+  const transcript = conversation
+    .map((m) => `${m.role === "interviewer" ? "INTERVIEWER" : "CANDIDATE"}: ${m.content}`)
+    .join("\n\n");
+
+  const jdSection = jdText.trim()
+    ? `\nJOB DESCRIPTION CONTEXT:\n${jdText.trim().slice(0, 2000)}`
+    : "";
+
+  return `You are an expert interview coach. Analyze this complete mock interview session and give a detailed, honest debrief.
+
+INTERVIEW TRANSCRIPT:
+${transcript}
+
+CANDIDATE RESUME:
+${resumeText.trim().slice(0, 2000)}
+${jdSection}
+
+Evaluate the candidate's performance across the full session. Be specific, direct, and actionable — not generic. Reference what they actually said.
+
+Return ONLY valid JSON. No text outside the JSON, no markdown code fences:
+
+{
+  "overall_score": 7,
+  "summary": "2–3 sentence honest assessment of the candidate's overall performance in this session",
+  "strengths": ["specific strength referencing their actual answers", "specific strength 2", "specific strength 3"],
+  "areas_to_improve": ["specific actionable instruction 1", "specific actionable instruction 2", "specific actionable instruction 3"],
+  "dimension_scores": {
+    "structure": 7,
+    "specificity": 6,
+    "confidence": 8,
+    "relevance": 7
+  },
+  "next_steps": ["concrete thing to practice before a real interview 1", "concrete thing to practice 2"]
+}
+
+SCORING GUIDE:
+- overall_score: 1–10 (8+ interview-ready, 6–7 needs polish, below 6 significant gaps)
+- dimension_scores.structure: 1–10 — STAR structure quality across all answers
+- dimension_scores.specificity: 1–10 — use of concrete examples, metrics, and named details
+- dimension_scores.confidence: 1–10 — directness, conviction, no hedging or excessive qualifiers
+- dimension_scores.relevance: 1–10 — how directly answers addressed what was actually asked
+
+Rules:
+- strengths: 3–4 items, each citing something specific from the transcript
+- areas_to_improve: 3–4 items, each a concrete instruction — not "be more specific", but "add the actual number/timeframe/scale to your answer about X"
+- next_steps: 2–3 actionable practices (mock a specific type of question, prep a metrics story, etc.)
+- No generic interview advice — every observation must be grounded in this session's transcript`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SALARY NEGOTIATION COACH
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function buildNegotiationPrompt(
+  offerDetails: {
+    company: string;
+    role: string;
+    current_offer: number;
+    target_offer: number;
+    currency?: string;
+    bonus?: string;
+    equity?: string;
+    competing_offer?: string;
+    notes?: string;
+  },
+  resumeText?: string
+): string {
+  const currency = offerDetails.currency ?? "USD";
+  const resumeSection = resumeText?.trim()
+    ? `\nCANDIDATE BACKGROUND:\n${resumeText.trim().slice(0, 2000)}`
+    : "";
+  const bonusLine = offerDetails.bonus?.trim() ? `Bonus: ${offerDetails.bonus}` : "";
+  const equityLine = offerDetails.equity?.trim() ? `Equity: ${offerDetails.equity}` : "";
+  const competingLine = offerDetails.competing_offer?.trim()
+    ? `Competing offer / market data: ${offerDetails.competing_offer}`
+    : "";
+  const notesLine = offerDetails.notes?.trim() ? `Additional context: ${offerDetails.notes}` : "";
+  const extras = [bonusLine, equityLine, competingLine, notesLine].filter(Boolean).join("\n");
+
+  return `You are an expert salary negotiation coach. Create a complete, actionable negotiation package for this specific situation.
+
+OFFER DETAILS:
+Company: ${offerDetails.company}
+Role: ${offerDetails.role}
+Current offer (base): ${offerDetails.current_offer.toLocaleString()} ${currency}
+Target (base): ${offerDetails.target_offer.toLocaleString()} ${currency}
+${extras}${resumeSection}
+
+Create a complete negotiation package. Be specific, direct, and confident — no hedging, no apologies. Every element must feel like it was written for this person and this company, not adapted from a template.
+
+Return ONLY valid JSON. No text outside the JSON, no markdown code fences:
+
+{
+  "strategy": "2–3 paragraphs of specific strategic advice for this negotiation. Cover: how to frame the ask, what leverage this candidate has, the right tone for ${offerDetails.company}, and what to watch out for. Reference the actual numbers.",
+  "counter_email": "Complete email ready to send — subject line on line 1, blank line, then body. First-person voice. Professional and direct. References specific numbers. 200–280 words. NO brackets or placeholder text — write the actual content.",
+  "phone_script": "Natural, conversational script for the negotiation call. Open → the ask → key talking points → how to close. 250–350 words. Written as spoken words — natural rhythm, no [stage directions] or [brackets].",
+  "pushback_responses": [
+    {
+      "objection": "This is the best we can do / we don't have budget",
+      "response": "Specific, confident 2–3 sentence response that doesn't back down"
+    },
+    {
+      "objection": "We've already gone to the top of our range",
+      "response": "Specific, confident 2–3 sentence response"
+    },
+    {
+      "objection": "Can we revisit this at your 6-month review?",
+      "response": "Specific, confident 2–3 sentence response"
+    },
+    {
+      "objection": "Other candidates are accepting this offer",
+      "response": "Specific, confident 2–3 sentence response"
+    }
+  ]
+}
+
+Rules:
+- counter_email: never use [Company Name] or [Your Name] — use the actual values from the offer details
+- phone_script: conversational tone, not formal corporate language
+- pushback_responses: each response is 2–3 sentences, specific to this offer, doesn't capitulate
+- Reference the delta (${(offerDetails.target_offer - offerDetails.current_offer).toLocaleString()} ${currency}) and the actual target number in the email and script`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// JOB FIT SCORER
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function buildFitScorePrompt(resumeText: string, jdText: string): string {
+  return `You are a senior hiring manager. Assess how well this candidate fits this job description. Be honest and calibrated — not optimistic by default.
+
+Score each dimension 0–100. Calibration guide: 50 = just barely qualifies, 70 = genuinely qualified, 85 = strong match, 95+ = exceptional fit. Most candidates score 50–75.
+
+Return ONLY valid JSON. No text outside the JSON, no markdown code fences:
+
+{
+  "overall": 72,
+  "recommendation": "strong_fit | moderate_fit | stretch | mismatch",
+  "summary": "2–3 sentence honest assessment of fit. Reference specific evidence from both documents.",
+  "dimensions": {
+    "skills_match": {
+      "score": 75,
+      "explanation": "What specific skills align and what's missing. Reference actual tools/skills by name.",
+      "gaps": ["specific missing skill 1", "specific missing skill 2"]
+    },
+    "experience_level": {
+      "score": 80,
+      "explanation": "Does their seniority, years, and scope match the role's expectations? Be specific.",
+      "gaps": ["specific experience gap 1"]
+    },
+    "must_haves": {
+      "score": 65,
+      "explanation": "Which non-negotiable requirements do they meet? Which are missing?",
+      "gaps": ["must-have requirement they're missing 1", "must-have they're missing 2"]
+    },
+    "nice_to_haves": {
+      "score": 70,
+      "explanation": "How many preferred requirements do they bring? What's absent?",
+      "gaps": ["nice-to-have gap 1"]
+    }
+  },
+  "top_gaps": ["most important gap — be specific", "second most important gap", "third gap"],
+  "top_strengths": ["strongest differentiator — be specific", "second strength", "third strength"]
+}
+
+Recommendation thresholds:
+- strong_fit: overall >= 80 — apply with confidence
+- moderate_fit: overall 60–79 — worth applying, address gaps proactively in cover letter
+- stretch: overall 40–59 — significant gaps but not disqualifying; address head-on
+- mismatch: overall < 40 — fundamental misalignment on core requirements
+
+Rules:
+- Reference actual skills, tools, years, and requirements by name — no generic observations
+- gaps: concrete and specific — "missing Kubernetes experience" not "needs more cloud skills"
+- top_gaps: the 3 most impactful gaps in priority order, with enough detail to be actionable
+- top_strengths: the 3 most compelling things that make this candidate strong for this role
+- overall = weighted average of dimensions (must_haves weighted heaviest)
+
+JOB DESCRIPTION:
+${jdText.trim()}
+
+CANDIDATE RESUME:
+${resumeText.trim()}`;
 }
 
 export function buildTailoringRecommendationsPrompt(

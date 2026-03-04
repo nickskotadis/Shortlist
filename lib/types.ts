@@ -112,6 +112,61 @@ export interface GenerateRequest {
   tone?: ToneType;
 }
 
+// ── Mock Interview Simulator ──────────────────────────────────────────────────
+
+export interface MockInterviewMessage {
+  role: "interviewer" | "candidate";
+  content: string;
+}
+
+export interface MockInterviewDebrief {
+  overall_score: number;
+  summary: string;
+  strengths: string[];
+  areas_to_improve: string[];
+  dimension_scores: {
+    structure: number;
+    specificity: number;
+    confidence: number;
+    relevance: number;
+  };
+  next_steps: string[];
+}
+
+// ── Salary Negotiation Coach ──────────────────────────────────────────────────
+
+export interface NegotiationResult {
+  strategy: string;
+  counter_email: string;
+  phone_script: string;
+  pushback_responses: Array<{
+    objection: string;
+    response: string;
+  }>;
+}
+
+// ── Job Fit Scorer ────────────────────────────────────────────────────────────
+
+export interface FitDimension {
+  score: number;
+  explanation: string;
+  gaps: string[];
+}
+
+export interface FitScoreResult {
+  overall: number;
+  recommendation: "strong_fit" | "moderate_fit" | "stretch" | "mismatch";
+  summary: string;
+  dimensions: {
+    skills_match: FitDimension;
+    experience_level: FitDimension;
+    must_haves: FitDimension;
+    nice_to_haves: FitDimension;
+  };
+  top_gaps: string[];
+  top_strengths: string[];
+}
+
 // SSE event shapes sent to the client
 export type SseEvent =
   | { type: "jd_analysis"; data: JdAnalysis }

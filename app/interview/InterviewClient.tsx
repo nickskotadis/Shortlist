@@ -3,7 +3,13 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
-import type { InterviewPrepResult, InterviewQuestion, AnswerCoachResult } from "@/lib/types";
+import type {
+  InterviewPrepResult,
+  InterviewQuestion,
+  AnswerCoachResult,
+  MockInterviewMessage,
+  MockInterviewDebrief,
+} from "@/lib/types";
 
 // ── Category config ───────────────────────────────────────────────────────────
 
@@ -29,14 +35,14 @@ const CATEGORY_STYLES: Record<
   },
 };
 
-// ── Score ring (reuse pattern from ScoreClient) ───────────────────────────────
+// ── Score ring ────────────────────────────────────────────────────────────────
 
-function ScoreRing({ score }: { score: number }) {
+function ScoreRing({ score, maxScore = 10 }: { score: number; maxScore?: number }) {
   const radius = 28;
   const circumference = 2 * Math.PI * radius;
-  const pct = Math.max(0, Math.min(score, 10)) / 10;
+  const pct = Math.max(0, Math.min(score, maxScore)) / maxScore;
   const offset = circumference * (1 - pct);
-  const color = score >= 8 ? "#34d399" : score >= 6 ? "#818cf8" : "#fbbf24";
+  const color = score >= maxScore * 0.8 ? "#34d399" : score >= maxScore * 0.6 ? "#818cf8" : "#fbbf24";
 
   return (
     <div className="relative inline-flex items-center justify-center w-16 h-16 shrink-0">
@@ -59,7 +65,7 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-// ── Question card ─────────────────────────────────────────────────────────────
+// ── Question card (Question Bank mode) ────────────────────────────────────────
 
 function QuestionCard({
   q,
@@ -295,7 +301,474 @@ function QuestionCard({
   );
 }
 
+// ── Mock Interview conversation ────────────────────────────────────────────────
+
+type MockPhase = "setup" | "running" | "debrief";
+type CategoryFocus = "all" | "behavioral" | "technical" | "situational";
+
+const CATEGORY_FOCUS_OPTIONS: { value: CategoryFocus; label: string; description: string }[] = [
+  { value: "all", label: "Mixed", description: "Behavioral, technical, situational & culture" },
+  { value: "behavioral", label: "Behavioral", description: "STAR-format past experience" },
+  { value: "technical", label: "Technical", description: "Role-specific skills & knowledge" },
+  { value: "situational", label: "Situational", description: "Hypothetical scenarios" },
+];
+
+function MockInterview({
+  plan,
+  resumeText,
+  jdText,
+}: {
+  plan: "free" | "pro";
+  resumeText: string;
+  jdText: string;
+}) {
+  const posthog = usePostHog();
+  const [phase, setPhase] = useState<MockPhase>("setup");
+  const [categoryFocus, setCategoryFocus] = useState<CategoryFocus>("all");
+  const [conversation, setConversation] = useState<MockInterviewMessage[]>([]);
+  const [pendingAnswer, setPendingAnswer] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [debrief, setDebrief] = useState<MockInterviewDebrief | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom on new messages
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [conversation]);
+
+  const candidateTurns = conversation.filter((m) => m.role === "candidate").length;
+  const canEndSession = candidateTurns >= 3;
+
+  const callMockApi = async (
+    action: "turn" | "debrief",
+    currentConversation: MockInterviewMessage[]
+  ) => {
+    const res = await fetch("/api/interview/mock", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action,
+        conversation: currentConversation,
+        resume_text: resumeText,
+        jd_text: jdText,
+        category_focus: categoryFocus,
+      }),
+    });
+    return res;
+  };
+
+  const handleStart = async () => {
+    if (!resumeText.trim() || loading) return;
+    setLoading(true);
+    setError(null);
+    setConversation([]);
+
+    try {
+      const res = await callMockApi("turn", []);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Failed to start — please try again.");
+        return;
+      }
+      setConversation([{ role: "interviewer", content: data.message }]);
+      setPhase("running");
+      posthog?.capture("mock_interview_started", { category_focus: categoryFocus });
+    } catch {
+      setError("Something went wrong — please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendAnswer = async () => {
+    const trimmed = pendingAnswer.trim();
+    if (!trimmed || loading) return;
+    setLoading(true);
+    setError(null);
+
+    const newConversation: MockInterviewMessage[] = [
+      ...conversation,
+      { role: "candidate", content: trimmed },
+    ];
+    setConversation(newConversation);
+    setPendingAnswer("");
+
+    try {
+      const res = await callMockApi("turn", newConversation);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Failed to generate follow-up — please try again.");
+        return;
+      }
+      setConversation([...newConversation, { role: "interviewer", content: data.message }]);
+    } catch {
+      setError("Something went wrong — please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEndSession = async () => {
+    if (loading) return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await callMockApi("debrief", conversation);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Failed to generate debrief — please try again.");
+        return;
+      }
+      setDebrief(data as MockInterviewDebrief);
+      setPhase("debrief");
+      posthog?.capture("mock_interview_completed", {
+        turns: candidateTurns,
+        overall_score: (data as MockInterviewDebrief).overall_score,
+      });
+    } catch {
+      setError("Something went wrong — please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = () => {
+    setPhase("setup");
+    setConversation([]);
+    setPendingAnswer("");
+    setDebrief(null);
+    setError(null);
+    setLoading(false);
+  };
+
+  // ── Pro gate ─────────────────────────────────────────────────────────────
+  if (plan !== "pro") {
+    return (
+      <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-8 text-center space-y-4">
+        <svg className="w-8 h-8 text-[#5A5A80] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-full">
+          Pro feature
+        </div>
+        <p className="text-sm font-semibold text-[#EEEEFC]">Mock Interview Simulator</p>
+        <p className="text-sm text-[#8888A8] max-w-sm mx-auto">
+          Practice with an AI interviewer in real back-and-forth conversation. Get a full debrief with scores and specific coaching after each session.
+        </p>
+        <Link
+          href="/pricing"
+          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-sm shadow-indigo-600/20 hover:-translate-y-px transition-all"
+        >
+          Upgrade to Pro →
+        </Link>
+      </div>
+    );
+  }
+
+  // ── Setup phase ───────────────────────────────────────────────────────────
+  if (phase === "setup") {
+    return (
+      <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6 space-y-5">
+        <div>
+          <p className="text-sm font-semibold text-[#EEEEFC] mb-1">Mock Interview Simulator</p>
+          <p className="text-xs text-[#5A5A80]">
+            Real back-and-forth with an AI interviewer. 4–6 exchanges, then a full debrief with scores and coaching.
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs font-semibold text-[#5A5A80] uppercase tracking-wide mb-3">
+            Focus area
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {CATEGORY_FOCUS_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setCategoryFocus(opt.value)}
+                className={`text-left px-3 py-3 rounded-xl border text-sm transition-all ${
+                  categoryFocus === opt.value
+                    ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500"
+                    : "border-[#232548] bg-[#13182C] hover:border-[#2E3165]"
+                }`}
+              >
+                <span
+                  className={`block font-semibold mb-0.5 ${
+                    categoryFocus === opt.value ? "text-indigo-400" : "text-[#EEEEFC]"
+                  }`}
+                >
+                  {opt.label}
+                </span>
+                <span className="block text-xs text-[#5A5A80]">{opt.description}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {!resumeText.trim() && (
+          <p className="text-xs text-amber-400">
+            Add your resume above for tailored questions and more specific coaching.
+          </p>
+        )}
+
+        {error && <p className="text-xs text-red-400">{error}</p>}
+
+        <button
+          onClick={handleStart}
+          disabled={loading}
+          className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all ${
+            !loading
+              ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
+              : "bg-[#141830] text-[#4A4A68] cursor-not-allowed"
+          }`}
+        >
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Starting...
+            </span>
+          ) : (
+            "Start Mock Interview →"
+          )}
+        </button>
+      </div>
+    );
+  }
+
+  // ── Running phase ─────────────────────────────────────────────────────────
+  if (phase === "running") {
+    return (
+      <div className="bg-[#0D1122] rounded-2xl border border-[#232548] overflow-hidden">
+        {/* Header */}
+        <div className="px-5 py-3 border-b border-[#1A1D38] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-2.5 py-1 rounded-full">
+              Mock Interview
+            </span>
+            <span className="text-xs text-[#5A5A80]">{candidateTurns} answer{candidateTurns !== 1 ? "s" : ""} given</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {canEndSession && (
+              <button
+                onClick={handleEndSession}
+                disabled={loading}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-950/30 hover:bg-emerald-950/50 border border-emerald-900/40 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
+              >
+                End session + get debrief
+              </button>
+            )}
+            <button
+              onClick={handleReset}
+              className="text-xs text-[#5A5A80] hover:text-[#8888A8] transition-colors"
+            >
+              Restart
+            </button>
+          </div>
+        </div>
+
+        {/* Conversation */}
+        <div ref={scrollRef} className="p-5 space-y-4 max-h-[480px] overflow-y-auto">
+          {conversation.map((msg, i) => (
+            <div
+              key={i}
+              className={`flex gap-3 ${msg.role === "candidate" ? "justify-end" : "justify-start"}`}
+            >
+              {msg.role === "interviewer" && (
+                <div className="w-7 h-7 rounded-full bg-[#13182C] border border-[#232548] flex items-center justify-center shrink-0 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+              )}
+              <div
+                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                  msg.role === "interviewer"
+                    ? "bg-[#13182C] border border-[#232548] text-[#C8C8F0]"
+                    : "bg-indigo-600/20 border border-indigo-500/30 text-[#EEEEFC]"
+                }`}
+              >
+                {msg.content}
+              </div>
+            </div>
+          ))}
+
+          {loading && (
+            <div className="flex gap-3 justify-start">
+              <div className="w-7 h-7 rounded-full bg-[#13182C] border border-[#232548] flex items-center justify-center shrink-0 mt-0.5">
+                <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div className="bg-[#13182C] border border-[#232548] rounded-2xl px-4 py-3">
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-[#5A5A80] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-1.5 h-1.5 bg-[#5A5A80] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-1.5 h-1.5 bg-[#5A5A80] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Answer input */}
+        <div className="px-5 pb-5 border-t border-[#1A1D38] pt-4">
+          {error && <p className="text-xs text-red-400 mb-3">{error}</p>}
+          <div className="flex gap-3">
+            <textarea
+              value={pendingAnswer}
+              onChange={(e) => setPendingAnswer(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendAnswer();
+                }
+              }}
+              rows={2}
+              placeholder="Type your answer... (Enter to send, Shift+Enter for new line)"
+              disabled={loading}
+              className="flex-1 border border-[#232548] rounded-xl px-4 py-3 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition resize-none disabled:opacity-50"
+            />
+            <button
+              onClick={handleSendAnswer}
+              disabled={!pendingAnswer.trim() || loading}
+              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all self-end ${
+                pendingAnswer.trim() && !loading
+                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20"
+                  : "bg-[#141830] text-[#4A4A68] cursor-not-allowed"
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </button>
+          </div>
+          {!canEndSession && (
+            <p className="text-xs text-[#5A5A80] mt-2">
+              Answer {3 - candidateTurns} more question{3 - candidateTurns !== 1 ? "s" : ""} to unlock the debrief
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Debrief phase ─────────────────────────────────────────────────────────
+  if (phase === "debrief" && debrief) {
+    const dimLabels: Record<keyof MockInterviewDebrief["dimension_scores"], string> = {
+      structure: "STAR Structure",
+      specificity: "Specificity",
+      confidence: "Confidence",
+      relevance: "Relevance",
+    };
+
+    return (
+      <div className="bg-[#0D1122] rounded-2xl border border-[#232548] overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-[#1A1D38] flex items-center justify-between">
+          <span className="text-sm font-semibold text-[#EEEEFC]">Session Debrief</span>
+          <button
+            onClick={handleReset}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#8888A8] hover:text-[#EEEEFC] bg-[#13182C] hover:bg-indigo-950/40 border border-[#232548] hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all"
+          >
+            Practice again →
+          </button>
+        </div>
+
+        <div className="p-6 space-y-6">
+          {/* Overall score */}
+          <div className="flex items-start gap-5">
+            <ScoreRing score={debrief.overall_score} />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-[#5A5A80] uppercase tracking-wide mb-1">
+                Overall Performance
+              </p>
+              <p className="text-sm text-[#C8C8F0] leading-relaxed">{debrief.summary}</p>
+            </div>
+          </div>
+
+          {/* Dimension scores */}
+          <div>
+            <p className="text-xs font-semibold text-[#5A5A80] uppercase tracking-wide mb-3">
+              Dimension Scores
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {(Object.keys(debrief.dimension_scores) as Array<keyof MockInterviewDebrief["dimension_scores"]>).map((key) => {
+                const score = debrief.dimension_scores[key];
+                const color = score >= 8 ? "#34d399" : score >= 6 ? "#818cf8" : "#fbbf24";
+                return (
+                  <div key={key} className="bg-[#0B0E1E] rounded-xl border border-[#232548] p-3">
+                    <p className="text-xs text-[#5A5A80] mb-1">{dimLabels[key]}</p>
+                    <p className="text-xl font-bold" style={{ color }}>{score}<span className="text-xs font-normal text-[#5A5A80]">/10</span></p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Strengths + improvements */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {debrief.strengths.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wide">
+                  What worked
+                </p>
+                <ul className="space-y-2">
+                  {debrief.strengths.map((s, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-[#C8C8F0]">
+                      <span className="text-emerald-400 shrink-0 mt-0.5">•</span>
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {debrief.areas_to_improve.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-amber-400 uppercase tracking-wide">
+                  What to improve
+                </p>
+                <ul className="space-y-2">
+                  {debrief.areas_to_improve.map((a, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-[#C8C8F0]">
+                      <span className="text-amber-400 shrink-0 mt-0.5">•</span>
+                      {a}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* Next steps */}
+          {debrief.next_steps.length > 0 && (
+            <div className="bg-[#0B0E1E] rounded-xl border border-[#232548] p-4 space-y-2">
+              <p className="text-xs font-semibold text-indigo-400 uppercase tracking-wide">
+                Next steps before your real interview
+              </p>
+              <ul className="space-y-1.5">
+                {debrief.next_steps.map((step, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-[#C8C8F0]">
+                    <span className="text-indigo-400 shrink-0 mt-0.5">{i + 1}.</span>
+                    {step}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
+
+type InterviewMode = "questions" | "mock";
 
 export default function InterviewClient({
   savedResume,
@@ -305,6 +778,7 @@ export default function InterviewClient({
   plan: "free" | "pro";
 }) {
   const posthog = usePostHog();
+  const [mode, setMode] = useState<InterviewMode>("questions");
   const [jdText, setJdText] = useState("");
   const [resumeText, setResumeText] = useState(savedResume ?? "");
   const [loading, setLoading] = useState(false);
@@ -378,13 +852,36 @@ export default function InterviewClient({
     <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
       {/* Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-full mb-4">
-          Free · No generation count used
-        </div>
         <h1 className="text-3xl font-bold text-[#EEEEFC] mb-3">Interview Prep</h1>
         <p className="text-base text-[#8888A8] max-w-xl mx-auto">
-          Get 6–8 tailored interview questions with STAR-format answer frameworks, based on your resume and the job description.
+          Tailored questions with STAR frameworks, or practice in a real back-and-forth mock interview.
         </p>
+      </div>
+
+      {/* Mode toggle */}
+      <div className="flex items-center gap-1 bg-[#0D1122] border border-[#232548] rounded-xl p-1 mb-6 w-fit mx-auto">
+        <button
+          onClick={() => setMode("questions")}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            mode === "questions"
+              ? "bg-indigo-600 text-white shadow-sm"
+              : "text-[#8888A8] hover:text-[#EEEEFC]"
+          }`}
+        >
+          Question Bank
+          <span className="ml-2 text-xs font-normal opacity-70">Free</span>
+        </button>
+        <button
+          onClick={() => setMode("mock")}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            mode === "mock"
+              ? "bg-indigo-600 text-white shadow-sm"
+              : "text-[#8888A8] hover:text-[#EEEEFC]"
+          }`}
+        >
+          Mock Interview
+          <span className="ml-2 text-xs font-normal opacity-70">Pro</span>
+        </button>
       </div>
 
       {/* Input card */}
@@ -455,45 +952,55 @@ export default function InterviewClient({
         </div>
       </div>
 
-      {/* Generate button */}
-      <div className="flex justify-end mb-6">
-        <button
-          onClick={handleGenerate}
-          disabled={!resumeText.trim() || loading}
-          className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-            resumeText.trim() && !loading
-              ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
-              : "bg-[#141830] text-[#4A4A68] cursor-not-allowed"
-          }`}
-        >
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Generating questions...
+      {/* Question Bank mode */}
+      {mode === "questions" && (
+        <>
+          <div className="flex items-center justify-between mb-6">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-full">
+              Free · No generation count used
             </span>
-          ) : (
-            "Generate questions →"
-          )}
-        </button>
-      </div>
+            <button
+              onClick={handleGenerate}
+              disabled={!resumeText.trim() || loading}
+              className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                resumeText.trim() && !loading
+                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
+                  : "bg-[#141830] text-[#4A4A68] cursor-not-allowed"
+              }`}
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Generating questions...
+                </span>
+              ) : (
+                "Generate questions →"
+              )}
+            </button>
+          </div>
 
-      {/* Error */}
-      {error && (
-        <div className="bg-red-950/20 border border-red-900/40 rounded-2xl p-5 mb-6 text-center">
-          <p className="text-sm text-red-400">{error}</p>
-        </div>
+          {error && (
+            <div className="bg-red-950/20 border border-red-900/40 rounded-2xl p-5 mb-6 text-center">
+              <p className="text-sm text-red-400">{error}</p>
+            </div>
+          )}
+
+          {result && result.questions.length > 0 && (
+            <div className="space-y-4">
+              <p className="text-xs text-[#5A5A80] text-right">
+                {result.questions.length} questions generated
+              </p>
+              {result.questions.map((q, i) => (
+                <QuestionCard key={i} q={q} plan={plan} resumeText={resumeText} jdText={jdText} />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
-      {/* Results */}
-      {result && result.questions.length > 0 && (
-        <div className="space-y-4">
-          <p className="text-xs text-[#5A5A80] text-right">
-            {result.questions.length} questions generated
-          </p>
-          {result.questions.map((q, i) => (
-            <QuestionCard key={i} q={q} plan={plan} resumeText={resumeText} jdText={jdText} />
-          ))}
-        </div>
+      {/* Mock Interview mode */}
+      {mode === "mock" && (
+        <MockInterview plan={plan} resumeText={resumeText} jdText={jdText} />
       )}
     </main>
   );

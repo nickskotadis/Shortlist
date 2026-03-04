@@ -4,7 +4,7 @@ import UserMenu from "./UserMenu";
 import NavMobileMenu from "./NavMobileMenu";
 
 interface NavProps {
-  activePage?: "dashboard" | "applications" | "generate" | "score" | "interview";
+  activePage?: "dashboard" | "applications" | "generate" | "score" | "interview" | "fit" | "negotiate";
   actions?: React.ReactNode;
 }
 
@@ -12,8 +12,10 @@ const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard", page: "dashboard" },
   { href: "/applications", label: "Applications", page: "applications" },
   { href: "/generate", label: "Generate", page: "generate" },
+  { href: "/fit", label: "Fit", page: "fit" },
   { href: "/score", label: "Score", page: "score" },
   { href: "/interview", label: "Interview", page: "interview" },
+  { href: "/negotiate", label: "Negotiate", page: "negotiate" },
 ] as const;
 
 export default async function Nav({ activePage, actions }: NavProps) {
