@@ -47,6 +47,7 @@ export default function UserMenu({ email }: { email: string }) {
           <div className="p-1.5">
             <Link
               href="/auth/logout"
+              prefetch={false}
               className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] rounded-lg transition-colors"
               onClick={() => setOpen(false)}
             >
