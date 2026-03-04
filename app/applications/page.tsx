@@ -34,14 +34,14 @@ export default async function ApplicationsPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-[#090C18]">
+    <div className="min-h-screen bg-[var(--color-page)]">
       <Nav activePage="applications" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-xl font-semibold text-[#EEEEFC]">Job Applications</h1>
-            <p className="text-sm text-[#8888A8] mt-1">Track your applications and linked documents</p>
+            <h1 className="text-xl font-semibold text-[var(--color-text-primary)]">Job Applications</h1>
+            <p className="text-sm text-[var(--color-text-secondary)] mt-1">Track your applications and linked documents</p>
           </div>
         </div>
 

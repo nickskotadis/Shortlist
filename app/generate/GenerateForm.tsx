@@ -56,7 +56,7 @@ const DOC_TYPES: { value: DocumentType; label: string; description: string; noJd
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <label className="block text-sm font-medium text-[#E0E0F8] mb-1.5">
+    <label className="block text-sm font-medium text-[var(--color-text-label)] mb-1.5">
       {children}
     </label>
   );
@@ -77,7 +77,7 @@ function Input({
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full border border-[#232548] rounded-lg px-4 py-2.5 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
+      className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
     />
   );
 }
@@ -102,9 +102,9 @@ function Textarea({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
-        className="w-full border border-[#232548] rounded-lg px-4 py-3 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition resize-none"
+        className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
       />
-      {hint && <p className="text-xs text-[#5A5A80] mt-1.5">{hint}</p>}
+      {hint && <p className="text-xs text-[var(--color-text-tertiary)] mt-1.5">{hint}</p>}
     </div>
   );
 }
@@ -259,7 +259,7 @@ function UsageMeter({ usage }: { usage: PlanUsage }) {
   return (
     <div className="mb-4">
       <div className="flex items-center justify-between mb-1.5">
-        <span className={`text-xs font-medium ${atLimit ? "text-amber-400" : "text-[#8888A8]"}`}>
+        <span className={`text-xs font-medium ${atLimit ? "text-amber-400" : "text-[var(--color-text-secondary)]"}`}>
           {used} of {limit} used this month
         </span>
         <Link
@@ -269,7 +269,7 @@ function UsageMeter({ usage }: { usage: PlanUsage }) {
           Upgrade to Pro →
         </Link>
       </div>
-      <div className="h-1.5 bg-[#232548] rounded-full overflow-hidden">
+      <div className="h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${atLimit ? "bg-amber-500" : "bg-indigo-500"}`}
           style={{ width: `${pct}%` }}
@@ -304,7 +304,7 @@ function BatchOutputPanel({
   return (
     <div className="flex flex-col gap-4">
       {/* Tab bar */}
-      <div className="flex gap-1 bg-[#13182C] p-1 rounded-xl border border-[#232548]">
+      <div className="flex gap-1 bg-[var(--color-elevated)] p-1 rounded-xl border border-[var(--color-border)]">
         {states.map((s) => {
           const done = s.status === "done";
           const running = s.status === "parsing" || s.status === "generating" || s.status === "validating";
@@ -314,8 +314,8 @@ function BatchOutputPanel({
               onClick={() => setActiveTab(s.docType)}
               className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-2 px-2 rounded-lg transition-all ${
                 activeTab === s.docType
-                  ? "bg-[#0D1122] text-[#EEEEFC] shadow-sm border border-[#232548]"
-                  : "text-[#8888A8] hover:text-[#EEEEFC]"
+                  ? "bg-[var(--color-surface)] text-[var(--color-text-primary)] shadow-sm border border-[var(--color-border)]"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
               }`}
             >
               {running && (
@@ -325,7 +325,7 @@ function BatchOutputPanel({
                 <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0" />
               )}
               {!running && !done && (
-                <span className="w-2.5 h-2.5 bg-[#2E3165] rounded-full shrink-0" />
+                <span className="w-2.5 h-2.5 bg-[var(--color-border-strong)] rounded-full shrink-0" />
               )}
               <span>{BATCH_DOC_LABELS[s.docType] ?? s.docType}</span>
             </button>
@@ -549,22 +549,22 @@ export default function GenerateForm({
   };
 
   return (
-    <div className="min-h-screen bg-[#090C18]">
+    <div className="min-h-screen bg-[var(--color-page)]">
       {/* Nav */}
-      <nav className="bg-[#090C18]/80 backdrop-blur-xl border-b border-[#1A1D38] sticky top-0 z-10">
+      <nav className="bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-1">
-            <Link href="/" className="text-base font-semibold text-[#EEEEFC] tracking-tight hover:text-indigo-400 transition-colors mr-4">
+            <Link href="/" className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-indigo-400 transition-colors mr-4">
               Shortlist
             </Link>
             <div className="hidden sm:flex items-center gap-0.5">
-              <Link href="/dashboard" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Dashboard</Link>
-              <Link href="/applications" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Applications</Link>
-              <span className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#EEEEFC] bg-[#13182C] border border-[#232548]">Generate</span>
-              <Link href="/fit" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Fit</Link>
-              <Link href="/score" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Score</Link>
-              <Link href="/interview" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Interview</Link>
-              <Link href="/negotiate" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Negotiate</Link>
+              <Link href="/dashboard" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Dashboard</Link>
+              <Link href="/applications" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Applications</Link>
+              <span className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-primary)] bg-[var(--color-elevated)] border border-[var(--color-border)]">Generate</span>
+              <Link href="/fit" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Fit</Link>
+              <Link href="/score" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Score</Link>
+              <Link href="/interview" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Interview</Link>
+              <Link href="/negotiate" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Negotiate</Link>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -574,7 +574,7 @@ export default function GenerateForm({
                 <NavMobileMenu activePage="generate" />
               </>
             ) : (
-              <Link href="/auth/login" className="text-sm text-[#8888A8] hover:text-[#EEEEFC] transition-colors">
+              <Link href="/auth/login" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                 Sign in
               </Link>
             )}
@@ -589,11 +589,11 @@ export default function GenerateForm({
         <div className="space-y-6 mb-8 lg:mb-0">
 
           {/* Section 1: Who are you? */}
-          <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6">
-            <h2 className="text-sm font-semibold text-[#EEEEFC] mb-1">
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+            <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
               1. Who are you?
             </h2>
-            <p className="text-xs text-[#5A5A80] mb-4">
+            <p className="text-xs text-[var(--color-text-tertiary)] mb-4">
               This shapes how your experience is framed and what tone we use.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -607,13 +607,13 @@ export default function GenerateForm({
                   className={`text-left rounded-xl border px-4 py-3.5 transition-all ${
                     userType === t.value
                       ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500"
-                      : "border-[#232548] bg-[#13182C] hover:border-[#2E3165]"
+                      : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
-                  <p className={`text-sm font-medium mb-0.5 ${userType === t.value ? "text-indigo-400" : "text-[#EEEEFC]"}`}>
+                  <p className={`text-sm font-medium mb-0.5 ${userType === t.value ? "text-indigo-400" : "text-[var(--color-text-primary)]"}`}>
                     {t.label}
                   </p>
-                  <p className="text-xs text-[#8888A8] leading-relaxed">{t.description}</p>
+                  <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">{t.description}</p>
                 </button>
               ))}
             </div>
@@ -621,11 +621,11 @@ export default function GenerateForm({
 
           {/* Section 2: Your background (only when type selected) */}
           {userType && (
-            <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6">
-              <h2 className="text-sm font-semibold text-[#EEEEFC] mb-1">
+            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+              <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
                 2. Your background
               </h2>
-              <p className="text-xs text-[#5A5A80] mb-4">
+              <p className="text-xs text-[var(--color-text-tertiary)] mb-4">
                 Used to calibrate framing, tone, and level of ownership claimed.
               </p>
               <UserDataFields
@@ -638,11 +638,11 @@ export default function GenerateForm({
 
           {/* Section: The job */}
           {!selectedDocType?.noJd && (
-            <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6">
-              <h2 className="text-sm font-semibold text-[#EEEEFC] mb-1">
+            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+              <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
                 {userType ? "3." : "2."} The job
               </h2>
-              <p className="text-xs text-[#5A5A80] mb-4">
+              <p className="text-xs text-[var(--color-text-tertiary)] mb-4">
                 Paste the full job description. More detail = better output.
               </p>
               <Textarea
@@ -656,9 +656,9 @@ export default function GenerateForm({
           )}
 
           {/* Section: Your resume / experience */}
-          <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6">
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
             <div className="flex items-center justify-between mb-1">
-              <h2 className="text-sm font-semibold text-[#EEEEFC]">
+              <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">
                 {sectionNum(4)}. Your resume
               </h2>
               <div className="flex items-center gap-2">
@@ -684,10 +684,10 @@ export default function GenerateForm({
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={parseLoading}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[#8888A8] hover:text-indigo-400 bg-[#13182C] hover:bg-indigo-950/30 border border-[#232548] hover:border-indigo-800/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-950/30 border border-[var(--color-border)] hover:border-indigo-800/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {parseLoading ? (
-                    <span className="w-3 h-3 border-2 border-[#4A4A68] border-t-transparent rounded-full animate-spin" />
+                    <span className="w-3 h-3 border-2 border-[var(--color-text-placeholder)] border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 8l-4-4m0 0L8 8m4-4v12" />
@@ -697,7 +697,7 @@ export default function GenerateForm({
                 </button>
               </div>
             </div>
-            <p className="text-xs text-[#5A5A80] mb-4">
+            <p className="text-xs text-[var(--color-text-tertiary)] mb-4">
               Paste your resume or upload a file. No need to make it perfect — raw bullet points work great.
             </p>
             {parseError && (
@@ -722,7 +722,7 @@ export default function GenerateForm({
                   className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${
                     resumeSaved
                       ? "text-emerald-400 bg-emerald-950/30 border-emerald-900/40 cursor-default"
-                      : "text-[#8888A8] hover:text-indigo-400 bg-[#13182C] hover:bg-indigo-950/30 border-[#232548] hover:border-indigo-800/50"
+                      : "text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-950/30 border-[var(--color-border)] hover:border-indigo-800/50"
                   } disabled:opacity-50`}
                 >
                   {resumeSaving ? "Saving..." : resumeSaved ? "✓ Saved as default" : "Save as default resume"}
@@ -732,11 +732,11 @@ export default function GenerateForm({
           </div>
 
           {/* Section: What to generate */}
-          <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6">
-            <h2 className="text-sm font-semibold text-[#EEEEFC] mb-1">
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+            <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
               {sectionNum(5)}. What to generate
             </h2>
-            <p className="text-xs text-[#5A5A80] mb-4">
+            <p className="text-xs text-[var(--color-text-tertiary)] mb-4">
               Start with bullets — they feed the summary and cover letter.
             </p>
 
@@ -752,13 +752,13 @@ export default function GenerateForm({
                   className={`text-left rounded-xl border px-3 py-3 transition-all ${
                     documentType === d.value
                       ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500"
-                      : "border-[#232548] bg-[#13182C] hover:border-[#2E3165]"
+                      : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
-                  <p className={`text-sm font-medium mb-0.5 ${documentType === d.value ? "text-indigo-400" : "text-[#EEEEFC]"}`}>
+                  <p className={`text-sm font-medium mb-0.5 ${documentType === d.value ? "text-indigo-400" : "text-[var(--color-text-primary)]"}`}>
                     {d.label}
                   </p>
-                  <p className="text-xs text-[#8888A8]">{d.description}</p>
+                  <p className="text-xs text-[var(--color-text-secondary)]">{d.description}</p>
                 </button>
               ))}
             </div>
@@ -773,18 +773,18 @@ export default function GenerateForm({
                   className={`text-left rounded-xl border px-3 py-3 transition-all ${
                     documentType === d.value
                       ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500"
-                      : "border-[#232548] bg-[#13182C] hover:border-[#2E3165]"
+                      : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-0.5">
-                    <p className={`text-sm font-medium ${documentType === d.value ? "text-indigo-400" : "text-[#EEEEFC]"}`}>
+                    <p className={`text-sm font-medium ${documentType === d.value ? "text-indigo-400" : "text-[var(--color-text-primary)]"}`}>
                       {d.label}
                     </p>
                     <span className="text-xs text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-1.5 py-0.5 rounded-full font-medium">
                       LinkedIn
                     </span>
                   </div>
-                  <p className="text-xs text-[#8888A8]">{d.description}</p>
+                  <p className="text-xs text-[var(--color-text-secondary)]">{d.description}</p>
                 </button>
               ))}
             </div>
@@ -799,7 +799,7 @@ export default function GenerateForm({
                 <button
                   onClick={() => setBatchMode((b) => !b)}
                   className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                    batchMode ? "bg-indigo-600" : "bg-[#2E3165]"
+                    batchMode ? "bg-indigo-600" : "bg-[var(--color-border-strong)]"
                   }`}
                   role="switch"
                   aria-checked={batchMode}
@@ -819,7 +819,7 @@ export default function GenerateForm({
 
             {/* Tone selector */}
             <div className="mb-6">
-              <p className="text-xs font-medium text-[#8888A8] mb-2">Writing tone</p>
+              <p className="text-xs font-medium text-[var(--color-text-secondary)] mb-2">Writing tone</p>
               <div className="flex gap-2">
                 {TONES.map((t) => (
                   <button
@@ -832,14 +832,14 @@ export default function GenerateForm({
                     className={`flex-1 text-center rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
                       tone === t.value
                         ? "border-indigo-500 bg-indigo-950/40 text-indigo-400 ring-1 ring-indigo-500"
-                        : "border-[#232548] bg-transparent text-[#8888A8] hover:border-[#2E3165] hover:text-[#EEEEFC]"
+                        : "border-[var(--color-border)] bg-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)]"
                     }`}
                   >
                     {t.label}
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-[#5A5A80] mt-1.5">
+              <p className="text-xs text-[var(--color-text-tertiary)] mt-1.5">
                 {TONES.find((t) => t.value === tone)?.description}
               </p>
             </div>
@@ -885,7 +885,7 @@ export default function GenerateForm({
                   className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all ${
                     canGenerate
                       ? "btn-shimmer text-white shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/25 hover:-translate-y-px cursor-pointer"
-                      : "bg-[#141830] text-[#4A4A68] cursor-not-allowed"
+                      : "bg-[var(--color-disabled)] text-[var(--color-text-placeholder)] cursor-not-allowed"
                   }`}
                 >
                   {isRunning ? (
@@ -903,12 +903,12 @@ export default function GenerateForm({
                 </button>
 
                 {!userType && (
-                  <p className="text-xs text-[#5A5A80] text-center mt-3">
+                  <p className="text-xs text-[var(--color-text-tertiary)] text-center mt-3">
                     Select who you are to get started
                   </p>
                 )}
                 {userType && !canGenerate && !isRunning && (
-                  <p className="text-xs text-[#5A5A80] text-center mt-3">
+                  <p className="text-xs text-[var(--color-text-tertiary)] text-center mt-3">
                     {jdRequired && !jdText.trim()
                       ? "Paste a job description and describe your experience to continue"
                       : "Describe your experience to continue"}
@@ -922,7 +922,7 @@ export default function GenerateForm({
         {/* ── RIGHT: Output ──────────────────────────────────────────────── */}
         <div className="lg:sticky lg:top-24">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-[#EEEEFC]">
+            <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">
               {batchMode ? "Application Package" : "Output"}
             </h2>
             {!batchMode && status === "done" && (
@@ -937,7 +937,7 @@ export default function GenerateForm({
                     tone,
                   })
                 }
-                className="text-xs text-[#8888A8] hover:text-indigo-400 transition-colors font-medium"
+                className="text-xs text-[var(--color-text-secondary)] hover:text-indigo-400 transition-colors font-medium"
               >
                 ↻ Regenerate
               </button>

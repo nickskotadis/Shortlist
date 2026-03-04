@@ -21,7 +21,7 @@ const STATUS_CONFIG: Record<ApplicationStatus, { label: string; color: string; d
   interview:  { label: "Interview",  color: "text-amber-400 bg-amber-950/30 border-amber-900/40",     dot: "bg-amber-400" },
   offer:      { label: "Offer",      color: "text-emerald-400 bg-emerald-950/30 border-emerald-900/40", dot: "bg-emerald-400" },
   rejected:   { label: "Rejected",   color: "text-red-400 bg-red-950/30 border-red-900/40",           dot: "bg-red-400" },
-  withdrawn:  { label: "Withdrawn",  color: "text-[#5A5A80] bg-[#13182C] border-[#232548]",           dot: "bg-[#5A5A80]" },
+  withdrawn:  { label: "Withdrawn",  color: "text-[var(--color-text-tertiary)] bg-[var(--color-elevated)] border-[var(--color-border)]",           dot: "bg-[var(--color-text-tertiary)]" },
 };
 
 function StatusBadge({ status }: { status: ApplicationStatus }) {
@@ -84,45 +84,45 @@ function AddForm({ onAdd }: AddFormProps) {
   }
 
   return (
-    <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-5 space-y-4">
-      <p className="text-sm font-semibold text-[#EEEEFC]">Add application</p>
+    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-5 space-y-4">
+      <p className="text-sm font-semibold text-[var(--color-text-primary)]">Add application</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="text-xs font-medium text-[#8888A8] mb-1 block">Company *</label>
+          <label className="text-xs font-medium text-[var(--color-text-secondary)] mb-1 block">Company *</label>
           <input
             type="text"
             placeholder="Acme Corp"
             value={form.company_name}
             onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))}
-            className="w-full border border-[#232548] rounded-lg px-3 py-2 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8888A8] mb-1 block">Role *</label>
+          <label className="text-xs font-medium text-[var(--color-text-secondary)] mb-1 block">Role *</label>
           <input
             type="text"
             placeholder="Product Manager"
             value={form.job_title}
             onChange={(e) => setForm((f) => ({ ...f, job_title: e.target.value }))}
-            className="w-full border border-[#232548] rounded-lg px-3 py-2 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8888A8] mb-1 block">Job URL</label>
+          <label className="text-xs font-medium text-[var(--color-text-secondary)] mb-1 block">Job URL</label>
           <input
             type="url"
             placeholder="https://..."
             value={form.url}
             onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
-            className="w-full border border-[#232548] rounded-lg px-3 py-2 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-[#8888A8] mb-1 block">Status</label>
+          <label className="text-xs font-medium text-[var(--color-text-secondary)] mb-1 block">Status</label>
           <select
             value={form.status}
             onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as ApplicationStatus }))}
-            className="w-full border border-[#232548] rounded-lg px-3 py-2 text-sm text-[#EEEEFC] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
           >
             {Object.entries(STATUS_CONFIG).map(([val, cfg]) => (
               <option key={val} value={val}>{cfg.label}</option>
@@ -139,7 +139,7 @@ function AddForm({ onAdd }: AddFormProps) {
         >
           {loading ? "Adding..." : "Add"}
         </button>
-        <button onClick={() => setOpen(false)} className="text-sm text-[#8888A8] hover:text-[#EEEEFC] transition-colors">Cancel</button>
+        <button onClick={() => setOpen(false)} className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">Cancel</button>
       </div>
     </div>
   );
@@ -186,7 +186,7 @@ function FollowUpPanel({ application }: FollowUpPanelProps) {
   };
 
   return (
-    <div className="mt-3 border-t border-[#1A1D38] pt-3">
+    <div className="mt-3 border-t border-[var(--color-border-subtle)] pt-3">
       {!email ? (
         <button
           onClick={generate}
@@ -205,7 +205,7 @@ function FollowUpPanel({ application }: FollowUpPanelProps) {
       ) : (
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <p className="text-xs font-medium text-[#5A5A80]">Follow-up email</p>
+            <p className="text-xs font-medium text-[var(--color-text-tertiary)]">Follow-up email</p>
             <button
               onClick={copy}
               className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
@@ -213,8 +213,8 @@ function FollowUpPanel({ application }: FollowUpPanelProps) {
               {copied ? "Copied ✓" : "Copy"}
             </button>
           </div>
-          <pre className="text-xs text-[#C8C8F0] whitespace-pre-wrap font-mono bg-[#0B0E1E] rounded-lg p-3 border border-[#232548]">{email}</pre>
-          <button onClick={() => setEmail(null)} className="text-xs text-[#5A5A80] hover:text-[#8888A8] mt-1.5 transition-colors">Regenerate</button>
+          <pre className="text-xs text-[var(--color-text-output)] whitespace-pre-wrap font-mono bg-[var(--color-inset)] rounded-lg p-3 border border-[var(--color-border)]">{email}</pre>
+          <button onClick={() => setEmail(null)} className="text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] mt-1.5 transition-colors">Regenerate</button>
         </div>
       )}
       {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
@@ -251,22 +251,22 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
   const date = new Date(application.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
   return (
-    <div className="bg-[#0D1122] rounded-2xl border border-[#232548] hover:border-[#2E3165] overflow-hidden transition-colors">
+    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] hover:border-[var(--color-border-strong)] overflow-hidden transition-colors">
       <div
-        className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-[#13182C] transition-colors"
+        className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-[var(--color-elevated)] transition-colors"
         onClick={() => setExpanded((e) => !e)}
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold text-[#EEEEFC] truncate">{application.company_name}</span>
-            <span className="text-[#363960]">·</span>
-            <span className="text-sm text-[#8888A8] truncate">{application.job_title}</span>
+            <span className="text-sm font-semibold text-[var(--color-text-primary)] truncate">{application.company_name}</span>
+            <span className="text-[var(--color-separator)]">·</span>
+            <span className="text-sm text-[var(--color-text-secondary)] truncate">{application.job_title}</span>
           </div>
           <div className="flex items-center gap-3 mt-1.5 flex-wrap">
             <StatusBadge status={application.status} />
-            <span className="text-xs text-[#5A5A80]">{date}</span>
+            <span className="text-xs text-[var(--color-text-tertiary)]">{date}</span>
             {application.generation_count > 0 && (
-              <span className="text-xs text-[#5A5A80]">{application.generation_count} doc{application.generation_count !== 1 ? "s" : ""} generated</span>
+              <span className="text-xs text-[var(--color-text-tertiary)]">{application.generation_count} doc{application.generation_count !== 1 ? "s" : ""} generated</span>
             )}
             {application.url && (
               <a
@@ -284,15 +284,15 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
             )}
           </div>
         </div>
-        <svg className={`w-4 h-4 text-[#5A5A80] shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-4 h-4 text-[var(--color-text-tertiary)] shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </div>
 
       {expanded && (
-        <div className="px-5 pb-5 border-t border-[#1A1D38]">
+        <div className="px-5 pb-5 border-t border-[var(--color-border-subtle)]">
           <div className="mt-4">
-            <p className="text-xs font-medium text-[#5A5A80] mb-2">Update status</p>
+            <p className="text-xs font-medium text-[var(--color-text-tertiary)] mb-2">Update status</p>
             <div className="flex flex-wrap gap-2">
               {(Object.keys(STATUS_CONFIG) as ApplicationStatus[]).map((s) => {
                 const activeColors: Record<ApplicationStatus, string> = {
@@ -300,7 +300,7 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
                   interview: "border-amber-500 bg-amber-950/30 ring-1 ring-amber-500 text-amber-400",
                   offer:     "border-emerald-500 bg-emerald-950/30 ring-1 ring-emerald-500 text-emerald-400",
                   rejected:  "border-red-500 bg-red-950/30 ring-1 ring-red-500 text-red-400",
-                  withdrawn: "border-[#5A5A80] bg-[#13182C] ring-1 ring-[#5A5A80] text-[#8888A8]",
+                  withdrawn: "border-[var(--color-text-tertiary)] bg-[var(--color-elevated)] ring-1 ring-[var(--color-text-tertiary)] text-[var(--color-text-secondary)]",
                 };
                 return (
                   <button
@@ -310,7 +310,7 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
                     className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-all disabled:cursor-not-allowed ${
                       application.status === s
                         ? activeColors[s]
-                        : "border-[#232548] text-[#8888A8] hover:border-[#2E3165] bg-transparent"
+                        : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] bg-transparent"
                     }`}
                   >
                     {STATUS_CONFIG[s].label}
@@ -322,8 +322,8 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
 
           {application.notes && (
             <div className="mt-3">
-              <p className="text-xs font-medium text-[#5A5A80] mb-1">Notes</p>
-              <p className="text-xs text-[#8888A8] leading-relaxed">{application.notes}</p>
+              <p className="text-xs font-medium text-[var(--color-text-tertiary)] mb-1">Notes</p>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">{application.notes}</p>
             </div>
           )}
 
@@ -389,11 +389,11 @@ export default function ApplicationsClient({ initialApplications }: Props) {
 
       {/* Search + filter toolbar */}
       {applications.length > 0 && (
-        <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-4">
+        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-4">
           {/* Search row */}
           <div className="relative mb-3">
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A5A80] pointer-events-none"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-tertiary)] pointer-events-none"
               fill="none" stroke="currentColor" viewBox="0 0 24 24"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -404,7 +404,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               placeholder="Search by company or role..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-[#232548] rounded-lg pl-9 pr-4 py-2 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
+              className="w-full border border-[var(--color-border)] rounded-lg pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
             />
           </div>
 
@@ -416,7 +416,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                 statusFilter === "all"
                   ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400"
-                  : "border-[#232548] bg-transparent text-[#8888A8] hover:border-[#2E3165]"
+                  : "border-[var(--color-border)] bg-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
               }`}
             >
               All ({applications.length})
@@ -429,7 +429,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
                 interview: "border-amber-500 bg-amber-950/30 ring-1 ring-amber-500 text-amber-400",
                 offer:     "border-emerald-500 bg-emerald-950/30 ring-1 ring-emerald-500 text-emerald-400",
                 rejected:  "border-red-500 bg-red-950/30 ring-1 ring-red-500 text-red-400",
-                withdrawn: "border-[#5A5A80] bg-[#13182C] ring-1 ring-[#5A5A80] text-[#8888A8]",
+                withdrawn: "border-[var(--color-text-tertiary)] bg-[var(--color-elevated)] ring-1 ring-[var(--color-text-tertiary)] text-[var(--color-text-secondary)]",
               };
               return (
                 <button
@@ -439,7 +439,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
                   className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                     statusFilter === s
                       ? activeColors[s]
-                      : "border-[#232548] bg-transparent text-[#8888A8] hover:border-[#2E3165]"
+                      : "border-[var(--color-border)] bg-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
                   {STATUS_CONFIG[s].label} ({count})
@@ -450,9 +450,9 @@ export default function ApplicationsClient({ initialApplications }: Props) {
 
           {/* Result count + clear */}
           {isFiltered && (
-            <div className="mt-3 flex items-center gap-2 text-xs text-[#8888A8]">
+            <div className="mt-3 flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
               <span>Showing {filtered.length} of {applications.length}</span>
-              <span className="text-[#363960]">·</span>
+              <span className="text-[var(--color-separator)]">·</span>
               <button
                 type="button"
                 onClick={clearFilters}
@@ -467,17 +467,17 @@ export default function ApplicationsClient({ initialApplications }: Props) {
 
       {/* Application list */}
       {applications.length === 0 ? (
-        <div className="text-center py-16 text-[#5A5A80]">
-          <svg className="w-10 h-10 mx-auto mb-3 text-[#2E3165]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-16 text-[var(--color-text-tertiary)]">
+          <svg className="w-10 h-10 mx-auto mb-3 text-[var(--color-border-strong)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
-          <p className="text-sm font-medium text-[#8888A8]">No applications yet</p>
-          <p className="text-xs text-[#5A5A80] mt-1">Add your first application above to start tracking.</p>
+          <p className="text-sm font-medium text-[var(--color-text-secondary)]">No applications yet</p>
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Add your first application above to start tracking.</p>
         </div>
       ) : filtered.length === 0 && isFiltered ? (
-        <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-12 text-center">
-          <p className="text-sm font-semibold text-[#EEEEFC] mb-1">No applications match your filters</p>
-          <p className="text-xs text-[#8888A8] mb-4">Try adjusting your search or status filter.</p>
+        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-12 text-center">
+          <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">No applications match your filters</p>
+          <p className="text-xs text-[var(--color-text-secondary)] mb-4">Try adjusting your search or status filter.</p>
           <button
             type="button"
             onClick={clearFilters}

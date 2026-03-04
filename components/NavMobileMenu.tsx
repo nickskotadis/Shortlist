@@ -20,7 +20,7 @@ export default function NavMobileMenu({ activePage }: { activePage?: string }) {
     <>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-colors"
+        className="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-colors"
         aria-label={open ? "Close menu" : "Open menu"}
       >
         {open ? (
@@ -35,13 +35,13 @@ export default function NavMobileMenu({ activePage }: { activePage?: string }) {
       </button>
 
       {open && (
-        <div className="fixed top-14 inset-x-0 bg-[#090C18] border-b border-[#1A1D38] z-50 sm:hidden">
+        <div className="fixed top-14 inset-x-0 bg-[var(--color-page)] border-b border-[var(--color-border-subtle)] z-50 sm:hidden">
           <div className="px-4 py-3 space-y-1">
             {NAV_LINKS.map((link) =>
               activePage === link.page ? (
                 <span
                   key={link.href}
-                  className="flex items-center px-4 py-3 rounded-xl text-sm font-medium text-[#EEEEFC] bg-[#13182C] border border-[#232548]"
+                  className="flex items-center px-4 py-3 rounded-xl text-sm font-medium text-[var(--color-text-primary)] bg-[var(--color-elevated)] border border-[var(--color-border)]"
                 >
                   {link.label}
                 </span>
@@ -50,7 +50,7 @@ export default function NavMobileMenu({ activePage }: { activePage?: string }) {
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="flex items-center px-4 py-3 rounded-xl text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all"
+                  className="flex items-center px-4 py-3 rounded-xl text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all"
                 >
                   {link.label}
                 </Link>

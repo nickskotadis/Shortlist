@@ -90,26 +90,26 @@ export default function PricingPage() {
   const annualSavings = MONTHLY_PRICE_CENTS * 12 - ANNUAL_PRICE_CENTS;
 
   return (
-    <div className="min-h-screen bg-[#090C18]">
+    <div className="min-h-screen bg-[var(--color-page)]">
       {/* Nav */}
-      <nav className="bg-[#090C18]/80 backdrop-blur-xl border-b border-[#1A1D38] sticky top-0 z-10">
+      <nav className="bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
           <Link
             href="/"
-            className="text-base font-semibold text-[#EEEEFC] tracking-tight hover:text-indigo-400 transition-colors"
+            className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-indigo-400 transition-colors"
           >
             Shortlist
           </Link>
           <div className="flex items-center gap-0.5">
             <Link
               href="/generate"
-              className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all"
+              className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all"
             >
               Generate
             </Link>
             <Link
               href="/dashboard"
-              className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all"
+              className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all"
             >
               Dashboard
             </Link>
@@ -120,23 +120,23 @@ export default function PricingPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-semibold text-[#EEEEFC] mb-3">
+          <h1 className="text-3xl font-semibold text-[var(--color-text-primary)] mb-3">
             Simple, honest pricing
           </h1>
-          <p className="text-base text-[#8888A8]">
+          <p className="text-base text-[var(--color-text-secondary)]">
             Try free. Upgrade when you need more.
           </p>
         </div>
 
         {/* Billing toggle */}
         <div className="flex justify-center mb-10">
-          <div className="inline-flex items-center bg-[#13182C] rounded-xl p-1 gap-1 border border-[#232548]">
+          <div className="inline-flex items-center bg-[var(--color-elevated)] rounded-xl p-1 gap-1 border border-[var(--color-border)]">
             <button
               onClick={() => setBilling("monthly")}
               className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
                 billing === "monthly"
-                  ? "bg-[#232548] text-[#EEEEFC] shadow-sm"
-                  : "text-[#8888A8] hover:text-[#EEEEFC]"
+                  ? "bg-[var(--color-border)] text-[var(--color-text-primary)] shadow-sm"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
               }`}
             >
               Monthly
@@ -145,8 +145,8 @@ export default function PricingPage() {
               onClick={() => setBilling("annual")}
               className={`px-5 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
                 billing === "annual"
-                  ? "bg-[#232548] text-[#EEEEFC] shadow-sm"
-                  : "text-[#8888A8] hover:text-[#EEEEFC]"
+                  ? "bg-[var(--color-border)] text-[var(--color-text-primary)] shadow-sm"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
               }`}
             >
               Annual
@@ -161,28 +161,28 @@ export default function PricingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
           {/* Free */}
-          <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-8 flex flex-col">
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-8 flex flex-col">
             <div className="mb-6">
-              <p className="text-sm font-medium text-[#8888A8] mb-2">Free</p>
+              <p className="text-sm font-medium text-[var(--color-text-secondary)] mb-2">Free</p>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-[#EEEEFC]">$0</span>
-                <span className="text-sm text-[#5A5A80]">/mo</span>
+                <span className="text-4xl font-bold text-[var(--color-text-primary)]">$0</span>
+                <span className="text-sm text-[var(--color-text-tertiary)]">/mo</span>
               </div>
-              <p className="text-sm text-[#8888A8] mt-2">No credit card required</p>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-2">No credit card required</p>
             </div>
 
             <ul className="space-y-3 mb-8 flex-1">
               {FREE_FEATURES.map((f) => (
                 <li key={f} className="flex items-center gap-2.5">
                   <CheckIcon />
-                  <span className="text-sm text-[#C8C8F0]">{f}</span>
+                  <span className="text-sm text-[var(--color-text-output)]">{f}</span>
                 </li>
               ))}
             </ul>
 
             <Link
               href="/generate"
-              className="w-full text-center py-3 rounded-xl text-sm font-semibold border border-[#232548] text-[#8888A8] hover:border-[#2E3165] hover:text-[#EEEEFC] transition-all"
+              className="w-full text-center py-3 rounded-xl text-sm font-semibold border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)] transition-all"
             >
               Get started free
             </Link>
@@ -244,7 +244,7 @@ export default function PricingPage() {
         </div>
 
         {/* Footer note */}
-        <p className="text-center text-xs text-[#5A5A80] mt-8">
+        <p className="text-center text-xs text-[var(--color-text-tertiary)] mt-8">
           Payments processed by Stripe. Cancel anytime.
         </p>
       </main>

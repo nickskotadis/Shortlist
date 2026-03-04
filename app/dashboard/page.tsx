@@ -42,7 +42,7 @@ export default async function DashboardPage() {
   const usedThisMonth = usageResult.count ?? 0;
 
   return (
-    <div className="min-h-screen bg-[#090C18]">
+    <div className="min-h-screen bg-[var(--color-page)]">
       <Nav activePage="dashboard" />
 
       {/* Content */}
@@ -50,8 +50,8 @@ export default async function DashboardPage() {
         <div className="mb-6">
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-lg font-semibold text-[#EEEEFC]">Your generations</h1>
-              <p className="text-sm text-[#8888A8] mt-0.5">
+              <h1 className="text-lg font-semibold text-[var(--color-text-primary)]">Your generations</h1>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
                 {generations.length}{" "}
                 {generations.length === 1 ? "generation" : "generations"} saved
               </p>
@@ -61,11 +61,11 @@ export default async function DashboardPage() {
             {plan === "free" && (
               <div className="min-w-[200px] max-w-xs w-full sm:w-auto">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className={`text-xs font-medium ${usedThisMonth >= FREE_MONTHLY_LIMIT ? "text-amber-400" : "text-[#8888A8]"}`}>
+                  <span className={`text-xs font-medium ${usedThisMonth >= FREE_MONTHLY_LIMIT ? "text-amber-400" : "text-[var(--color-text-secondary)]"}`}>
                     {usedThisMonth} of {FREE_MONTHLY_LIMIT} used this month
                   </span>
                 </div>
-                <div className="h-1.5 bg-[#232548] rounded-full overflow-hidden">
+                <div className="h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all ${
                       usedThisMonth >= FREE_MONTHLY_LIMIT ? "bg-amber-500" : "bg-indigo-500"

@@ -43,11 +43,11 @@ export default function QualityClient({
     <>
       {/* Filter toolbar */}
       {stats.length > 0 && (
-        <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-4 mb-4">
+        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-4 mb-4">
           {/* Search row */}
           <div className="relative mb-3">
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A5A80] pointer-events-none"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-tertiary)] pointer-events-none"
               fill="none" stroke="currentColor" viewBox="0 0 24 24"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -58,7 +58,7 @@ export default function QualityClient({
               placeholder="Search by prompt version..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-[#232548] rounded-lg pl-9 pr-4 py-2 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
+              className="w-full border border-[var(--color-border)] rounded-lg pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
             />
           </div>
 
@@ -69,7 +69,7 @@ export default function QualityClient({
                 v === "B"
                   ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400"
                   : v === "A"
-                  ? "border-[#5A5A80] bg-[#13182C] ring-1 ring-[#5A5A80] text-[#8888A8]"
+                  ? "border-[var(--color-text-tertiary)] bg-[var(--color-elevated)] ring-1 ring-[var(--color-text-tertiary)] text-[var(--color-text-secondary)]"
                   : "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400";
               const label = v === "all" ? `All (${stats.length})` : `Variant ${v}`;
               return (
@@ -80,7 +80,7 @@ export default function QualityClient({
                   className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                     variantFilter === v
                       ? activeClass
-                      : "border-[#232548] bg-transparent text-[#8888A8] hover:border-[#2E3165]"
+                      : "border-[var(--color-border)] bg-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
                   {label}
@@ -91,9 +91,9 @@ export default function QualityClient({
 
           {/* Result count + clear */}
           {isFiltered && (
-            <div className="mt-3 flex items-center gap-2 text-xs text-[#8888A8]">
+            <div className="mt-3 flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
               <span>Showing {filtered.length} of {stats.length}</span>
-              <span className="text-[#363960]">·</span>
+              <span className="text-[var(--color-separator)]">·</span>
               <button
                 type="button"
                 onClick={clearFilters}
@@ -107,34 +107,34 @@ export default function QualityClient({
       )}
 
       {/* Table */}
-      <div className="bg-[#0D1122] rounded-2xl border border-[#232548] overflow-hidden">
+      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[#1A1D38]">
-              <th className="text-left px-6 py-3 text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">
+            <tr className="border-b border-[var(--color-border-subtle)]">
+              <th className="text-left px-6 py-3 text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                 Prompt Version
               </th>
-              <th className="text-left px-6 py-3 text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">
+              <th className="text-left px-6 py-3 text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                 Variant
               </th>
-              <th className="text-right px-6 py-3 text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">
+              <th className="text-right px-6 py-3 text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                 Count
               </th>
-              <th className="text-right px-6 py-3 text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">
+              <th className="text-right px-6 py-3 text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                 Avg Score
               </th>
-              <th className="text-right px-6 py-3 text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">
+              <th className="text-right px-6 py-3 text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                 Pass Rate
               </th>
-              <th className="text-right px-6 py-3 text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">
+              <th className="text-right px-6 py-3 text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                 👍 Rate
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#1A1D38]">
+          <tbody className="divide-y divide-[var(--color-border-subtle)]">
             {filtered.map((row, i) => (
-              <tr key={i} className="hover:bg-[#13182C] transition-colors">
-                <td className="px-6 py-4 font-mono text-xs text-[#C8C8F0]">
+              <tr key={i} className="hover:bg-[var(--color-elevated)] transition-colors">
+                <td className="px-6 py-4 font-mono text-xs text-[var(--color-text-output)]">
                   {row.prompt_version}
                 </td>
                 <td className="px-6 py-4">
@@ -143,16 +143,16 @@ export default function QualityClient({
                       className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full border ${
                         row.ab_variant === "B"
                           ? "text-indigo-400 bg-indigo-950/40 border-indigo-900/50"
-                          : "text-[#8888A8] bg-[#13182C] border-[#232548]"
+                          : "text-[var(--color-text-secondary)] bg-[var(--color-elevated)] border-[var(--color-border)]"
                       }`}
                     >
                       {row.ab_variant}
                     </span>
                   ) : (
-                    <span className="text-xs text-[#5A5A80]">—</span>
+                    <span className="text-xs text-[var(--color-text-tertiary)]">—</span>
                   )}
                 </td>
-                <td className="px-6 py-4 text-right text-[#8888A8]">{row.count}</td>
+                <td className="px-6 py-4 text-right text-[var(--color-text-secondary)]">{row.count}</td>
                 <td className="px-6 py-4 text-right">
                   <span
                     className={`font-medium ${
@@ -182,7 +182,7 @@ export default function QualityClient({
                 <td className="px-6 py-4 text-right">
                   <span
                     className={`font-medium ${
-                      row.feedback_positive_rate >= 70 ? "text-emerald-400" : "text-[#8888A8]"
+                      row.feedback_positive_rate >= 70 ? "text-emerald-400" : "text-[var(--color-text-secondary)]"
                     }`}
                   >
                     {row.feedback_positive_rate > 0
@@ -194,7 +194,7 @@ export default function QualityClient({
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-sm text-[#5A5A80]">
+                <td colSpan={6} className="px-6 py-12 text-center text-sm text-[var(--color-text-tertiary)]">
                   {isFiltered ? (
                     <span>
                       No rows match your filters.{" "}

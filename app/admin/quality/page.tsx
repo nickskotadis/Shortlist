@@ -72,21 +72,21 @@ export default async function AdminQualityPage() {
   const totalGens = generations?.length ?? 0;
 
   return (
-    <div className="min-h-screen bg-[#090C18]">
-      <nav className="bg-[#090C18]/80 backdrop-blur-xl border-b border-[#1A1D38] sticky top-0 z-10">
+    <div className="min-h-screen bg-[var(--color-page)]">
+      <nav className="bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 flex items-center gap-4 h-14">
-          <Link href="/dashboard" className="text-base font-semibold text-[#EEEEFC] tracking-tight hover:text-indigo-400 transition-colors">
+          <Link href="/dashboard" className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-indigo-400 transition-colors">
             Shortlist
           </Link>
-          <span className="text-[#363960]">·</span>
-          <span className="text-sm text-[#8888A8]">Admin · Quality Dashboard</span>
+          <span className="text-[var(--color-separator)]">·</span>
+          <span className="text-sm text-[var(--color-text-secondary)]">Admin · Quality Dashboard</span>
         </div>
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="mb-6">
-          <h1 className="text-xl font-semibold text-[#EEEEFC]">Generation Quality</h1>
-          <p className="text-sm text-[#8888A8] mt-1">
+          <h1 className="text-xl font-semibold text-[var(--color-text-primary)]">Generation Quality</h1>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">
             Stats by prompt version — {totalGens.toLocaleString()} total generations
           </p>
         </div>

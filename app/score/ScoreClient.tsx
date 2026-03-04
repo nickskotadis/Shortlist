@@ -44,7 +44,7 @@ function ScoreRing({ score, size = 80 }: { score: number; size?: number }) {
         cy={size / 2}
         r={radius}
         fill="none"
-        stroke="#232548"
+        stroke="var(--color-border)"
         strokeWidth={6}
       />
       <circle
@@ -73,10 +73,10 @@ function DimensionCard({ dimensionKey, score }: { dimensionKey: string; score: n
   return (
     <div className={`rounded-2xl border p-5 ${bg}`}>
       <div className="flex items-center justify-between mb-2">
-        <p className="text-sm font-semibold text-[#EEEEFC]">{meta.label}</p>
-        <span className={`text-xl font-bold ${color}`}>{score}<span className="text-sm font-normal text-[#5A5A80]">/10</span></span>
+        <p className="text-sm font-semibold text-[var(--color-text-primary)]">{meta.label}</p>
+        <span className={`text-xl font-bold ${color}`}>{score}<span className="text-sm font-normal text-[var(--color-text-tertiary)]">/10</span></span>
       </div>
-      <div className="h-1.5 bg-[#232548] rounded-full overflow-hidden mb-2">
+      <div className="h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden mb-2">
         <div
           className={`h-full rounded-full transition-all duration-700 ${
             score >= 8 ? "bg-emerald-500" : score >= 6 ? "bg-indigo-500" : score >= 4 ? "bg-amber-500" : "bg-red-500"
@@ -84,7 +84,7 @@ function DimensionCard({ dimensionKey, score }: { dimensionKey: string; score: n
           style={{ width: `${score * 10}%` }}
         />
       </div>
-      <p className="text-xs text-[#8888A8]">{meta.description}</p>
+      <p className="text-xs text-[var(--color-text-secondary)]">{meta.description}</p>
     </div>
   );
 }
@@ -175,8 +175,8 @@ export default function ScoreClient({
         <div className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-full mb-4">
           {plan === "pro" ? "Pro · Unlimited scores" : "Free · 1 score included"}
         </div>
-        <h1 className="text-3xl font-bold text-[#EEEEFC] mb-3">Resume Health Score</h1>
-        <p className="text-base text-[#8888A8] max-w-xl mx-auto">
+        <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-3">Resume Health Score</h1>
+        <p className="text-base text-[var(--color-text-secondary)] max-w-xl mx-auto">
           Paste your resume and get an instant AI critique across 5 dimensions — before you apply anywhere.
         </p>
       </div>
@@ -189,7 +189,7 @@ export default function ScoreClient({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <p className="text-base font-semibold text-[#EEEEFC] mb-1">You&apos;ve used your free score</p>
+          <p className="text-base font-semibold text-[var(--color-text-primary)] mb-1">You&apos;ve used your free score</p>
           <p className="text-sm text-indigo-400/80 mb-6 max-w-sm mx-auto">
             Upgrade to Pro for unlimited resume health scores, plus AI Answer Coach, full application packages, and unlimited generations.
           </p>
@@ -204,9 +204,9 @@ export default function ScoreClient({
 
       {/* Input card + results */}
       {!limitReached && <>
-      <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6 mb-6">
+      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <label className="block text-sm font-medium text-[#E0E0F8]">
+          <label className="block text-sm font-medium text-[var(--color-text-label)]">
             Your resume
           </label>
           <div className="flex items-center gap-2">
@@ -224,10 +224,10 @@ export default function ScoreClient({
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={parseLoading}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-[#8888A8] hover:text-indigo-400 bg-[#13182C] hover:bg-indigo-950/40 border border-[#232548] hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
             >
               {parseLoading ? (
-                <span className="w-3 h-3 border-2 border-[#8888A8] border-t-transparent rounded-full animate-spin" />
+                <span className="w-3 h-3 border-2 border-[var(--color-text-secondary)] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 8l-4-4m0 0L8 8m4-4v12" />
@@ -246,10 +246,10 @@ export default function ScoreClient({
           }}
           rows={12}
           placeholder="Paste your full resume here — all sections, all roles..."
-          className="w-full border border-[#232548] rounded-lg px-4 py-3 text-sm text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition resize-none"
+          className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
         />
         <div className="flex items-center justify-between mt-3">
-          <p className="text-xs text-[#5A5A80]">
+          <p className="text-xs text-[var(--color-text-tertiary)]">
             {resumeText.trim().split(/\s+/).filter(Boolean).length} words
           </p>
           <button
@@ -258,7 +258,7 @@ export default function ScoreClient({
             className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               resumeText.trim() && !loading
                 ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
-                : "bg-[#141830] text-[#4A4A68] cursor-not-allowed"
+                : "bg-[var(--color-disabled)] text-[var(--color-text-placeholder)] cursor-not-allowed"
             }`}
           >
             {loading ? (
@@ -284,7 +284,7 @@ export default function ScoreClient({
       {result && (
         <div className="space-y-6">
           {/* Overall score */}
-          <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-8 text-center">
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-8 text-center">
             <div className="flex items-center justify-center mb-4">
               <div className="relative">
                 <ScoreRing score={result.overall} size={120} />
@@ -295,7 +295,7 @@ export default function ScoreClient({
                 </div>
               </div>
             </div>
-            <p className="text-lg font-semibold text-[#EEEEFC] mb-1">
+            <p className="text-lg font-semibold text-[var(--color-text-primary)] mb-1">
               {result.overall >= 8
                 ? "Strong resume — ready to send"
                 : result.overall >= 6
@@ -304,7 +304,7 @@ export default function ScoreClient({
                 ? "Needs work before applying"
                 : "Significant gaps to address"}
             </p>
-            <p className="text-sm text-[#5A5A80]">{result.word_count} words</p>
+            <p className="text-sm text-[var(--color-text-tertiary)]">{result.word_count} words</p>
           </div>
 
           {/* Dimension scores */}
@@ -315,8 +315,8 @@ export default function ScoreClient({
           </div>
 
           {/* Recommendations */}
-          <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6">
-            <h2 className="text-sm font-semibold text-[#EEEEFC] mb-4">
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+            <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4">
               Actionable improvements
             </h2>
             <ul className="space-y-3">
@@ -325,7 +325,7 @@ export default function ScoreClient({
                   <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-950/50 border border-indigo-900/50 text-indigo-400 text-xs font-bold flex items-center justify-center mt-0.5">
                     {i + 1}
                   </span>
-                  <p className="text-sm text-[#C8C8F0] leading-relaxed">{rec}</p>
+                  <p className="text-sm text-[var(--color-text-output)] leading-relaxed">{rec}</p>
                 </li>
               ))}
             </ul>
@@ -333,7 +333,7 @@ export default function ScoreClient({
 
           {/* CTA */}
           <div className="bg-indigo-950/30 border border-indigo-900/40 rounded-2xl p-6 text-center">
-            <p className="text-sm font-semibold text-[#EEEEFC] mb-1">
+            <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
               Ready to tailor for a specific role?
             </p>
             <p className="text-xs text-indigo-400 mb-4">

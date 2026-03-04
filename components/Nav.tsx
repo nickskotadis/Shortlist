@@ -35,12 +35,12 @@ export default async function Nav({ activePage, actions }: NavProps) {
   }
 
   return (
-    <nav className="bg-[#090C18]/80 backdrop-blur-xl border-b border-[#1A1D38] sticky top-0 z-10">
+    <nav className="bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
         <div className="flex items-center gap-1">
           <Link
             href="/"
-            className="text-base font-semibold text-[#EEEEFC] tracking-tight hover:text-indigo-400 transition-colors mr-4"
+            className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-indigo-400 transition-colors mr-4"
           >
             Shortlist
           </Link>
@@ -50,7 +50,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
                 activePage === link.page ? (
                   <span
                     key={link.href}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#EEEEFC] bg-[#13182C] border border-[#232548]"
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-primary)] bg-[var(--color-elevated)] border border-[var(--color-border)]"
                   >
                     {link.label}
                   </span>
@@ -58,7 +58,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all"
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all"
                   >
                     {link.label}
                   </Link>
@@ -78,7 +78,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
                   Pro
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-[#8888A8] bg-[#13182C] border border-[#232548]">
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-[var(--color-text-secondary)] bg-[var(--color-elevated)] border border-[var(--color-border)]">
                   Free
                   <Link
                     href="/pricing"
@@ -94,7 +94,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
           ) : (
             <Link
               href="/auth/login"
-              className="text-sm text-[#8888A8] hover:text-[#EEEEFC] transition-colors"
+              className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
             >
               Sign in
             </Link>

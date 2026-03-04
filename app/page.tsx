@@ -24,7 +24,7 @@ const exampleBullets = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#090C18]">
+    <div className="min-h-screen bg-[var(--color-page)]">
       <Nav />
 
       {/* Hero */}
@@ -40,7 +40,7 @@ export default function Home() {
         </div>
 
         <div className="animate-fade-up animate-delay-1">
-          <h1 className="text-5xl sm:text-6xl font-bold text-[#EEEEFC] tracking-tight leading-[1.1] mb-6">
+          <h1 className="text-5xl sm:text-6xl font-bold text-[var(--color-text-primary)] tracking-tight leading-[1.1] mb-6">
             Application materials<br />
             that get you{" "}
             <span className="text-gradient">shortlisted.</span>
@@ -48,7 +48,7 @@ export default function Home() {
         </div>
 
         <div className="animate-fade-up animate-delay-2">
-          <p className="text-lg text-[#8888A8] max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg text-[var(--color-text-secondary)] max-w-2xl mx-auto mb-10 leading-relaxed">
             Paste a job description. Describe your background in plain language. Get
             resume bullets, a professional summary, and a cover letter — specific to
             the role, your level, and your industry.
@@ -65,7 +65,7 @@ export default function Home() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
-          <p className="mt-4 text-sm text-[#4A4A68]">No account required to start</p>
+          <p className="mt-4 text-sm text-[var(--color-text-placeholder)]">No account required to start</p>
         </div>
       </section>
 
@@ -75,11 +75,11 @@ export default function Home() {
           {features.map((f, i) => (
             <div
               key={f.title}
-              className="animate-fade-up bg-[#0D1122] rounded-2xl p-7 border border-[#232548] hover:border-[#2E3165] transition-colors"
+              className="animate-fade-up bg-[var(--color-surface)] rounded-2xl p-7 border border-[var(--color-border)] hover:border-[var(--color-border-strong)] transition-colors"
               style={{ animationDelay: `${0.1 + i * 0.07}s`, opacity: 0 }}
             >
-              <h3 className="text-sm font-semibold text-[#EEEEFC] mb-2">{f.title}</h3>
-              <p className="text-sm text-[#8888A8] leading-relaxed">{f.body}</p>
+              <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">{f.title}</h3>
+              <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{f.body}</p>
             </div>
           ))}
         </div>
@@ -87,14 +87,14 @@ export default function Home() {
 
       {/* Example output */}
       <section className="max-w-3xl mx-auto px-6 pb-28 text-center">
-        <h2 className="text-2xl font-bold text-[#EEEEFC] mb-3">What good looks like</h2>
-        <p className="text-[#8888A8] mb-10 text-sm">
+        <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-3">What good looks like</h2>
+        <p className="text-[var(--color-text-secondary)] mb-10 text-sm">
           Shortlist output for a teacher transitioning into product management — no templates, no AI filler.
         </p>
-        <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-8 text-left">
+        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-8 text-left">
           <div className="flex items-center gap-2 mb-6">
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-            <p className="text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">
+            <p className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
               Resume bullets — Associate PM, B2B SaaS
             </p>
           </div>
@@ -102,7 +102,7 @@ export default function Home() {
             {exampleBullets.map((bullet, i) => (
               <li key={i} className="flex gap-3 text-sm leading-relaxed">
                 <span className="text-indigo-500 mt-0.5 shrink-0">•</span>
-                <span className="text-[#C8C8F0]">{bullet}</span>
+                <span className="text-[var(--color-text-output)]">{bullet}</span>
               </li>
             ))}
           </ul>
@@ -110,11 +110,11 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="relative overflow-hidden py-24 px-6 text-center border-t border-[#232548]">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/60 via-[#090C18] to-[#090C18] pointer-events-none" />
+      <section className="relative overflow-hidden py-24 px-6 text-center border-t border-[var(--color-border)]">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/60 via-[var(--color-page)] to-[var(--color-page)] pointer-events-none" />
         <div className="relative">
-          <h2 className="text-3xl font-bold text-[#EEEEFC] mb-4">Ready to get shortlisted?</h2>
-          <p className="text-[#8888A8] mb-8 max-w-md mx-auto">
+          <h2 className="text-3xl font-bold text-[var(--color-text-primary)] mb-4">Ready to get shortlisted?</h2>
+          <p className="text-[var(--color-text-secondary)] mb-8 max-w-md mx-auto">
             Paste your first job description and see what role-specific output looks like.
           </p>
           <Link

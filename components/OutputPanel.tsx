@@ -30,14 +30,14 @@ function ScoreBar({ label, score }: { label: string; score: number }) {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-[#8888A8] w-24 shrink-0">{label}</span>
-      <div className="flex-1 bg-[#232548] rounded-full h-1.5 overflow-hidden">
+      <span className="text-xs text-[var(--color-text-secondary)] w-24 shrink-0">{label}</span>
+      <div className="flex-1 bg-[var(--color-border)] rounded-full h-1.5 overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-700 ${color}`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-xs font-medium text-[#E0E0F8] w-8 text-right">{score}/10</span>
+      <span className="text-xs font-medium text-[var(--color-text-label)] w-8 text-right">{score}/10</span>
     </div>
   );
 }
@@ -76,7 +76,7 @@ function DownloadIcon() {
 
 function Spinner() {
   return (
-    <span className="w-4 h-4 border-2 border-[#4A4A68] border-t-transparent rounded-full animate-spin" />
+    <span className="w-4 h-4 border-2 border-[var(--color-text-placeholder)] border-t-transparent rounded-full animate-spin" />
   );
 }
 
@@ -110,12 +110,12 @@ function KeywordGap({ keywords, output }: { keywords: string[]; output: string }
   if (matched.length === 0 && missing.length === 0) return null;
 
   return (
-    <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-5">
+    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-5">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">
+        <p className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
           Keyword match
         </p>
-        <span className="text-xs font-medium text-[#8888A8]">
+        <span className="text-xs font-medium text-[var(--color-text-secondary)]">
           {matched.length}/{keywords.length} keywords
         </span>
       </div>
@@ -134,7 +134,7 @@ function KeywordGap({ keywords, output }: { keywords: string[]; output: string }
         {missing.map((k) => (
           <span
             key={k}
-            className="inline-flex items-center gap-1 text-xs font-medium text-[#5A5A80] bg-[#13182C] border border-[#232548] px-2 py-0.5 rounded-full"
+            className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-text-tertiary)] bg-[var(--color-elevated)] border border-[var(--color-border)] px-2 py-0.5 rounded-full"
           >
             <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -144,7 +144,7 @@ function KeywordGap({ keywords, output }: { keywords: string[]; output: string }
         ))}
       </div>
       {missing.length > 0 && (
-        <p className="text-xs text-[#5A5A80] mt-2">
+        <p className="text-xs text-[var(--color-text-tertiary)] mt-2">
           Missing keywords can be added to your resume or cover letter where accurate.
         </p>
       )}
@@ -194,10 +194,10 @@ function LabelInput({ generationId }: { generationId: string }) {
         onBlur={() => label && save(label)}
         onKeyDown={handleKeyDown}
         maxLength={200}
-        className="flex-1 border border-[#232548] rounded-lg px-3 py-2 text-xs text-[#EEEEFC] placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[#13182C] transition"
+        className="flex-1 border border-[var(--color-border)] rounded-lg px-3 py-2 text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
       />
       {saving && (
-        <span className="w-3.5 h-3.5 border-2 border-[#4A4A68] border-t-transparent rounded-full animate-spin" />
+        <span className="w-3.5 h-3.5 border-2 border-[var(--color-text-placeholder)] border-t-transparent rounded-full animate-spin" />
       )}
       {saved && (
         <span className="text-xs text-emerald-400 font-medium">Saved</span>
@@ -216,7 +216,7 @@ function QualityRing({ score }: { score: number }) {
   return (
     <div className="relative inline-flex items-center justify-center" title="Generation quality score (1–10)">
       <svg width="52" height="52" viewBox="0 0 52 52" className="-rotate-90">
-        <circle cx="26" cy="26" r={radius} fill="none" stroke="#232548" strokeWidth="4" />
+        <circle cx="26" cy="26" r={radius} fill="none" stroke="var(--color-border)" strokeWidth="4" />
         <circle
           cx="26" cy="26" r={radius} fill="none"
           stroke={color} strokeWidth="4"
@@ -225,7 +225,7 @@ function QualityRing({ score }: { score: number }) {
           style={{ transition: "stroke-dasharray 0.7s ease" }}
         />
       </svg>
-      <span className="absolute text-xs font-bold text-[#E0E0F8]">{score.toFixed(1)}</span>
+      <span className="absolute text-xs font-bold text-[var(--color-text-label)]">{score.toFixed(1)}</span>
     </div>
   );
 }
@@ -235,28 +235,28 @@ function TailoringPanel({ suggestions }: { suggestions: string[] }) {
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="bg-[#0D1122] rounded-2xl border border-[#232548] overflow-hidden">
+    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#13182C] transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[var(--color-elevated)] transition-colors"
       >
         <div className="flex items-center gap-2">
           <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
-          <span className="text-sm font-semibold text-[#EEEEFC]">Resume Tailoring Checklist</span>
+          <span className="text-sm font-semibold text-[var(--color-text-primary)]">Resume Tailoring Checklist</span>
           <span className="text-xs font-medium text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-2 py-0.5 rounded-full">{suggestions.length} actions</span>
         </div>
-        <svg className={`w-4 h-4 text-[#5A5A80] transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-4 h-4 text-[var(--color-text-tertiary)] transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
       {open && (
-        <div className="px-5 pb-4 border-t border-[#1A1D38] pt-3">
-          <p className="text-xs text-[#5A5A80] mb-3">Specific changes to make in your base resume to better match this role:</p>
+        <div className="px-5 pb-4 border-t border-[var(--color-border-subtle)] pt-3">
+          <p className="text-xs text-[var(--color-text-tertiary)] mb-3">Specific changes to make in your base resume to better match this role:</p>
           <ul className="space-y-2">
             {suggestions.map((s, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-[#E0E0F8]">
+              <li key={i} className="flex items-start gap-2 text-sm text-[var(--color-text-label)]">
                 <span className="w-5 h-5 rounded-full bg-indigo-950/40 border border-indigo-900/50 text-indigo-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
                 <span className="leading-relaxed">{s}</span>
               </li>
@@ -367,15 +367,15 @@ export default function OutputPanel({
   // ── Idle state ─────────────────────────────────────────────────────────────
   if (status === "idle") {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border-2 border-dashed border-[#232548] bg-[#0D1122]">
+      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border-2 border-dashed border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="w-12 h-12 rounded-xl bg-indigo-950/40 flex items-center justify-center mb-4">
           <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
-        <p className="text-sm font-medium text-[#8888A8]">Your output will appear here</p>
-        <p className="text-xs text-[#5A5A80] mt-1">Fill in the form and click Generate</p>
+        <p className="text-sm font-medium text-[var(--color-text-secondary)]">Your output will appear here</p>
+        <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Fill in the form and click Generate</p>
       </div>
     );
   }
@@ -399,10 +399,10 @@ export default function OutputPanel({
   // ── Parsing state ──────────────────────────────────────────────────────────
   if (status === "parsing") {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border border-[#232548] bg-[#0D1122]">
+      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-sm font-medium text-[#E0E0F8]">Analyzing job description...</p>
-        <p className="text-xs text-[#5A5A80] mt-1">Extracting role signals and requirements</p>
+        <p className="text-sm font-medium text-[var(--color-text-label)]">Analyzing job description...</p>
+        <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Extracting role signals and requirements</p>
       </div>
     );
   }
@@ -417,17 +417,17 @@ export default function OutputPanel({
       {/* JD Analysis chip — shown once parsed */}
       {jdAnalysis?.role_title && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-[#8888A8]">Targeting:</span>
+          <span className="text-xs text-[var(--color-text-secondary)]">Targeting:</span>
           <span className="text-xs font-medium text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-2.5 py-1 rounded-full">
             {jdAnalysis.role_title}
           </span>
           {jdAnalysis.seniority_level && (
-            <span className="text-xs text-[#8888A8] bg-[#13182C] border border-[#232548] px-2.5 py-1 rounded-full capitalize">
+            <span className="text-xs text-[var(--color-text-secondary)] bg-[var(--color-elevated)] border border-[var(--color-border)] px-2.5 py-1 rounded-full capitalize">
               {jdAnalysis.seniority_level}
             </span>
           )}
           {jdAnalysis.company_type && (
-            <span className="text-xs text-[#8888A8] bg-[#13182C] border border-[#232548] px-2.5 py-1 rounded-full capitalize">
+            <span className="text-xs text-[var(--color-text-secondary)] bg-[var(--color-elevated)] border border-[var(--color-border)] px-2.5 py-1 rounded-full capitalize">
               {jdAnalysis.company_type}
             </span>
           )}
@@ -438,16 +438,16 @@ export default function OutputPanel({
       {(isStreaming || isValidating) && (
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin shrink-0" />
-          <span className="text-xs text-[#8888A8]">
+          <span className="text-xs text-[var(--color-text-secondary)]">
             {isValidating ? "Checking quality..." : "Generating..."}
           </span>
         </div>
       )}
 
       {/* Output text */}
-      <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-6">
+      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
         <div
-          className={`text-sm text-[#C8C8F0] leading-relaxed whitespace-pre-wrap font-mono ${isStreaming ? "cursor-blink" : ""}`}
+          className={`text-sm text-[var(--color-text-output)] leading-relaxed whitespace-pre-wrap font-mono ${isStreaming ? "cursor-blink" : ""}`}
         >
           {displayText || (
             <span className="text-[#3A3A55] italic">Generating...</span>
@@ -458,13 +458,13 @@ export default function OutputPanel({
       {/* Scores — shown when done */}
       {status === "done" && result && (
         <>
-          <div className="bg-[#0D1122] rounded-2xl border border-[#232548] p-5">
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <QualityRing score={result.overall} />
                 <div>
-                  <p className="text-xs font-semibold text-[#5A5A80] uppercase tracking-wider">Generation quality</p>
-                  <p className="text-xs text-[#5A5A80] mt-0.5">Shortlist grades every generation for accuracy, relevance, and impact</p>
+                  <p className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">Generation quality</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">Shortlist grades every generation for accuracy, relevance, and impact</p>
                 </div>
               </div>
               <StatusBadge verdict={result.verdict} />
@@ -475,7 +475,7 @@ export default function OutputPanel({
               ))}
             </div>
             {result.retryCount > 0 && (
-              <p className="text-xs text-[#5A5A80] mt-3">
+              <p className="text-xs text-[var(--color-text-tertiary)] mt-3">
                 ↻ Refined once to improve quality
               </p>
             )}
@@ -538,7 +538,7 @@ export default function OutputPanel({
             {/* Copy */}
             <button
               onClick={copy}
-              className="flex items-center gap-2 text-sm font-medium text-[#E0E0F8] bg-[#13182C] hover:bg-[#232548] border border-[#232548] hover:border-[#2E3165] px-4 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-label)] bg-[var(--color-elevated)] hover:bg-[var(--color-border)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] px-4 py-2 rounded-lg transition-colors"
             >
               {copied ? (
                 <>
@@ -562,7 +562,7 @@ export default function OutputPanel({
             <button
               onClick={() => downloadExport("docx")}
               disabled={exportLoading.docx}
-              className="flex items-center gap-2 text-sm font-medium text-[#E0E0F8] bg-[#13182C] hover:bg-[#232548] border border-[#232548] hover:border-[#2E3165] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-label)] bg-[var(--color-elevated)] hover:bg-[var(--color-border)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {exportLoading.docx ? <Spinner /> : <DownloadIcon />}
               DOCX
@@ -572,7 +572,7 @@ export default function OutputPanel({
             <button
               onClick={() => downloadExport("pdf")}
               disabled={exportLoading.pdf}
-              className="flex items-center gap-2 text-sm font-medium text-[#E0E0F8] bg-[#13182C] hover:bg-[#232548] border border-[#232548] hover:border-[#2E3165] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-label)] bg-[var(--color-elevated)] hover:bg-[var(--color-border)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {exportLoading.pdf ? <Spinner /> : <DownloadIcon />}
               PDF
@@ -581,7 +581,7 @@ export default function OutputPanel({
             {/* Feedback — only shown for authenticated users (generationId present) */}
             {result.generationId && (
               <>
-                <span className="text-[#232548] text-sm">|</span>
+                <span className="text-[var(--color-border)] text-sm">|</span>
 
                 <button
                   onClick={() => submitFeedback(true)}
@@ -590,7 +590,7 @@ export default function OutputPanel({
                   className={`inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg border text-xs font-medium transition-all disabled:cursor-not-allowed ${
                     feedback === true
                       ? "bg-emerald-950/30 border-emerald-800/40 text-emerald-400"
-                      : "bg-transparent border-[#232548] text-[#5A5A80] hover:border-emerald-800/50 hover:bg-emerald-950/20 hover:text-emerald-400"
+                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-emerald-800/50 hover:bg-emerald-950/20 hover:text-emerald-400"
                   }`}
                 >
                   <ThumbsUpIcon />
@@ -604,7 +604,7 @@ export default function OutputPanel({
                   className={`inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg border text-xs font-medium transition-all disabled:cursor-not-allowed ${
                     feedback === false
                       ? "bg-red-950/30 border-red-800/40 text-red-400"
-                      : "bg-transparent border-[#232548] text-[#5A5A80] hover:border-red-800/50 hover:bg-red-950/20 hover:text-red-400"
+                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-red-800/50 hover:bg-red-950/20 hover:text-red-400"
                   }`}
                 >
                   <ThumbsDownIcon />
@@ -616,9 +616,9 @@ export default function OutputPanel({
 
           {/* Hiring manager worry */}
           {jdAnalysis?.hiring_manager_worry && (
-            <div className="bg-[#0B0E1E] rounded-lg px-4 py-3 border border-[#232548]">
-              <p className="text-xs text-[#5A5A80] font-medium mb-0.5">What they worry about</p>
-              <p className="text-xs text-[#8888A8] leading-relaxed">
+            <div className="bg-[var(--color-inset)] rounded-lg px-4 py-3 border border-[var(--color-border)]">
+              <p className="text-xs text-[var(--color-text-tertiary)] font-medium mb-0.5">What they worry about</p>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
                 {jdAnalysis.hiring_manager_worry}
               </p>
             </div>
