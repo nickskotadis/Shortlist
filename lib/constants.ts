@@ -8,11 +8,11 @@ export const MODELS = {
 // Stored on every generations row so you can measure impact of prompt changes.
 export const PROMPT_VERSIONS = {
   jd_parser: "jd-parser-v1",
-  bullets: "bullets-v2",
-  summary: "summary-v2",
-  cover_letter: "cover-letter-v2",
-  linkedin_about: "linkedin-about-v1",
-  linkedin_headline: "linkedin-headline-v1",
+  bullets: "bullets-v3",
+  summary: "summary-v3",
+  cover_letter: "cover-letter-v3",
+  linkedin_about: "linkedin-about-v2",
+  linkedin_headline: "linkedin-headline-v2",
   validator: "validator-v2",
   health_score: "health-score-v1",
   tailoring: "tailoring-v1",

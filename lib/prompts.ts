@@ -176,6 +176,7 @@ Your writing standards:
 - Every bullet must describe an outcome, not an activity. "Managed relationships with 12 enterprise clients" is an activity. "Retained 12 enterprise accounts totaling $4M ARR by rebuilding onboarding and cutting time-to-value from 90 to 30 days" is an outcome.
 - Mirror key terminology from the target role naturally — sound like an insider, not a keyword stuffer.
 - Ruthlessly prioritize relevance. If an experience doesn't map directly to what this role needs, omit it.
+- No em dashes (—) as clause connectors. Constructions like "Built X — reducing Y by 40%" or "Led team — delivering Z" are the single strongest AI writing signal. Rewrite as a comma, period, or restructured sentence instead.
 
 Banned phrases (automatic failure if any appear):
 ${banned}
@@ -227,6 +228,7 @@ Rules:
 - Second sentence: the specific thing they are unusually good at. Narrow enough that it couldn't describe a different person.
 - Third sentence: connects their background explicitly to the target role — what they bring to this problem specifically.
 - Optional fourth sentence: a genuine differentiator (specific credential, unusual background, notable achievement). Only include if it's real and specific — otherwise cut it.
+- No em dashes (—) as clause connectors. They are a strong AI writing signal. Use natural sentence breaks instead.
 
 Banned phrases:
 ${banned}
@@ -293,6 +295,7 @@ RULES:
 - Total length: 250–350 words. Hard limit. Count before returning.
 - No passive voice. Every sentence is active.
 - No clichés from the banned list.
+- No em dashes (—) as clause connectors. They are a strong AI writing signal. Use commas, periods, or restructured sentences instead.
 - Every sentence earns its place. Cut anything that doesn't add specific signal.
 - NO square bracket notes, annotations, or editorial comments of any kind.
 - Output only the letter body. Nothing before the first paragraph, nothing after the last.
@@ -338,6 +341,7 @@ Rules:
 - Optimized for LinkedIn's algorithm: naturally incorporate relevant keywords from the target role without keyword stuffing.
 - No bullet points — flowing paragraphs only (LinkedIn formatting).
 - Do NOT start with "I am" or "I'm a." Start with a hook that earns attention.
+- No em dashes (—) as clause connectors. They are a strong AI writing signal. Use natural sentence structure instead.
 
 Banned phrases:
 ${banned}
@@ -380,6 +384,7 @@ Rules:
   - "[Role] helping [type of company/customer] [outcome]"
   - "[Specific skill] + [specific skill] = [result they deliver]"
 - No generic phrases like "Passionate about..." or "Experienced professional"
+- No em dashes (—) as separators within the headline. Use | or + if separators are needed.
 
 TARGET CONTEXT:
 Role: ${jdAnalysis.role_title ?? "target role"}
