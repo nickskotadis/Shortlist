@@ -19,17 +19,23 @@ function CheckIcon() {
 const FREE_FEATURES = [
   "2 generations per month",
   "Resume bullets, summary & cover letter",
+  "LinkedIn About & Headline",
   "JD analysis + keyword tailoring",
-  "Quality score on every output",
+  "Quality score + keyword gap on every output",
   "DOCX & PDF export",
+  "Resume health score",
+  "Interview prep questions",
 ];
 
 const PRO_FEATURES = [
   "Unlimited generations",
-  "Resume bullets, summary & cover letter",
+  "Full application package — bullets, cover letter & LinkedIn at once (ZIP export)",
+  "AI Answer Coach — practice answers with scored feedback",
+  "LinkedIn About & Headline",
   "JD analysis + keyword tailoring",
-  "Quality score on every output",
+  "Quality score + keyword gap on every output",
   "DOCX & PDF export",
+  "Resume health score + interview prep",
   "Priority support",
 ];
 
