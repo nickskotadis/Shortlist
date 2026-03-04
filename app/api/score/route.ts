@@ -1,14 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { createClient } from "@/lib/supabase/server";
 import { buildHealthScorePrompt, stripCodeFences } from "@/lib/prompts";
 import { MODELS } from "@/lib/constants";
 import type { HealthScoreResult } from "@/lib/types";
 
 export const maxDuration = 30;
 
+export const FREE_SCORE_LIMIT = 1;
+
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
+  // Check auth + plan for free limit enforcement
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let currentScoreCount = 0;
+  let isPro = false;
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan, score_count")
+      .eq("id", user.id)
+      .single();
+
+    isPro = profile?.plan === "pro";
+    currentScoreCount = profile?.score_count ?? 0;
+
+    if (!isPro && currentScoreCount >= FREE_SCORE_LIMIT) {
+      return NextResponse.json({ error: "score_limit_reached" }, { status: 429 });
+    }
+  }
+
   let body: { resume_text: string };
   try {
     body = await req.json();
@@ -38,7 +65,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const response = await anthropic.messages.create({
-      model: MODELS.parser, // Haiku — analysis only, no generation
+      model: MODELS.parser,
       max_tokens: 1024,
       messages: [{ role: "user", content: buildHealthScorePrompt(trimmed) }],
     });
@@ -50,6 +77,14 @@ export async function POST(req: NextRequest) {
       result = JSON.parse(stripCodeFences(raw)) as HealthScoreResult;
     } catch {
       return NextResponse.json({ error: "Failed to parse score result — please try again." }, { status: 500 });
+    }
+
+    // Increment score_count for authenticated users — fire-and-forget
+    if (user) {
+      void supabase
+        .from("profiles")
+        .update({ score_count: currentScoreCount + 1 })
+        .eq("id", user.id);
     }
 
     return NextResponse.json(result);

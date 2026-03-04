@@ -23,7 +23,7 @@ const FREE_FEATURES = [
   "JD analysis + keyword tailoring",
   "Quality score + keyword gap on every output",
   "DOCX & PDF export",
-  "Resume health score",
+  "Resume health score (1×)",
   "Interview prep questions",
 ];
 
@@ -35,7 +35,8 @@ const PRO_FEATURES = [
   "JD analysis + keyword tailoring",
   "Quality score + keyword gap on every output",
   "DOCX & PDF export",
-  "Resume health score + interview prep",
+  "Unlimited resume health scores",
+  "Interview prep questions",
   "Priority support",
 ];
 
