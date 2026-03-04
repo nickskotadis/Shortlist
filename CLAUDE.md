@@ -61,7 +61,7 @@ Be decisive. If there are options, pick one and justify it.
 - `migration_003.sql` — drops unused `feedback_rating smallint` column (was in migration_001, never used); adds `on_generation_created` trigger to increment `profiles.generation_count` on every insert (required for Week 4 rate limiting); backfill: `UPDATE profiles SET generation_count = (SELECT COUNT(*) FROM generations WHERE user_id = profiles.id)`
 
 ### Week 4 — DONE
-- Stripe billing: Free (2 generations/month) and Pro (unlimited, $4.99/mo or $49.99/yr)
+- Stripe billing: Free (2 generations/month) and Pro (unlimited, $7/mo or $63/yr)
 - `lib/stripe.ts` — lazy `getStripe()` singleton; deferred init so builds don't fail when `STRIPE_SECRET_KEY` is unset
 - `/api/stripe/checkout` — POST, accepts `{ billingPeriod: "monthly" | "annual" }`, server resolves price ID from env vars (never exposed to client), returns `{ url }`
 - `/api/stripe/portal` — POST, requires `profiles.stripe_customer_id`, returns `{ url }`
