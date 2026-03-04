@@ -166,7 +166,7 @@ export default function PrivacyPage() {
                 href="mailto:nick@getshortlist.io"
                 className="text-indigo-600 hover:underline"
               >
-                nick@getshortlist.io
+                nickskotadis@gmail.com
               </a>
               .
             </p>
