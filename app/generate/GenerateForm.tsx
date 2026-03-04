@@ -561,8 +561,10 @@ export default function GenerateForm({
               <Link href="/dashboard" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Dashboard</Link>
               <Link href="/applications" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Applications</Link>
               <span className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#EEEEFC] bg-[#13182C] border border-[#232548]">Generate</span>
+              <Link href="/fit" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Fit</Link>
               <Link href="/score" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Score</Link>
               <Link href="/interview" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Interview</Link>
+              <Link href="/negotiate" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all">Negotiate</Link>
             </div>
           </div>
           <div className="flex items-center gap-3">
