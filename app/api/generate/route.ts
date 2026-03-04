@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { Redis } from "@upstash/redis";
 import { createClient } from "@/lib/supabase/server";
+
+export const maxDuration = 60;
 import {
   buildJdParserPrompt,
   buildUserTypeBlock,

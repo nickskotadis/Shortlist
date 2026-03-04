@@ -3,6 +3,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { MODELS } from "@/lib/constants";
 
+export const maxDuration = 30;
+
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const MAX_FIELD_LEN = 200;

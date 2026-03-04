@@ -4,6 +4,8 @@ import { buildInterviewPrepPrompt, stripCodeFences } from "@/lib/prompts";
 import { MODELS } from "@/lib/constants";
 import type { InterviewPrepResult } from "@/lib/types";
 
+export const maxDuration = 60;
+
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {

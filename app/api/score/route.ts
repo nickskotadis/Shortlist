@@ -4,6 +4,8 @@ import { buildHealthScorePrompt, stripCodeFences } from "@/lib/prompts";
 import { MODELS } from "@/lib/constants";
 import type { HealthScoreResult } from "@/lib/types";
 
+export const maxDuration = 30;
+
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
