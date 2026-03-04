@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { FREE_MONTHLY_LIMIT } from "@/lib/constants";
 import GenerationsClient, { type Generation } from "./GenerationsClient";
@@ -44,17 +43,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#090C18]">
-      <Nav
-        activePage="dashboard"
-        actions={
-          <Link
-            href="/generate"
-            className="text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl shadow-sm shadow-indigo-600/20 transition-all hover:-translate-y-px"
-          >
-            New generation
-          </Link>
-        }
-      />
+      <Nav activePage="dashboard" />
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

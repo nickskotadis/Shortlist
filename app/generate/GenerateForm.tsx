@@ -7,6 +7,7 @@ import { useGenerate } from "@/hooks/useGenerate";
 import { useBatchGenerate } from "@/hooks/useBatchGenerate";
 import OutputPanel from "@/components/OutputPanel";
 import UserMenu from "@/components/UserMenu";
+import NavMobileMenu from "@/components/NavMobileMenu";
 import type { DocumentType, UserType, UserData, ToneType } from "@/lib/types";
 import { FREE_MONTHLY_LIMIT, TONES } from "@/lib/constants";
 
@@ -565,7 +566,10 @@ export default function GenerateForm({
           </div>
           <div className="flex items-center gap-3">
             {userEmail ? (
-              <UserMenu email={userEmail} />
+              <>
+                <UserMenu email={userEmail} />
+                <NavMobileMenu activePage="generate" />
+              </>
             ) : (
               <Link href="/auth/login" className="text-sm text-[#8888A8] hover:text-[#EEEEFC] transition-colors">
                 Sign in
