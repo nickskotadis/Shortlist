@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { href: "/applications", label: "Applications", page: "applications" },
   { href: "/generate", label: "Generate", page: "generate" },
   { href: "/score", label: "Score", page: "score" },
+  { href: "/interview", label: "Interview", page: "interview" },
 ] as const;
 
 export default function NavMobileMenu({ activePage }: { activePage?: string }) {

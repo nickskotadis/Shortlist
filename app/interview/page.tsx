@@ -1,0 +1,28 @@
+import { createClient } from "@/lib/supabase/server";
+import Nav from "@/components/Nav";
+import InterviewClient from "./InterviewClient";
+
+export default async function InterviewPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let savedResume: string | null = null;
+
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("resume_text")
+      .eq("id", user.id)
+      .single();
+    savedResume = data?.resume_text ?? null;
+  }
+
+  return (
+    <div className="min-h-screen bg-[#090C18]">
+      <Nav activePage="interview" />
+      <InterviewClient savedResume={savedResume} />
+    </div>
+  );
+}

@@ -83,6 +83,17 @@ export interface HealthScoreResult {
   word_count: number;
 }
 
+export interface InterviewQuestion {
+  question: string;
+  category: "behavioral" | "technical" | "situational" | "culture";
+  why_asked: string;
+  framework: string;
+}
+
+export interface InterviewPrepResult {
+  questions: InterviewQuestion[];
+}
+
 export interface GenerateRequest {
   document_type: DocumentType;
   jd_text?: string;

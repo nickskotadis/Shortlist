@@ -16,6 +16,7 @@ export const PROMPT_VERSIONS = {
   validator: "validator-v2",
   health_score: "health-score-v1",
   tailoring: "tailoring-v1",
+  interview_prep: "interview-prep-v1",
 } as const;
 
 export const BANNED_PHRASES = [

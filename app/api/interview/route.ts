@@ -1,0 +1,74 @@
+import { NextRequest, NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
+import { buildInterviewPrepPrompt, stripCodeFences } from "@/lib/prompts";
+import { MODELS } from "@/lib/constants";
+import type { InterviewPrepResult } from "@/lib/types";
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+export async function POST(req: NextRequest) {
+  let body: { jd_text?: string; resume_text: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const { jd_text, resume_text } = body;
+
+  if (!resume_text || typeof resume_text !== "string") {
+    return NextResponse.json({ error: "resume_text is required" }, { status: 400 });
+  }
+
+  const trimmedResume = resume_text.trim();
+  if (trimmedResume.length < 50) {
+    return NextResponse.json(
+      { error: "Resume is too short — paste more of your background so we can tailor the questions." },
+      { status: 400 }
+    );
+  }
+  if (trimmedResume.length > 8_000) {
+    return NextResponse.json(
+      { error: "Resume text too long (max 8,000 characters)." },
+      { status: 400 }
+    );
+  }
+
+  if (jd_text !== undefined && jd_text !== null) {
+    if (typeof jd_text !== "string") {
+      return NextResponse.json({ error: "jd_text must be a string" }, { status: 400 });
+    }
+    if (jd_text.trim().length > 15_000) {
+      return NextResponse.json(
+        { error: "Job description too long (max 15,000 characters)." },
+        { status: 400 }
+      );
+    }
+  }
+
+  try {
+    const response = await anthropic.messages.create({
+      model: MODELS.parser,
+      max_tokens: 2048,
+      messages: [{ role: "user", content: buildInterviewPrepPrompt(jd_text ?? "", trimmedResume) }],
+    });
+
+    const raw = response.content[0].type === "text" ? response.content[0].text : "{}";
+
+    let result: InterviewPrepResult;
+    try {
+      result = JSON.parse(stripCodeFences(raw)) as InterviewPrepResult;
+    } catch {
+      return NextResponse.json(
+        { error: "Failed to parse interview prep result — please try again." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Interview prep failed";
+    console.error("[shortlist] interview prep error:", message);
+    return NextResponse.json({ error: "Interview prep failed — please try again." }, { status: 500 });
+  }
+}

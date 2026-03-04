@@ -572,6 +572,50 @@ ${resumeText}`;
 // TAILORING RECOMMENDATIONS — post-generation checklist
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// INTERVIEW PREP — tailored questions with STAR frameworks
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function buildInterviewPrepPrompt(jdText: string, resumeText: string): string {
+  const jdSection = jdText.trim()
+    ? `JOB DESCRIPTION:\n${jdText.trim()}`
+    : "No job description provided — generate universally strong questions appropriate for the experience level and background described in the resume.";
+
+  return `You are a senior talent acquisition strategist with 15 years of experience conducting interviews across every industry. Your job is to anticipate exactly what interviewers will ask and help candidates answer brilliantly.
+
+Analyze the following inputs and generate exactly 6–8 tailored interview questions. Cover all 4 categories: behavioral, technical, situational, culture. If no JD is provided, infer the target role from the resume and generate questions that would apply to any interview at that experience level.
+
+For each question:
+- Write it exactly as an interviewer would ask it out loud
+- Explain what the interviewer is actually trying to assess (why_asked) — be specific, not generic
+- Provide a concrete STAR-format answer framework (framework) that is specifically tailored to the candidate's resume background — reference their actual experience where possible
+
+Return ONLY valid JSON in this exact structure, no wrapper text, no markdown:
+
+{
+  "questions": [
+    {
+      "question": "exact question as the interviewer would ask it",
+      "category": "behavioral | technical | situational | culture",
+      "why_asked": "what the interviewer is actually assessing — be specific",
+      "framework": "STAR-format answer guidance tailored to this candidate's background"
+    }
+  ]
+}
+
+Requirements:
+- Exactly 6–8 questions total
+- At least 1 question per category (behavioral, technical, situational, culture)
+- Questions must be specific to this role/candidate — not generic filler
+- framework must reference the candidate's actual background from their resume
+- No text outside the JSON object
+
+${jdSection}
+
+CANDIDATE RESUME:
+${resumeText.trim()}`;
+}
+
 export function buildTailoringRecommendationsPrompt(
   resumeText: string,
   jdAnalysis: Partial<JdAnalysis>,
