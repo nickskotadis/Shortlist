@@ -98,6 +98,7 @@ Be decisive. If there are options, pick one and justify it.
 - **summary-v2** — first sentence formula explicitly banned ("Experienced X with N years..."); must lead with most compelling specific thing
 - **cover-letter-v2** — explicit first-person instruction throughout; Paragraph 1 avoids opening with "I" but rest uses I/my/me; "Why This Company" paragraph calls out generic praise as worthless; closer must be direct, not "I hope to hear from you"
 - **System prompt** — upgraded from "You are an expert career writer" to full elite career strategist persona emphasising human-sounding, specific output
+- **bullets-v3 / summary-v3 / cover-letter-v3 / linkedin-about-v2 / linkedin-headline-v2** — explicit rule banning em dashes (—) as clause connectors across all 5 generator prompts; em dashes are the single strongest AI writing signal; rule instructs rewriting as comma, period, or restructured sentence instead
 
 ### Post-Week 4 features — DONE
 - **Save master resume** — `profiles.resume_text text` column; GET/PUT `/api/profile/resume`; generate page fetches it server-side and pre-fills the resume textarea; "Save as default resume" button persists on blur; "Saved ✓" badge when populated
@@ -111,10 +112,11 @@ Be decisive. If there are options, pick one and justify it.
 - **Chrome extension JD import** — `GenerateForm` reads `?jd=` URL param on mount via `useEffect` and pre-fills `jdText`; no backend changes needed
 - **Dashboard empty state** — improved with icon, descriptive copy, and "Score my resume" secondary CTA
 - **`migration_004.sql`** — `profiles.resume_text`, `generations.label`, `generations.tone`; applied to production
+- **Interview prep** — free page at `/interview`; POST `/api/interview` uses Haiku (`MODELS.parser`) + `buildInterviewPrepPrompt()`; generates 6–8 tailored questions covering all 4 categories (behavioral, technical, situational, culture); each question includes `why_asked` + STAR-format `framework` tailored to candidate's resume; no auth required, no generation count; `max_tokens: 4096` (STAR frameworks verbose); per-card copy button; `interview_prep_page_viewed` + `interview_prep_generated` PostHog events; Interview link added to `Nav`, `NavMobileMenu`, and `GenerateForm` inline nav; `activePage` union in `Nav` extended to include `"interview"`
 
 ### Auth UX — DONE
 - **UserMenu** — `components/UserMenu.tsx`; client component; indigo initials avatar (2-char derived from email local part); click opens dropdown with "Signed in as [email]" + "Sign out" link; outside-click dismiss via `useEffect`
-- **Nav** — `components/Nav.tsx`; async server component; fetches user + plan from Supabase; props: `activePage`, `actions: React.ReactNode`; always uses `max-w-7xl` inner container (no `maxWidth` prop — was removed to prevent layout shift between pages); shows nav links (Dashboard/Applications/Generate/Score) only when authed; right side: `actions` + plan badge + `<UserMenu>` when authed, "Sign in" link when not
+- **Nav** — `components/Nav.tsx`; async server component; fetches user + plan from Supabase; props: `activePage`, `actions: React.ReactNode`; always uses `max-w-7xl` inner container (no `maxWidth` prop — was removed to prevent layout shift between pages); shows nav links (Dashboard/Applications/Generate/Score/Interview) only when authed; right side: `actions` + plan badge + `<UserMenu>` when authed, "Sign in" link when not
 - **Logout route** — `app/auth/logout/route.ts`; GET handler; calls `supabase.auth.signOut()` then redirects to `/`
 - **Social sign-in** — Google, LinkedIn (OIDC), GitHub OAuth buttons added to `app/auth/login/page.tsx`; each calls `supabase.auth.signInWithOAuth({ provider, options: { redirectTo: window.location.origin + '/auth/callback' } })`; existing `/auth/callback/route.ts` handles code exchange unchanged; providers must be enabled in Supabase Dashboard → Authentication → Providers
 - **Score page restructured** — `app/score/page.tsx` is now an async server wrapper rendering `<Nav activePage="score" />`; interactive content extracted to `app/score/ScoreClient.tsx` (`"use client"`)
@@ -130,8 +132,8 @@ Be decisive. If there are options, pick one and justify it.
 
 ## Key files
 - `lib/constants.ts` — model names, prompt versions, banned phrases, thresholds, `FREE_MONTHLY_LIMIT`, `TONES`, `PROMPT_AB_VARIANT`
-- `lib/prompts.ts` — all prompt builders; bump `PROMPT_VERSIONS` on every change; includes `buildToneInstruction()`, `buildLinkedInAboutPrompt()`, `buildLinkedInHeadlinePrompt()`, `buildHealthScorePrompt()`, `buildTailoringRecommendationsPrompt()`
-- `lib/types.ts` — shared types including SSE event shapes; `ToneType`, `HealthScoreResult`, updated `DocumentType`; `tailoring_suggestions` in `SseEvent` union
+- `lib/prompts.ts` — all prompt builders; bump `PROMPT_VERSIONS` on every change; includes `buildToneInstruction()`, `buildLinkedInAboutPrompt()`, `buildLinkedInHeadlinePrompt()`, `buildHealthScorePrompt()`, `buildTailoringRecommendationsPrompt()`, `buildInterviewPrepPrompt()`
+- `lib/types.ts` — shared types including SSE event shapes; `ToneType`, `HealthScoreResult`, `InterviewQuestion`, `InterviewPrepResult`, updated `DocumentType`; `tailoring_suggestions` in `SseEvent` union
 - `lib/stripe.ts` — lazy `getStripe()` singleton (server only — never import from client)
 - `app/api/generate/route.ts` — main LLM pipeline (SSE streaming); rate limit check; 5 doc types; `ab_variant` stored on DB insert; Stage 5 tailoring Haiku call (fire-and-forget)
 - `app/api/export/route.ts` — DOCX/PDF/ZIP export; ZIP uses jszip `arraybuffer` type
@@ -142,6 +144,9 @@ Be decisive. If there are options, pick one and justify it.
 - `app/api/generations/[id]/feedback/route.ts` — PATCH feedback_positive (thumbs up/down); RLS-enforced
 - `app/api/parse-resume/route.ts` — multipart POST; pdf-parse (PDF) + mammoth (DOCX); max 5 MB
 - `app/api/score/route.ts` — POST resume text, returns `HealthScoreResult` via Haiku
+- `app/api/interview/route.ts` — POST resume + optional JD, returns `InterviewPrepResult` via Haiku; no auth required; `max_tokens: 4096`
+- `app/interview/page.tsx` — async server wrapper; fetches `profiles.resume_text` if logged in; renders `<Nav activePage="interview" />` + `<InterviewClient />`
+- `app/interview/InterviewClient.tsx` — `"use client"`; JD textarea + resume textarea + PDF/DOCX upload; per-question cards with category badge, why_asked, STAR framework, copy button; PostHog events
 - `app/api/stripe/checkout/route.ts` — creates Stripe Checkout Session
 - `app/api/stripe/portal/route.ts` — creates Stripe Customer Portal session
 - `app/api/stripe/webhook/route.ts` — handles Stripe webhook events, service-role Supabase writes
@@ -414,7 +419,7 @@ These have been explicitly decided against. Don't suggest or implement them:
 **Features:**
 - Auto-apply / bulk apply — spam risk, race to the bottom, not the product positioning
 - LinkedIn scraping or any third-party data ingestion beyond PDF upload
-- AI interview prep, salary data, job board aggregation — out of scope for this product
+- Salary data, job board aggregation — out of scope for this product
 - Multiplayer / sharing generated docs with others — not needed for MVP
 - Mobile app — responsive web only
 
