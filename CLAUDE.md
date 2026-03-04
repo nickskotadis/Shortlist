@@ -107,7 +107,7 @@ Be decisive. If there are options, pick one and justify it.
 - **Keyword gap analysis** — `done` SSE event now includes `keywords: string[]` (from `jdAnalysis.key_terminology`); `OutputPanel` shows matched keywords (green ✓) vs missing (grey ✗) using case-insensitive substring match on the output text
 - **LinkedIn doc types** — `DocumentType` extended to include `"linkedin_about" | "linkedin_headline"`; both are JD-optional (`noJd: true` in DOC_TYPES); new prompt builders `buildLinkedInAboutPrompt()` and `buildLinkedInHeadlinePrompt()` in `lib/prompts.ts`; generate route handles both in the switch
 - **Tone selector** — `ToneType = "professional" | "conversational" | "bold"` in `lib/types.ts`; `TONES` config array in `lib/constants.ts`; `buildToneInstruction(tone)` injects tone override block into all generator prompts; `tone` stored on `generations` row; UI in generate form section (3 toggle buttons)
-- **Resume health score** — free page at `/score`; `/api/score` POST uses Haiku (`MODELS.parser`) + `buildHealthScorePrompt()`; scores 5 dimensions (clarity, impact, ats_friendliness, action_verbs, quantification); SVG score ring + dimension cards + 3–5 recommendations; CTA links to `/generate`; PDF/DOCX upload supported
+- **Resume health score** — `/score`; `/api/score` POST uses Haiku (`MODELS.parser`) + `buildHealthScorePrompt()`; scores 5 dimensions (clarity, impact, ats_friendliness, action_verbs, quantification); SVG score ring + dimension cards + 3–5 recommendations; CTA links to `/generate`; PDF/DOCX upload supported; **free limit: 1 score** (Pro: unlimited); `profiles.score_count` tracks usage; API returns 429 `score_limit_reached` for free users at limit; `score/page.tsx` fetches `plan, score_count` server-side and passes to `ScoreClient` so gate renders immediately; increment is fire-and-forget via `void supabase.from("profiles").update(...)` after successful score; `migration_007.sql`
 - **Session expiry UX** — `useGenerate` now sets `sessionExpired: boolean` on 401 response; `GenerateForm` shows "Session expired — log in again" amber card instead of silent failure
 - **Chrome extension JD import** — `GenerateForm` reads `?jd=` URL param on mount via `useEffect` and pre-fills `jdText`; no backend changes needed
 - **Dashboard empty state** — improved with icon, descriptive copy, and "Score my resume" secondary CTA
@@ -136,17 +136,17 @@ Be decisive. If there are options, pick one and justify it.
 - `lib/prompts.ts` — all prompt builders; bump `PROMPT_VERSIONS` on every change; includes `buildToneInstruction()`, `buildLinkedInAboutPrompt()`, `buildLinkedInHeadlinePrompt()`, `buildHealthScorePrompt()`, `buildTailoringRecommendationsPrompt()`, `buildInterviewPrepPrompt()`, `buildAnswerCoachPrompt()`
 - `lib/types.ts` — shared types including SSE event shapes; `ToneType`, `HealthScoreResult`, `InterviewQuestion`, `InterviewPrepResult`, `AnswerCoachResult`, updated `DocumentType`; `tailoring_suggestions` in `SseEvent` union
 - `lib/stripe.ts` — lazy `getStripe()` singleton (server only — never import from client)
-- `app/api/generate/route.ts` — main LLM pipeline (SSE streaming); rate limit check; 5 doc types; `ab_variant` stored on DB insert; Stage 5 tailoring Haiku call (fire-and-forget)
+- `app/api/generate/route.ts` — main LLM pipeline (SSE streaming); rate limit check; 5 doc types; `ab_variant` stored on DB insert; Stage 5 tailoring Haiku call (fire-and-forget); `maxDuration = 60`
 - `app/api/export/route.ts` — DOCX/PDF/ZIP export; ZIP uses jszip `arraybuffer` type
 - `app/api/applications/route.ts` — GET/POST/PATCH job applications (RLS-enforced)
-- `app/api/follow-up/route.ts` — POST follow-up email generation via Haiku
+- `app/api/follow-up/route.ts` — POST follow-up email generation via Haiku; `maxDuration = 30`
 - `app/api/profile/resume/route.ts` — GET/PUT saved resume text for authenticated user
 - `app/api/generations/[id]/label/route.ts` — PATCH label on a generation (RLS-enforced)
 - `app/api/generations/[id]/feedback/route.ts` — PATCH feedback_positive (thumbs up/down); RLS-enforced
 - `app/api/parse-resume/route.ts` — multipart POST; pdf-parse (PDF) + mammoth (DOCX); max 5 MB
-- `app/api/score/route.ts` — POST resume text, returns `HealthScoreResult` via Haiku
-- `app/api/interview/route.ts` — POST resume + optional JD, returns `InterviewPrepResult` via Haiku; no auth required; `max_tokens: 4096`
-- `app/api/interview/evaluate/route.ts` — POST; requires auth + Pro plan (401/403); validates answer 10–3,000 chars; returns `AnswerCoachResult` via Haiku; `max_tokens: 1024`
+- `app/api/score/route.ts` — POST resume text, returns `HealthScoreResult` via Haiku; `maxDuration = 30`; checks `plan + score_count` for free limit (429 `score_limit_reached`); increments `score_count` fire-and-forget on success
+- `app/api/interview/route.ts` — POST resume + optional JD, returns `InterviewPrepResult` via Haiku; no auth required; `max_tokens: 4096`; `maxDuration = 60`
+- `app/api/interview/evaluate/route.ts` — POST; requires auth + Pro plan (401/403); validates answer 10–3,000 chars; returns `AnswerCoachResult` via Haiku; `max_tokens: 1024`; `maxDuration = 30`
 - `app/interview/page.tsx` — async server wrapper; fetches `profiles.plan, profiles.resume_text` if logged in; passes both to `<InterviewClient />`
 - `app/interview/InterviewClient.tsx` — `"use client"`; JD textarea + resume textarea + PDF/DOCX upload; per-question cards with category badge, why_asked, STAR framework, copy button; Pro users get answer practice toggle + feedback panel; free users get locked upgrade CTA; PostHog events
 - `app/api/stripe/checkout/route.ts` — creates Stripe Checkout Session
@@ -157,8 +157,8 @@ Be decisive. If there are options, pick one and justify it.
 - `app/applications/page.tsx` — server component; fetches applications + generation counts; uses `<Nav activePage="applications" />`
 - `app/applications/ApplicationsClient.tsx` — client; status updates, follow-up email panel, add form
 - `app/admin/quality/page.tsx` — protected by `ADMIN_EMAILS`; aggregates generations by prompt_version + ab_variant
-- `app/score/page.tsx` — async server wrapper; renders `<Nav activePage="score" />` + `<ScoreClient />`
-- `app/score/ScoreClient.tsx` — `"use client"` resume health score interactive content; `score_page_viewed` PostHog event
+- `app/score/page.tsx` — async server wrapper; fetches `profiles.plan, profiles.score_count` if logged in; passes both to `<ScoreClient />`
+- `app/score/ScoreClient.tsx` — `"use client"`; accepts `plan`, `scoreCount` props; renders upgrade gate immediately when `plan !== "pro" && scoreCount >= 1`; header badge reflects plan; `score_page_viewed` PostHog event
 - `app/auth/logout/route.ts` — GET; signs out via Supabase, redirects to `/`
 - `app/pricing/page.tsx` — pricing page; `upgrade_clicked` PostHog event
 - `components/Nav.tsx` — async server component; shared nav with user auth + plan fetch; accepts `activePage`, `actions` props; always `max-w-7xl` inner container; pill-button nav links
@@ -179,6 +179,7 @@ Be decisive. If there are options, pick one and justify it.
 - `supabase/migration_004.sql` — resume_text, label, tone columns
 - `supabase/migration_005.sql` — ab_variant column on generations
 - `supabase/migration_006.sql` — status, url, notes columns on job_applications
+- `supabase/migration_007.sql` — score_count column on profiles (resume health score usage tracking)
 - `lib/export.ts` — server-only DOCX + PDF generators; handles all 5 doc types
 - `chrome-extension/` — Manifest V3 extension; content.js, background.js, popup.html, icons/
 - `chrome-extension/generate-icons.js` — run with `node chrome-extension/generate-icons.js` to regenerate PNG icons; zero dependencies (zlib only)
@@ -475,4 +476,7 @@ These have been explicitly decided against. Don't suggest or implement them:
 - Social OAuth providers (Google, LinkedIn, GitHub) must be enabled in Supabase Dashboard → Authentication → Providers with client ID + secret before the buttons do anything
 - Nav `maxWidth` prop was removed — all pages must use the shared `max-w-7xl` inner container. Do not add per-page width overrides to Nav or the buttons will shift between pages. Page content can use its own max-width independently.
 - Nav `px-6` must be on the inner `<div>` not the `<nav>` element — if moved to `<nav>`, `mx-auto` centers within a narrowed viewport and content shifts relative to page body.
+- **`maxDuration` on every LLM route is mandatory** — Vercel defaults to 10s; Haiku generating 4096 tokens takes 15–25s. Every route that calls `anthropic.messages.create` must export `export const maxDuration = 60` (long outputs) or `30` (short outputs). Missing this causes silent timeout failures on the first attempt.
+- **Supabase fire-and-forget increment**: use `void supabase.from(...).update(...).eq(...)` — do NOT chain `.then().catch()` on the Supabase query builder; its return type is `PromiseLike`, not a full `Promise`, so `.catch()` doesn't exist on it and TypeScript will error.
+- **Supabase CLI ad-hoc SQL**: `supabase db execute` doesn't exist in v2.75. To run a migration against remote, use `supabase db push` (for tracked migrations) or connect via database URL. The Management API (`POST /v1/projects/{ref}/database/query`) requires a Personal Access Token (PAT), not the service role key.
 - **Security hardening (applied)**: open redirect in `auth/callback` prevented by validating `next` param starts with `/` and not `//`; Stripe checkout redirect URLs derived server-side from `x-forwarded-host` (never trust client); `follow-up` route requires auth + `MAX_FIELD_LEN=200` limits; `generate` route verifies `job_application_id` ownership before linking; `parse-resume` validates magic bytes (`%PDF` / `PK\x03\x04`) before passing to parsers; `applications` route uses `sanitizeUrl()` (rejects `javascript:` URIs), validates status enum, enforces field length limits, returns generic error messages; global security headers set in `next.config.ts` (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`)
