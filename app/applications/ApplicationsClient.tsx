@@ -17,10 +17,10 @@ interface Application {
 }
 
 const STATUS_CONFIG: Record<ApplicationStatus, { label: string; color: string; dot: string }> = {
-  applied:    { label: "Applied",    color: "text-indigo-400 bg-indigo-950/40 border-indigo-900/50",   dot: "bg-indigo-400" },
-  interview:  { label: "Interview",  color: "text-amber-400 bg-amber-950/30 border-amber-900/40",     dot: "bg-amber-400" },
-  offer:      { label: "Offer",      color: "text-emerald-400 bg-emerald-950/30 border-emerald-900/40", dot: "bg-emerald-400" },
-  rejected:   { label: "Rejected",   color: "text-red-400 bg-red-950/30 border-red-900/40",           dot: "bg-red-400" },
+  applied:    { label: "Applied",    color: "text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/50",   dot: "bg-indigo-400" },
+  interview:  { label: "Interview",  color: "text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40",     dot: "bg-amber-400" },
+  offer:      { label: "Offer",      color: "text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40", dot: "bg-emerald-400" },
+  rejected:   { label: "Rejected",   color: "text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border-red-200 dark:border-red-900/40",           dot: "bg-red-400" },
   withdrawn:  { label: "Withdrawn",  color: "text-[var(--color-text-tertiary)] bg-[var(--color-elevated)] border-[var(--color-border)]",           dot: "bg-[var(--color-text-tertiary)]" },
 };
 
@@ -296,10 +296,10 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
             <div className="flex flex-wrap gap-2">
               {(Object.keys(STATUS_CONFIG) as ApplicationStatus[]).map((s) => {
                 const activeColors: Record<ApplicationStatus, string> = {
-                  applied:   "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400",
-                  interview: "border-amber-500 bg-amber-950/30 ring-1 ring-amber-500 text-amber-400",
-                  offer:     "border-emerald-500 bg-emerald-950/30 ring-1 ring-emerald-500 text-emerald-400",
-                  rejected:  "border-red-500 bg-red-950/30 ring-1 ring-red-500 text-red-400",
+                  applied:   "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400",
+                  interview: "border-amber-500 bg-amber-50 ring-1 ring-amber-500 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400",
+                  offer:     "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400",
+                  rejected:  "border-red-500 bg-red-50 ring-1 ring-red-500 text-red-700 dark:bg-red-950/30 dark:text-red-400",
                   withdrawn: "border-[var(--color-text-tertiary)] bg-[var(--color-elevated)] ring-1 ring-[var(--color-text-tertiary)] text-[var(--color-text-secondary)]",
                 };
                 return (
@@ -415,7 +415,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               onClick={() => setStatusFilter("all")}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                 statusFilter === "all"
-                  ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400"
+                  ? "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
                   : "border-[var(--color-border)] bg-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
               }`}
             >
@@ -425,10 +425,10 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               const count = applications.filter((a) => a.status === s).length;
               if (count === 0) return null;
               const activeColors: Record<ApplicationStatus, string> = {
-                applied:   "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400",
-                interview: "border-amber-500 bg-amber-950/30 ring-1 ring-amber-500 text-amber-400",
-                offer:     "border-emerald-500 bg-emerald-950/30 ring-1 ring-emerald-500 text-emerald-400",
-                rejected:  "border-red-500 bg-red-950/30 ring-1 ring-red-500 text-red-400",
+                applied:   "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400",
+                interview: "border-amber-500 bg-amber-50 ring-1 ring-amber-500 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400",
+                offer:     "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400",
+                rejected:  "border-red-500 bg-red-50 ring-1 ring-red-500 text-red-700 dark:bg-red-950/30 dark:text-red-400",
                 withdrawn: "border-[var(--color-text-tertiary)] bg-[var(--color-elevated)] ring-1 ring-[var(--color-text-tertiary)] text-[var(--color-text-secondary)]",
               };
               return (

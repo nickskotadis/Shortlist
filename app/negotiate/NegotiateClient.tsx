@@ -22,7 +22,7 @@ function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) 
   return (
     <button
       onClick={handleCopy}
-      className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all shrink-0"
+      className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-100 dark:hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all shrink-0"
     >
       {copied ? (
         <>
@@ -70,7 +70,7 @@ function ResultPanel({ result, currentOffer, targetOffer }: { result: Negotiatio
       {/* Summary bar */}
       <div className="px-6 py-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-950/30 border border-emerald-900/40 px-2.5 py-1 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 px-2.5 py-1 rounded-full">
             +{delta.toLocaleString()} ({deltaPct}% ask)
           </span>
           <span className="text-xs text-[var(--color-text-tertiary)]">
@@ -99,7 +99,7 @@ function ResultPanel({ result, currentOffer, targetOffer }: { result: Negotiatio
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 px-3 py-3 text-xs font-semibold transition-all ${
               activeTab === tab.id
-                ? "text-indigo-400 border-b-2 border-indigo-500 bg-indigo-950/20"
+                ? "text-indigo-400 border-b-2 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20"
                 : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-elevated)]"
             }`}
           >
@@ -273,7 +273,7 @@ export default function NegotiateClient({
           <svg className="w-10 h-10 text-[var(--color-text-tertiary)] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-full">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-3 py-1.5 rounded-full">
             Pro feature
           </div>
           <h2 className="text-xl font-bold text-[var(--color-text-primary)]">Salary Negotiation Coach</h2>
@@ -295,7 +295,7 @@ export default function NegotiateClient({
     <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
       {/* Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-full mb-4">
+        <div className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-3 py-1.5 rounded-full mb-4">
           Pro · Salary Negotiation Coach
         </div>
         <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-3">Negotiate Your Offer</h1>
@@ -480,7 +480,7 @@ export default function NegotiateClient({
 
       {/* Error */}
       {error && error !== "pro_required" && (
-        <div className="bg-red-950/20 border border-red-900/40 rounded-2xl p-5 mb-6 text-center">
+        <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-2xl p-5 mb-6 text-center">
           <p className="text-sm text-red-400">{error}</p>
         </div>
       )}

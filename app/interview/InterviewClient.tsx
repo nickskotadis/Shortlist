@@ -19,19 +19,19 @@ const CATEGORY_STYLES: Record<
 > = {
   behavioral: {
     label: "Behavioral",
-    classes: "text-indigo-400 bg-indigo-950/40 border-indigo-900/50",
+    classes: "text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/50",
   },
   technical: {
     label: "Technical",
-    classes: "text-violet-400 bg-violet-950/40 border-violet-900/50",
+    classes: "text-violet-700 bg-violet-50 dark:text-violet-400 dark:bg-violet-950/40 border-violet-200 dark:border-violet-900/50",
   },
   situational: {
     label: "Situational",
-    classes: "text-amber-400 bg-amber-950/30 border-amber-900/40",
+    classes: "text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40",
   },
   culture: {
     label: "Culture",
-    classes: "text-emerald-400 bg-emerald-950/30 border-emerald-900/40",
+    classes: "text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40",
   },
 };
 
@@ -141,7 +141,7 @@ function QuestionCard({
         <button
           onClick={handleCopy}
           title="Copy question + framework"
-          className="shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all"
+          className="shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-100 dark:hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all"
         >
           {copied ? (
             <>
@@ -452,7 +452,7 @@ function MockInterview({
         <svg className="w-8 h-8 text-[var(--color-text-tertiary)] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
-        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-full">
+        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-3 py-1.5 rounded-full">
           Pro feature
         </div>
         <p className="text-sm font-semibold text-[var(--color-text-primary)]">Mock Interview Simulator</p>
@@ -491,7 +491,7 @@ function MockInterview({
                 onClick={() => setCategoryFocus(opt.value)}
                 className={`text-left px-3 py-3 rounded-xl border text-sm transition-all ${
                   categoryFocus === opt.value
-                    ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500"
+                    ? "border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 ring-1 ring-indigo-500"
                     : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                 }`}
               >
@@ -545,7 +545,7 @@ function MockInterview({
         {/* Header */}
         <div className="px-5 py-3 border-b border-[var(--color-border-subtle)] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-2.5 py-1 rounded-full">
               Mock Interview
             </span>
             <span className="text-xs text-[var(--color-text-tertiary)]">{candidateTurns} answer{candidateTurns !== 1 ? "s" : ""} given</span>
@@ -555,7 +555,7 @@ function MockInterview({
               <button
                 onClick={handleEndSession}
                 disabled={loading}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-950/30 hover:bg-emerald-950/50 border border-emerald-900/40 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900/40 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
               >
                 End session + get debrief
               </button>
@@ -671,7 +671,7 @@ function MockInterview({
           <span className="text-sm font-semibold text-[var(--color-text-primary)]">Session Debrief</span>
           <button
             onClick={handleReset}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] bg-[var(--color-elevated)] hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] bg-[var(--color-elevated)] hover:bg-indigo-100 dark:hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all"
           >
             Practice again →
           </button>
@@ -922,7 +922,7 @@ export default function InterviewClient({
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={parseLoading}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-100 dark:hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
               >
                 {parseLoading ? (
                   <span className="w-3 h-3 border-2 border-[var(--color-text-secondary)] border-t-transparent rounded-full animate-spin" />
@@ -956,7 +956,7 @@ export default function InterviewClient({
       {mode === "questions" && (
         <>
           <div className="flex items-center justify-between mb-6">
-            <span className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-full">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-3 py-1.5 rounded-full">
               Free · No generation count used
             </span>
             <button
@@ -980,7 +980,7 @@ export default function InterviewClient({
           </div>
 
           {error && (
-            <div className="bg-red-950/20 border border-red-900/40 rounded-2xl p-5 mb-6 text-center">
+            <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-2xl p-5 mb-6 text-center">
               <p className="text-sm text-red-400">{error}</p>
             </div>
           )}

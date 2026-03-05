@@ -100,22 +100,22 @@ function DimensionBar({
 const RECOMMENDATION_CONFIG = {
   strong_fit: {
     label: "Strong Fit",
-    classes: "text-emerald-400 bg-emerald-950/30 border-emerald-900/40",
+    classes: "text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40",
     description: "Apply with confidence.",
   },
   moderate_fit: {
     label: "Moderate Fit",
-    classes: "text-indigo-400 bg-indigo-950/40 border-indigo-900/50",
+    classes: "text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/50",
     description: "Worth applying — address gaps in your cover letter.",
   },
   stretch: {
     label: "Stretch Role",
-    classes: "text-amber-400 bg-amber-950/30 border-amber-900/40",
+    classes: "text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40",
     description: "Significant gaps — apply if you can address them head-on.",
   },
   mismatch: {
     label: "Likely Mismatch",
-    classes: "text-red-400 bg-red-950/30 border-red-900/40",
+    classes: "text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border-red-200 dark:border-red-900/40",
     description: "Fundamental misalignment on core requirements.",
   },
 };
@@ -291,7 +291,7 @@ export default function FitClient({
     <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
       {/* Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-full mb-4">
+        <div className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-3 py-1.5 rounded-full mb-4">
           {plan === "pro" ? "Pro · Unlimited" : `Free · ${FREE_FIT_LIMIT} check`}
         </div>
         <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-3">Job Fit Scorer</h1>
@@ -361,7 +361,7 @@ export default function FitClient({
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={parseLoading}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-100 dark:hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
                   >
                     {parseLoading ? (
                       <span className="w-3 h-3 border-2 border-[var(--color-text-secondary)] border-t-transparent rounded-full animate-spin" />
@@ -413,7 +413,7 @@ export default function FitClient({
 
           {/* Error */}
           {error && (
-            <div className="bg-red-950/20 border border-red-900/40 rounded-2xl p-5 mb-6 text-center">
+            <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-2xl p-5 mb-6 text-center">
               <p className="text-sm text-red-400">{error}</p>
             </div>
           )}

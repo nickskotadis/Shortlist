@@ -67,10 +67,10 @@ export default function QualityClient({
             {(["all", "A", "B"] as VariantFilter[]).map((v) => {
               const activeClass =
                 v === "B"
-                  ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400"
+                  ? "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
                   : v === "A"
                   ? "border-[var(--color-text-tertiary)] bg-[var(--color-elevated)] ring-1 ring-[var(--color-text-tertiary)] text-[var(--color-text-secondary)]"
-                  : "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400";
+                  : "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400";
               const label = v === "all" ? `All (${stats.length})` : `Variant ${v}`;
               return (
                 <button
@@ -142,7 +142,7 @@ export default function QualityClient({
                     <span
                       className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full border ${
                         row.ab_variant === "B"
-                          ? "text-indigo-400 bg-indigo-950/40 border-indigo-900/50"
+                          ? "text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/50"
                           : "text-[var(--color-text-secondary)] bg-[var(--color-elevated)] border-[var(--color-border)]"
                       }`}
                     >

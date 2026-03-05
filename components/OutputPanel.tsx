@@ -45,20 +45,20 @@ function ScoreBar({ label, score }: { label: string; score: number }) {
 function StatusBadge({ verdict }: { verdict: string }) {
   if (verdict === "PASS")
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400 bg-emerald-950/30 border border-emerald-900/40 px-2.5 py-1 rounded-full">
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 px-2.5 py-1 rounded-full">
         <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
         Passed quality check
       </span>
     );
   if (verdict === "REVISE")
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-400 bg-amber-950/30 border border-amber-900/40 px-2.5 py-1 rounded-full">
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 px-2.5 py-1 rounded-full">
         <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
         Review before using
       </span>
     );
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-400 bg-red-950/30 border border-red-900/40 px-2.5 py-1 rounded-full">
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 px-2.5 py-1 rounded-full">
       <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
       Needs editing
     </span>
@@ -123,7 +123,7 @@ function KeywordGap({ keywords, output }: { keywords: string[]; output: string }
         {matched.map((k) => (
           <span
             key={k}
-            className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400 bg-emerald-950/30 border border-emerald-900/40 px-2 py-0.5 rounded-full"
+            className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 px-2 py-0.5 rounded-full"
           >
             <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -245,7 +245,7 @@ function TailoringPanel({ suggestions }: { suggestions: string[] }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
           <span className="text-sm font-semibold text-[var(--color-text-primary)]">Resume Tailoring Checklist</span>
-          <span className="text-xs font-medium text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-2 py-0.5 rounded-full">{suggestions.length} actions</span>
+          <span className="text-xs font-medium text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-2 py-0.5 rounded-full">{suggestions.length} actions</span>
         </div>
         <svg className={`w-4 h-4 text-[var(--color-text-tertiary)] transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -257,7 +257,7 @@ function TailoringPanel({ suggestions }: { suggestions: string[] }) {
           <ul className="space-y-2">
             {suggestions.map((s, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-[var(--color-text-label)]">
-                <span className="w-5 h-5 rounded-full bg-indigo-950/40 border border-indigo-900/50 text-indigo-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                <span className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 text-indigo-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
                 <span className="leading-relaxed">{s}</span>
               </li>
             ))}
@@ -368,7 +368,7 @@ export default function OutputPanel({
   if (status === "idle") {
     return (
       <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border-2 border-dashed border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="w-12 h-12 rounded-xl bg-indigo-950/40 flex items-center justify-center mb-4">
+        <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-950/40 flex items-center justify-center mb-4">
           <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -383,8 +383,8 @@ export default function OutputPanel({
   // ── Error state ────────────────────────────────────────────────────────────
   if (status === "error") {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border border-red-900/40 bg-red-950/20">
-        <div className="w-12 h-12 rounded-xl bg-red-950/40 flex items-center justify-center mb-4">
+      <div className="flex flex-col items-center justify-center h-full min-h-80 text-center px-8 py-16 rounded-2xl border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20">
+        <div className="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-950/40 flex items-center justify-center mb-4">
           <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -418,7 +418,7 @@ export default function OutputPanel({
       {jdAnalysis?.role_title && (
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-[var(--color-text-secondary)]">Targeting:</span>
-          <span className="text-xs font-medium text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-2.5 py-1 rounded-full">
+          <span className="text-xs font-medium text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-2.5 py-1 rounded-full">
             {jdAnalysis.role_title}
           </span>
           {jdAnalysis.seniority_level && (
@@ -480,7 +480,7 @@ export default function OutputPanel({
               </p>
             )}
             {result.overall < 7 && (
-              <div className="mt-3 flex items-center gap-2 text-xs text-amber-400 bg-amber-950/20 border border-amber-900/30 rounded-lg px-3 py-2">
+              <div className="mt-3 flex items-center gap-2 text-xs text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-lg px-3 py-2">
                 <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -501,7 +501,7 @@ export default function OutputPanel({
             );
             if (flags.length === 0) return null;
             return (
-              <div className="bg-amber-950/20 border border-amber-900/40 rounded-2xl p-5">
+              <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-2xl p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -512,7 +512,7 @@ export default function OutputPanel({
                 <div className="space-y-3">
                   {flags.map((flag: ValidatorIssue, i: number) => (
                     <div key={i}>
-                      <p className="text-xs font-mono text-amber-200 bg-amber-950/50 border border-amber-900/40 px-2 py-1 rounded mb-1 break-words">
+                      <p className="text-xs font-mono text-amber-800 bg-amber-50 dark:text-amber-200 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900/40 px-2 py-1 rounded mb-1 break-words">
                         &ldquo;{flag.location}&rdquo;
                       </p>
                       <p className="text-xs text-amber-400/80 leading-relaxed">{flag.fix}</p>
@@ -589,8 +589,8 @@ export default function OutputPanel({
                   aria-label="Helpful"
                   className={`inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg border text-xs font-medium transition-all disabled:cursor-not-allowed ${
                     feedback === true
-                      ? "bg-emerald-950/30 border-emerald-800/40 text-emerald-400"
-                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-emerald-800/50 hover:bg-emerald-950/20 hover:text-emerald-400"
+                      ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/40 text-emerald-400"
+                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-emerald-300 dark:hover:border-emerald-800/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:text-emerald-400"
                   }`}
                 >
                   <ThumbsUpIcon />
@@ -603,8 +603,8 @@ export default function OutputPanel({
                   aria-label="Not helpful"
                   className={`inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg border text-xs font-medium transition-all disabled:cursor-not-allowed ${
                     feedback === false
-                      ? "bg-red-950/30 border-red-800/40 text-red-400"
-                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-red-800/50 hover:bg-red-950/20 hover:text-red-400"
+                      ? "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800/40 text-red-400"
+                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-red-300 dark:hover:border-red-800/50 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-400"
                   }`}
                 >
                   <ThumbsDownIcon />

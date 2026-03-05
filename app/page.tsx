@@ -33,7 +33,7 @@ export default function Home() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="animate-fade-up relative">
-          <div className="inline-flex items-center gap-2 bg-indigo-950/50 border border-indigo-900/50 text-indigo-400 text-xs font-medium px-4 py-1.5 rounded-full mb-8">
+          <div className="inline-flex items-center gap-2 bg-indigo-100 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-900/50 text-indigo-400 text-xs font-medium px-4 py-1.5 rounded-full mb-8">
             <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
             Built for career switchers, students, professionals &amp; executives
           </div>

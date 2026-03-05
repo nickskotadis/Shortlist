@@ -73,7 +73,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
           {user ? (
             <>
               {plan === "pro" ? (
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-indigo-400 bg-indigo-950/50 border border-indigo-900/50">
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-900/50">
                   <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
                   Pro
                 </span>

@@ -243,7 +243,7 @@ function UsageMeter({ usage }: { usage: PlanUsage }) {
   if (usage.plan === "pro") {
     return (
       <div className="flex items-center gap-2 mb-4">
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-indigo-400 bg-indigo-950/50 border border-indigo-900/50">
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-900/50">
           <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
           Pro · Unlimited
         </span>
@@ -363,7 +363,7 @@ function BatchOutputPanel({
         <button
           onClick={onDownloadZip}
           disabled={zipLoading}
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-indigo-800/50 text-sm font-semibold text-indigo-400 bg-indigo-950/30 hover:bg-indigo-950/50 transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-indigo-300 dark:border-indigo-800/50 text-sm font-semibold text-indigo-700 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-950/50 transition-colors disabled:opacity-50"
         >
           {zipLoading ? (
             <span className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
@@ -606,7 +606,7 @@ export default function GenerateForm({
                   }}
                   className={`text-left rounded-xl border px-4 py-3.5 transition-all ${
                     userType === t.value
-                      ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500"
+                      ? "border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 ring-1 ring-indigo-500"
                       : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
@@ -664,7 +664,7 @@ export default function GenerateForm({
               <div className="flex items-center gap-2">
                 {/* Save resume badge */}
                 {resumeSaved && candidateInput.trim() && (
-                  <span className="inline-flex items-center gap-1 text-xs text-emerald-400 bg-emerald-950/30 border border-emerald-900/40 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 px-2 py-0.5 rounded-full">
                     <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
                     Saved
                   </span>
@@ -684,7 +684,7 @@ export default function GenerateForm({
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={parseLoading}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-950/30 border border-[var(--color-border)] hover:border-indigo-800/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-800/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {parseLoading ? (
                     <span className="w-3 h-3 border-2 border-[var(--color-text-placeholder)] border-t-transparent rounded-full animate-spin" />
@@ -721,8 +721,8 @@ export default function GenerateForm({
                   disabled={resumeSaving || resumeSaved}
                   className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${
                     resumeSaved
-                      ? "text-emerald-400 bg-emerald-950/30 border-emerald-900/40 cursor-default"
-                      : "text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-950/30 border-[var(--color-border)] hover:border-indigo-800/50"
+                      ? "text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40 cursor-default"
+                      : "text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-800/50"
                   } disabled:opacity-50`}
                 >
                   {resumeSaving ? "Saving..." : resumeSaved ? "✓ Saved as default" : "Save as default resume"}
@@ -751,7 +751,7 @@ export default function GenerateForm({
                   }}
                   className={`text-left rounded-xl border px-3 py-3 transition-all ${
                     documentType === d.value
-                      ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500"
+                      ? "border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 ring-1 ring-indigo-500"
                       : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
@@ -772,7 +772,7 @@ export default function GenerateForm({
                   }}
                   className={`text-left rounded-xl border px-3 py-3 transition-all ${
                     documentType === d.value
-                      ? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500"
+                      ? "border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 ring-1 ring-indigo-500"
                       : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
@@ -780,7 +780,7 @@ export default function GenerateForm({
                     <p className={`text-sm font-medium ${documentType === d.value ? "text-indigo-400" : "text-[var(--color-text-primary)]"}`}>
                       {d.label}
                     </p>
-                    <span className="text-xs text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-1.5 py-0.5 rounded-full font-medium">
+                    <span className="text-xs text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-1.5 py-0.5 rounded-full font-medium">
                       LinkedIn
                     </span>
                   </div>
@@ -791,7 +791,7 @@ export default function GenerateForm({
 
             {/* Batch mode toggle */}
             {initialUsage?.plan === "pro" ? (
-              <div className="mb-4 flex items-start justify-between gap-3 bg-indigo-950/20 border border-indigo-900/30 rounded-xl px-4 py-3">
+              <div className="mb-4 flex items-start justify-between gap-3 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/30 rounded-xl px-4 py-3">
                 <div>
                   <p className="text-sm font-medium text-indigo-300">Full application package</p>
                   <p className="text-xs text-indigo-400/70 mt-0.5">Generate resume bullets, cover letter, and LinkedIn About at once. Counts as 3 generations.</p>
@@ -808,12 +808,12 @@ export default function GenerateForm({
                 </button>
               </div>
             ) : (
-              <Link href="/pricing" className="mb-4 flex items-start justify-between gap-3 bg-indigo-950/20 border border-indigo-900/30 rounded-xl px-4 py-3 hover:border-indigo-900/60 transition-colors">
+              <Link href="/pricing" className="mb-4 flex items-start justify-between gap-3 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/30 rounded-xl px-4 py-3 hover:border-indigo-300 dark:hover:border-indigo-900/60 transition-colors">
                 <div>
                   <p className="text-sm font-medium text-indigo-300">Full application package</p>
                   <p className="text-xs text-indigo-400/50 mt-0.5">Generate resume bullets, cover letter, and LinkedIn About at once. Counts as 3 generations.</p>
                 </div>
-                <span className="shrink-0 text-xs font-semibold text-indigo-400 bg-indigo-950/40 border border-indigo-900/50 px-2 py-0.5 rounded-full self-center">Pro</span>
+                <span className="shrink-0 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-2 py-0.5 rounded-full self-center">Pro</span>
               </Link>
             )}
 
@@ -831,7 +831,7 @@ export default function GenerateForm({
                     title={t.description}
                     className={`flex-1 text-center rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
                       tone === t.value
-                        ? "border-indigo-500 bg-indigo-950/40 text-indigo-400 ring-1 ring-indigo-500"
+                        ? "border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 text-indigo-400 ring-1 ring-indigo-500"
                         : "border-[var(--color-border)] bg-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)]"
                     }`}
                   >
@@ -849,7 +849,7 @@ export default function GenerateForm({
 
             {/* Session expired */}
             {effectiveSessionExpired && (
-              <div className="mb-4 bg-amber-950/30 border border-amber-900/40 rounded-xl p-4 text-center">
+              <div className="mb-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 rounded-xl p-4 text-center">
                 <p className="text-sm font-medium text-amber-300 mb-2">Session expired</p>
                 <Link
                   href="/auth/login"
@@ -862,7 +862,7 @@ export default function GenerateForm({
 
             {/* Limit reached — replace button with upgrade CTA */}
             {effectiveLimitReached ? (
-              <div className="bg-amber-950/30 border border-amber-900/40 rounded-xl p-4 text-center">
+              <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 rounded-xl p-4 text-center">
                 <p className="text-sm font-medium text-amber-300 mb-1">
                   Monthly limit reached
                 </p>

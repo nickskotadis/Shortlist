@@ -67,9 +67,9 @@ function computeOverall(scores: NonNullable<Generation["validator_scores"]>): nu
 function VerdictBadge({ verdict }: { verdict: ValidatorVerdict | null }) {
   if (!verdict) return null;
   const styles: Record<ValidatorVerdict, string> = {
-    PASS: "text-emerald-400 bg-emerald-950/30 border border-emerald-900/40",
-    REVISE: "text-amber-400 bg-amber-950/30 border border-amber-900/40",
-    REJECT: "text-red-400 bg-red-950/30 border border-red-900/40",
+    PASS: "text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40",
+    REVISE: "text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40",
+    REJECT: "text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40",
   };
   const dots: Record<ValidatorVerdict, string> = {
     PASS: "bg-emerald-500",
@@ -154,7 +154,7 @@ function FilterPill({
   onClick: () => void;
 }) {
   const base = "px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer";
-  const activeStyle = activeClass ?? "border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400";
+  const activeStyle = activeClass ?? "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400";
   const inactiveStyle = "border-[var(--color-border)] bg-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)]";
   return (
     <button
@@ -393,8 +393,8 @@ function GenerationCard({ gen }: { gen: Generation }) {
                   aria-label="Helpful"
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium transition-all disabled:cursor-not-allowed ${
                     feedback === true
-                      ? "bg-emerald-950/30 border-emerald-800/40 text-emerald-400"
-                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-emerald-800/50 hover:bg-emerald-950/20 hover:text-emerald-400"
+                      ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/40 text-emerald-400"
+                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-emerald-300 dark:hover:border-emerald-800/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:text-emerald-400"
                   }`}
                 >
                   <ThumbsUpIcon />
@@ -408,8 +408,8 @@ function GenerationCard({ gen }: { gen: Generation }) {
                   aria-label="Not helpful"
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium transition-all disabled:cursor-not-allowed ${
                     feedback === false
-                      ? "bg-red-950/30 border-red-800/40 text-red-400"
-                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-red-800/50 hover:bg-red-950/20 hover:text-red-400"
+                      ? "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800/40 text-red-400"
+                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-red-300 dark:hover:border-red-800/50 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-400"
                   }`}
                 >
                   <ThumbsDownIcon />
@@ -454,9 +454,9 @@ const VERDICT_FILTER_OPTIONS: Array<{
   activeClass?: string;
 }> = [
   { value: "all", label: "All" },
-  { value: "PASS", label: "PASS", activeClass: "border-emerald-500 bg-emerald-950/30 ring-1 ring-emerald-500 text-emerald-400" },
-  { value: "REVISE", label: "REVISE", activeClass: "border-amber-500 bg-amber-950/30 ring-1 ring-amber-500 text-amber-400" },
-  { value: "REJECT", label: "REJECT", activeClass: "border-red-500 bg-red-950/30 ring-1 ring-red-500 text-red-400" },
+  { value: "PASS", label: "PASS", activeClass: "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400" },
+  { value: "REVISE", label: "REVISE", activeClass: "border-amber-500 bg-amber-50 ring-1 ring-amber-500 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400" },
+  { value: "REJECT", label: "REJECT", activeClass: "border-red-500 bg-red-50 ring-1 ring-red-500 text-red-700 dark:bg-red-950/30 dark:text-red-400" },
 ];
 
 export default function GenerationsClient({ generations }: { generations: Generation[] }) {
@@ -488,7 +488,7 @@ export default function GenerationsClient({ generations }: { generations: Genera
   if (generations.length === 0) {
     return (
       <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-16 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-950/40 flex items-center justify-center mx-auto mb-5">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-950/40 flex items-center justify-center mx-auto mb-5">
           <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
