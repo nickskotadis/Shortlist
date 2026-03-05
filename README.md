@@ -89,11 +89,10 @@ Every generated document can be given a label — shown as the card title in the
 Authenticated users see their last 50 generations with expandable cards showing the full output, quality scores, thumbs up/down feedback, copy to clipboard, export, and inline label editing.
 
 ### Billing
-| Plan | Price | Generations |
-|------|-------|-------------|
-| Free | $0 | 2/month |
-| Pro (monthly) | $7/mo | Unlimited + batch mode + answer coach |
-| Pro (annual) | $63/yr | Same, 25% off (3 months free) |
+| Plan | Generations |
+|------|-------------|
+| Free | 2/month |
+| Pro | Unlimited + batch mode + answer coach |
 
 Stripe Checkout for upgrades, Stripe Customer Portal for billing management. Webhook handles `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
 
@@ -103,8 +102,7 @@ Manifest V3 extension that extracts job descriptions from Greenhouse, Lever, Wor
 ### Analytics and observability
 - **PostHog** — event tracking for `generation_started`, `generation_completed`, `document_type_selected`, `tone_selected`, `export_clicked`, `upgrade_clicked`, `score_page_viewed`, `interview_prep_generated`, `interview_answer_evaluated` — metadata only, never content fields
 - **Sentry** — error monitoring with Session Replay on client; source maps uploaded on every build; PII stripped
-- **Admin quality dashboard** (`/admin/quality`) — protected by `ADMIN_EMAILS` env var; aggregates generations by prompt version and A/B variant with count, avg score, pass rate, and thumbs-up rate
-- **A/B testing** — `PROMPT_AB_VARIANT` env var (`A` or `B`) controls the active prompt variant; stored on every `generations` row for analysis
+- **Admin quality dashboard** — internal prompt quality monitoring; aggregates generations by prompt version with count, avg score, pass rate, and thumbs-up rate
 
 ---
 
@@ -193,7 +191,7 @@ The generate endpoint uses Server-Sent Events. SSE event types:
 | `/applications` | Auth required | Job application tracker |
 | `/pricing` | Public | Plan comparison with Stripe checkout |
 | `/privacy` | Public | Privacy policy (required for Chrome Web Store) |
-| `/admin/quality` | Admin only | Prompt quality dashboard (protected by `ADMIN_EMAILS`) |
+| `/admin/quality` | Admin only | Prompt quality dashboard |
 | `/auth/login` | Public | Magic link + OAuth sign-in |
 
 ---
@@ -311,8 +309,6 @@ npm run dev
 | `NEXT_PUBLIC_POSTHOG_HOST` | PostHog host |
 | `NEXT_PUBLIC_SENTRY_DSN` | Sentry DSN |
 | `SENTRY_AUTH_TOKEN` | Source map upload on build |
-| `ADMIN_EMAILS` | Comma-separated emails for `/admin/quality` |
-| `PROMPT_AB_VARIANT` | `"A"` or `"B"` — active prompt variant |
 
 ---
 
