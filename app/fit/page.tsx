@@ -24,7 +24,7 @@ export default async function FitPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#090C18]">
+    <div className="min-h-screen bg-[var(--color-page)]">
       <Nav activePage="fit" />
       <FitClient plan={plan} fitCount={fitCount} savedResume={savedResume} />
     </div>

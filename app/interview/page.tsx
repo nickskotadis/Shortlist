@@ -22,7 +22,7 @@ export default async function InterviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#090C18]">
+    <div className="min-h-screen bg-[var(--color-page)]">
       <Nav activePage="interview" />
       <InterviewClient savedResume={savedResume} plan={plan} />
     </div>

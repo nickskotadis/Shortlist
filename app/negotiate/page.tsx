@@ -22,7 +22,7 @@ export default async function NegotiatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#090C18]">
+    <div className="min-h-screen bg-[var(--color-page)]">
       <Nav activePage="negotiate" />
       <NegotiateClient plan={plan} savedResume={savedResume} isAuthed={!!user} />
     </div>
