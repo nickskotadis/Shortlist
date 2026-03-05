@@ -56,7 +56,8 @@ export function useBatchGenerate() {
     async (
       request: GenerateRequest,
       docType: DocumentType,
-      cachedJdAnalysis: JdAnalysis | null
+      cachedJdAnalysis: JdAnalysis | null,
+      onAbort?: () => void
     ): Promise<JdAnalysis | null> => {
       updateState(docType, { status: "parsing", streamText: "", result: null });
 
@@ -79,11 +80,13 @@ export function useBatchGenerate() {
         const err = await response.json().catch(() => ({ error: "Request failed" }));
         if (response.status === 429 && err.error === "monthly_limit_reached") {
           setLimitReached(true);
+          onAbort?.();
           updateState(docType, { status: "error" });
           return null;
         }
         if (response.status === 401) {
           setSessionExpired(true);
+          onAbort?.();
           updateState(docType, { status: "error" });
           return null;
         }
@@ -175,21 +178,24 @@ export function useBatchGenerate() {
       setJdAnalysis(null);
       setStates(BATCH_DOC_TYPES.map(makeInitialState));
 
+      // Local mutable flag — avoids stale-closure issue with React state reads mid-loop
+      let aborted = false;
       let cachedJdAnalysis: JdAnalysis | null = null;
 
       for (const docType of BATCH_DOC_TYPES) {
-        const result = await generateOne(request, docType, cachedJdAnalysis);
+        if (aborted) break;
+        const result = await generateOne(request, docType, cachedJdAnalysis, () => {
+          aborted = true;
+        });
         // Cache JD analysis from first successful generation
         if (result && !cachedJdAnalysis) {
           cachedJdAnalysis = result;
         }
-        // Stop batch if limit reached or session expired
-        if (limitReached || sessionExpired) break;
       }
 
       setRunning(false);
     },
-    [generateOne, limitReached, sessionExpired]
+    [generateOne]
   );
 
   const reset = useCallback(() => {

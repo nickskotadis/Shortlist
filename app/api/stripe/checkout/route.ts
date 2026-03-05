@@ -29,7 +29,13 @@ export async function POST(req: NextRequest) {
 
   // Derive redirect URLs server-side — never accept them from the client
   const forwardedHost = req.headers.get("x-forwarded-host");
-  const host = forwardedHost ? `https://${forwardedHost}` : "https://shortlist-amber.vercel.app";
+  const hostHeader = req.headers.get("host") ?? "";
+  const isLocal = hostHeader.includes("localhost") || hostHeader.includes("127.0.0.1");
+  const host = forwardedHost
+    ? `https://${forwardedHost}`
+    : isLocal
+    ? `http://${hostHeader}`
+    : "https://shortlist-amber.vercel.app";
   const successUrl = `${host}/dashboard?upgraded=1`;
   const cancelUrl = `${host}/pricing`;
 

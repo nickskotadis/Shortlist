@@ -12,17 +12,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: { returnUrl: string };
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-  }
-
-  const { returnUrl } = body;
-  if (!returnUrl) {
-    return NextResponse.json({ error: "Missing required field: returnUrl" }, { status: 400 });
-  }
+  // Derive return URL server-side — never trust client-supplied redirect targets
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const hostHeader = req.headers.get("host") ?? "";
+  const isLocal = hostHeader.includes("localhost") || hostHeader.includes("127.0.0.1");
+  const host = forwardedHost
+    ? `https://${forwardedHost}`
+    : isLocal
+    ? `http://${hostHeader}`
+    : "https://shortlist-amber.vercel.app";
+  const returnUrl = `${host}/dashboard`;
 
   const { data: profile } = await supabase
     .from("profiles")

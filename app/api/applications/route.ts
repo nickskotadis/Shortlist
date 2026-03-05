@@ -68,10 +68,10 @@ export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body?.id) return NextResponse.json({ error: "id is required" }, { status: 400 });
 
-  const updates: Record<string, string> = {};
+  const updates: Record<string, unknown> = {};
   if (body.status && VALID_STATUSES.includes(body.status as ApplicationStatus)) updates.status = body.status;
-  if (body.url !== undefined) updates.url = body.url;
-  if (body.notes !== undefined) updates.notes = body.notes;
+  if (body.url !== undefined) updates.url = sanitizeUrl(body.url); // null for invalid/javascript: URIs
+  if (body.notes !== undefined) updates.notes = body.notes !== null ? String(body.notes).slice(0, 2000) : null;
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });

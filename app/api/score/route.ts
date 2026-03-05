@@ -12,26 +12,43 @@ export const FREE_SCORE_LIMIT = 1;
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
-  // Check auth + plan for free limit enforcement
+  // Require authentication — limit is per-account, meaningless without an identity
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let currentScoreCount = 0;
-  let isPro = false;
+  if (!user) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
 
-  if (user) {
-    const { data: profile } = await supabase
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan, score_count")
+    .eq("id", user.id)
+    .single();
+
+  const isPro = profile?.plan === "pro";
+  const currentScoreCount = profile?.score_count ?? 0;
+
+  // Free users: atomically claim the slot before the LLM call.
+  // The UPDATE only succeeds if score_count hasn't changed since we read it,
+  // which prevents concurrent requests from both passing the limit check.
+  if (!isPro) {
+    if (currentScoreCount >= FREE_SCORE_LIMIT) {
+      return NextResponse.json({ error: "score_limit_reached" }, { status: 429 });
+    }
+
+    const { data: claimed } = await supabase
       .from("profiles")
-      .select("plan, score_count")
+      .update({ score_count: currentScoreCount + 1 })
       .eq("id", user.id)
-      .single();
+      .eq("score_count", currentScoreCount) // optimistic lock
+      .select("id")
+      .maybeSingle();
 
-    isPro = profile?.plan === "pro";
-    currentScoreCount = profile?.score_count ?? 0;
-
-    if (!isPro && currentScoreCount >= FREE_SCORE_LIMIT) {
+    if (!claimed) {
+      // Another concurrent request already incremented — treat as limit reached
       return NextResponse.json({ error: "score_limit_reached" }, { status: 429 });
     }
   }
@@ -79,13 +96,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to parse score result — please try again." }, { status: 500 });
     }
 
-    // Increment score_count for authenticated users — fire-and-forget
-    if (user) {
+    // Pro users: increment count after success (no limit enforcement needed)
+    if (isPro) {
       void supabase
         .from("profiles")
         .update({ score_count: currentScoreCount + 1 })
         .eq("id", user.id);
     }
+    // Free users: count was already incremented atomically above
 
     return NextResponse.json(result);
   } catch (err) {

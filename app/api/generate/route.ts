@@ -328,7 +328,7 @@ export async function POST(req: NextRequest) {
           const jdWordCount = jd_text ? jd_text.trim().split(/\s+/).length : 0;
 
           // Verify job_application_id belongs to this user before linking
-        let verifiedJobApplicationId: string | null = null;
+          let verifiedJobApplicationId: string | null = null;
         if (body.job_application_id) {
           const { count } = await supabase
             .from("job_applications")

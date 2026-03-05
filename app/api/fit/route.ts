@@ -10,26 +10,43 @@ export const maxDuration = 30;
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
-  // Check auth + plan for free limit enforcement
+  // Require authentication — limit is per-account, meaningless without an identity
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let currentFitCount = 0;
-  let isPro = false;
+  if (!user) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
 
-  if (user) {
-    const { data: profile } = await supabase
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan, fit_count")
+    .eq("id", user.id)
+    .single();
+
+  const isPro = profile?.plan === "pro";
+  const currentFitCount = profile?.fit_count ?? 0;
+
+  // Free users: atomically claim the slot before the LLM call.
+  // The UPDATE only succeeds if fit_count hasn't changed since we read it,
+  // which prevents concurrent requests from both passing the limit check.
+  if (!isPro) {
+    if (currentFitCount >= FREE_FIT_LIMIT) {
+      return NextResponse.json({ error: "fit_limit_reached" }, { status: 429 });
+    }
+
+    const { data: claimed } = await supabase
       .from("profiles")
-      .select("plan, fit_count")
+      .update({ fit_count: currentFitCount + 1 })
       .eq("id", user.id)
-      .single();
+      .eq("fit_count", currentFitCount) // optimistic lock
+      .select("id")
+      .maybeSingle();
 
-    isPro = profile?.plan === "pro";
-    currentFitCount = profile?.fit_count ?? 0;
-
-    if (!isPro && currentFitCount >= FREE_FIT_LIMIT) {
+    if (!claimed) {
+      // Another concurrent request already incremented — treat as limit reached
       return NextResponse.json({ error: "fit_limit_reached" }, { status: 429 });
     }
   }
@@ -97,13 +114,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Increment fit_count for authenticated users — fire-and-forget
-    if (user) {
+    // Pro users: increment count after success (no limit enforcement needed)
+    if (isPro) {
       void supabase
         .from("profiles")
         .update({ fit_count: currentFitCount + 1 })
         .eq("id", user.id);
     }
+    // Free users: count was already incremented atomically above
 
     return NextResponse.json(result);
   } catch (err) {

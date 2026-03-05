@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   // Require Pro plan
   const { data: profile } = await supabase
     .from("profiles")
-    .select("plan")
+    .select("plan, negotiation_count")
     .eq("id", user.id)
     .single();
 
@@ -123,6 +123,12 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Track usage — fire-and-forget analytics counter
+    void supabase
+      .from("profiles")
+      .update({ negotiation_count: (profile?.negotiation_count ?? 0) + 1 })
+      .eq("id", user.id);
 
     return NextResponse.json(result);
   } catch (err) {

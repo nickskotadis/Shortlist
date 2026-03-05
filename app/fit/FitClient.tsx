@@ -250,6 +250,10 @@ export default function FitClient({
       });
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 401) {
+          setError("sign_in_required");
+          return;
+        }
         if (data.error === "fit_limit_reached") {
           setLimitReached(true);
           return;
@@ -412,7 +416,14 @@ export default function FitClient({
           </div>
 
           {/* Error */}
-          {error && (
+          {error && error === "sign_in_required" && (
+            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6 mb-6 text-center space-y-3">
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">Sign in to check your fit</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">A free account gives you 1 job fit check — no credit card required.</p>
+              <a href="/auth/login" className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all">Sign in →</a>
+            </div>
+          )}
+          {error && error !== "sign_in_required" && (
             <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-2xl p-5 mb-6 text-center">
               <p className="text-sm text-red-400">{error}</p>
             </div>

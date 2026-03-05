@@ -65,6 +65,15 @@ export async function POST(req: NextRequest) {
   if (conversation.length > 20) {
     return NextResponse.json({ error: "conversation too long (max 20 turns)" }, { status: 400 });
   }
+  const MAX_MSG_LEN = 2000;
+  for (const msg of conversation) {
+    if (typeof msg.content !== "string" || msg.content.length > MAX_MSG_LEN) {
+      return NextResponse.json(
+        { error: `Each message must be a string under ${MAX_MSG_LEN} characters` },
+        { status: 400 }
+      );
+    }
+  }
 
   const systemPrompt = buildMockInterviewSystemPrompt(resume_text, jd_text, category_focus);
 
