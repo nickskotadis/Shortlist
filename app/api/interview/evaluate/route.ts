@@ -48,7 +48,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { question, user_answer, framework, resume_text, jd_text } = body;
+  const { user_answer, resume_text, jd_text } = body;
+  // BUG-11: truncate question and framework to prevent token burning
+  const question = typeof body.question === "string" ? body.question.slice(0, 500) : body.question;
+  const framework = typeof body.framework === "string" ? body.framework.slice(0, 1000) : body.framework;
 
   // Validate required fields
   if (!question || typeof question !== "string" || !question.trim()) {

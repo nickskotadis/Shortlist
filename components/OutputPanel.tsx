@@ -307,9 +307,13 @@ export default function OutputPanel({
   const copy = async () => {
     const text = result?.output ?? streamText;
     if (!text) return;
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Permission denied or non-HTTPS context — silently ignore
+    }
   };
 
   const downloadExport = async (format: "docx" | "pdf") => {

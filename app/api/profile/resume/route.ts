@@ -19,7 +19,8 @@ export async function GET() {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[shortlist] profile/resume GET error:", error.message);
+    return NextResponse.json({ error: "Failed to load resume" }, { status: 500 });
   }
 
   return NextResponse.json({ resume_text: data?.resume_text ?? null });
@@ -57,7 +58,8 @@ export async function PUT(req: NextRequest) {
     .eq("id", user.id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[shortlist] profile/resume PUT error:", error.message);
+    return NextResponse.json({ error: "Failed to save resume" }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });

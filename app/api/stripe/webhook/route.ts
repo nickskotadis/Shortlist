@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Webhook signature verification failed";
     console.error("[stripe/webhook] Signature error:", message);
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json({ error: "Webhook verification failed" }, { status: 400 });
   }
 
   try {
@@ -33,13 +33,14 @@ export async function POST(req: NextRequest) {
         const userId = session.client_reference_id;
         if (!userId) break;
 
-        await supabaseAdmin
+        const { error: err1 } = await supabaseAdmin
           .from("profiles")
           .update({
             plan: "pro",
             stripe_customer_id: session.customer as string,
           })
           .eq("id", userId);
+        if (err1) throw err1;
         break;
       }
 
@@ -48,10 +49,11 @@ export async function POST(req: NextRequest) {
         const customerId = subscription.customer as string;
         const newPlan = subscription.status === "active" ? "pro" : "free";
 
-        await supabaseAdmin
+        const { error: err2 } = await supabaseAdmin
           .from("profiles")
           .update({ plan: newPlan })
           .eq("stripe_customer_id", customerId);
+        if (err2) throw err2;
         break;
       }
 
@@ -59,10 +61,11 @@ export async function POST(req: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
 
-        await supabaseAdmin
+        const { error: err3 } = await supabaseAdmin
           .from("profiles")
           .update({ plan: "free" })
           .eq("stripe_customer_id", customerId);
+        if (err3) throw err3;
         break;
       }
 

@@ -11,8 +11,13 @@ export async function GET(request: NextRequest) {
   const rawNext = searchParams.get("next") ?? "/generate";
   const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/generate";
 
+  // BUG-14: only trust x-forwarded-host for known Vercel deployment domains
+  const ALLOWED_HOST_PATTERN = /^[a-z0-9-]+\.vercel\.app$/;
   const forwardedHost = request.headers.get("x-forwarded-host");
-  const host = forwardedHost ? `https://${forwardedHost}` : origin;
+  const host =
+    forwardedHost && ALLOWED_HOST_PATTERN.test(forwardedHost)
+      ? `https://${forwardedHost}`
+      : origin;
 
   if (code) {
     // For OAuth PKCE: build the redirect response first, then wire Supabase cookies

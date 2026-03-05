@@ -9,10 +9,24 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const MAX_FIELD_LEN = 200;
 
+// BUG-09: per-user in-memory cooldown — prevents rapid-fire abuse
+// Note: resets on process restart (acceptable for serverless; adds friction without hard quota)
+const followUpCooldowns = new Map<string, number>();
+const FOLLOW_UP_COOLDOWN_MS = 30_000; // 30 seconds between calls per user
+
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const lastCall = followUpCooldowns.get(user.id);
+  if (lastCall && Date.now() - lastCall < FOLLOW_UP_COOLDOWN_MS) {
+    return NextResponse.json(
+      { error: "Please wait a moment before generating another follow-up email." },
+      { status: 429 }
+    );
+  }
+  followUpCooldowns.set(user.id, Date.now());
 
   const body = await req.json().catch(() => null);
   if (!body?.company_name || !body?.job_title) {

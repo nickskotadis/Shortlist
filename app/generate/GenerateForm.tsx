@@ -440,7 +440,8 @@ export default function GenerateForm({
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const jd = params.get("jd");
-    if (jd) setJdText(decodeURIComponent(jd));
+    // BUG-17: cap URL param length before decoding to avoid excessive state work
+    if (jd && jd.length <= 20_000) setJdText(decodeURIComponent(jd));
   }, []);
 
   const handleGenerate = () => {

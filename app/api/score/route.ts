@@ -22,6 +22,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   }
 
+  // BUG-07: parse and validate body before consuming the free usage slot
+  let body: { resume_text: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const { resume_text } = body;
+
+  if (!resume_text || typeof resume_text !== "string") {
+    return NextResponse.json({ error: "resume_text is required" }, { status: 400 });
+  }
+
+  const trimmed = resume_text.trim();
+  if (trimmed.length < 100) {
+    return NextResponse.json(
+      { error: "Resume is too short — paste the full text of your resume." },
+      { status: 400 }
+    );
+  }
+  if (trimmed.length > 20_000) {
+    return NextResponse.json(
+      { error: "Resume text too long (max 20,000 characters)." },
+      { status: 400 }
+    );
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("plan, score_count")
@@ -51,33 +79,6 @@ export async function POST(req: NextRequest) {
       // Another concurrent request already incremented — treat as limit reached
       return NextResponse.json({ error: "score_limit_reached" }, { status: 429 });
     }
-  }
-
-  let body: { resume_text: string };
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-  }
-
-  const { resume_text } = body;
-
-  if (!resume_text || typeof resume_text !== "string") {
-    return NextResponse.json({ error: "resume_text is required" }, { status: 400 });
-  }
-
-  const trimmed = resume_text.trim();
-  if (trimmed.length < 100) {
-    return NextResponse.json(
-      { error: "Resume is too short — paste the full text of your resume." },
-      { status: 400 }
-    );
-  }
-  if (trimmed.length > 20_000) {
-    return NextResponse.json(
-      { error: "Resume text too long (max 20,000 characters)." },
-      { status: 400 }
-    );
   }
 
   try {

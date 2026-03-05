@@ -1,5 +1,6 @@
 import JSZip from "jszip";
 import { generateDocx, generatePdf } from "@/lib/export";
+import { createClient } from "@/lib/supabase/server";
 import type { DocumentType } from "@/lib/types";
 
 const VALID_DOC_TYPES = new Set<DocumentType>([
@@ -17,6 +18,15 @@ interface BatchDoc {
 }
 
 export async function POST(req: Request) {
+  // BUG-01: require auth — export is CPU-intensive and must be gated
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return Response.json({ error: "Authentication required" }, { status: 401 });
+  }
+
   let body: unknown;
   try {
     body = await req.json();
@@ -34,6 +44,10 @@ export async function POST(req: Request) {
   if (format === "zip") {
     if (!Array.isArray(batch) || batch.length === 0) {
       return Response.json({ error: "batch array is required for zip format" }, { status: 400 });
+    }
+    // BUG-06: cap batch size to prevent DoS
+    if (batch.length > 10) {
+      return Response.json({ error: "Batch export is limited to 10 documents" }, { status: 400 });
     }
 
     const zip = new JSZip();

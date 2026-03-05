@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 // POST — parse a PDF or DOCX file and return its plain text
 // Accepts multipart/form-data with a "file" field
 export async function POST(req: NextRequest) {
+  // BUG-02: require auth — pdf-parse + mammoth are memory-heavy parsers
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
+
   let formData: FormData;
   try {
     formData = await req.formData();

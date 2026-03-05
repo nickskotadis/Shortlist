@@ -235,14 +235,17 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
     if (updating) return;
     setUpdating(true);
     try {
-      await fetch("/api/applications", {
+      const res = await fetch("/api/applications", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: application.id, status: newStatus }),
       });
-      onStatusChange(application.id, newStatus);
+      // BUG-10: only update UI state if the server confirmed the change
+      if (res.ok) {
+        onStatusChange(application.id, newStatus);
+      }
     } catch {
-      // Silent
+      // Network error — leave status unchanged
     } finally {
       setUpdating(false);
     }

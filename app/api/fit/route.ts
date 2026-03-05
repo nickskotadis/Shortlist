@@ -20,37 +20,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("plan, fit_count")
-    .eq("id", user.id)
-    .single();
-
-  const isPro = profile?.plan === "pro";
-  const currentFitCount = profile?.fit_count ?? 0;
-
-  // Free users: atomically claim the slot before the LLM call.
-  // The UPDATE only succeeds if fit_count hasn't changed since we read it,
-  // which prevents concurrent requests from both passing the limit check.
-  if (!isPro) {
-    if (currentFitCount >= FREE_FIT_LIMIT) {
-      return NextResponse.json({ error: "fit_limit_reached" }, { status: 429 });
-    }
-
-    const { data: claimed } = await supabase
-      .from("profiles")
-      .update({ fit_count: currentFitCount + 1 })
-      .eq("id", user.id)
-      .eq("fit_count", currentFitCount) // optimistic lock
-      .select("id")
-      .maybeSingle();
-
-    if (!claimed) {
-      // Another concurrent request already incremented — treat as limit reached
-      return NextResponse.json({ error: "fit_limit_reached" }, { status: 429 });
-    }
-  }
-
+  // BUG-08: parse and validate body before consuming the free usage slot
   let body: { resume_text: string; jd_text: string };
   try {
     body = await req.json();
@@ -93,6 +63,37 @@ export async function POST(req: NextRequest) {
       { error: "Job description too long (max 15,000 characters)." },
       { status: 400 }
     );
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan, fit_count")
+    .eq("id", user.id)
+    .single();
+
+  const isPro = profile?.plan === "pro";
+  const currentFitCount = profile?.fit_count ?? 0;
+
+  // Free users: atomically claim the slot before the LLM call.
+  // The UPDATE only succeeds if fit_count hasn't changed since we read it,
+  // which prevents concurrent requests from both passing the limit check.
+  if (!isPro) {
+    if (currentFitCount >= FREE_FIT_LIMIT) {
+      return NextResponse.json({ error: "fit_limit_reached" }, { status: 429 });
+    }
+
+    const { data: claimed } = await supabase
+      .from("profiles")
+      .update({ fit_count: currentFitCount + 1 })
+      .eq("id", user.id)
+      .eq("fit_count", currentFitCount) // optimistic lock
+      .select("id")
+      .maybeSingle();
+
+    if (!claimed) {
+      // Another concurrent request already incremented — treat as limit reached
+      return NextResponse.json({ error: "fit_limit_reached" }, { status: 429 });
+    }
   }
 
   try {

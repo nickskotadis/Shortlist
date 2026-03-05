@@ -70,10 +70,20 @@ export async function POST(req: NextRequest) {
     jd_text,
     jd_analysis: preAnalyzed,
     user_type,
-    user_data,
     candidate_input,
-    tone,
   } = body;
+  let { tone } = body;
+
+  // BUG-03: cap all user_data string fields to prevent prompt stuffing
+  const MAX_FIELD_LEN = 200;
+  const user_data = body.user_data
+    ? (Object.fromEntries(
+        Object.entries(body.user_data).map(([k, v]) => [
+          k,
+          typeof v === "string" ? v.slice(0, MAX_FIELD_LEN) : v,
+        ])
+      ) as typeof body.user_data)
+    : body.user_data;
 
   // ── Field validation ─────────────────────────────────────────────────────────
   if (!document_type || !user_type || !candidate_input) {
@@ -87,6 +97,11 @@ export async function POST(req: NextRequest) {
   }
   if (!VALID_USER_TYPES.includes(user_type)) {
     return NextResponse.json({ error: "Invalid user_type" }, { status: 400 });
+  }
+  // BUG-13: validate tone to prevent arbitrary string injection into prompts
+  const VALID_TONES = ["professional", "conversational", "bold"];
+  if (tone && !VALID_TONES.includes(tone)) {
+    tone = "professional";
   }
 
   // ── Input length validation ──────────────────────────────────────────────────
@@ -159,11 +174,31 @@ export async function POST(req: NextRequest) {
 
       try {
         // ── Stage 1: Parse JD (Haiku — cache-first, 1h TTL) ─────────────────────
-        let jdAnalysis: Partial<JdAnalysis> = preAnalyzed ?? {};
+
+        // BUG-04: sanitize client-supplied jd_analysis to prevent prompt injection
+        // through pre-analyzed fields that bypass JD text length limits
+        const sanitizeJdField = (v: unknown, maxLen: number): unknown => {
+          if (typeof v === "string") return v.slice(0, maxLen);
+          if (Array.isArray(v)) return v.slice(0, 20).map((item) => sanitizeJdField(item, maxLen));
+          if (v && typeof v === "object") {
+            return Object.fromEntries(
+              Object.entries(v as Record<string, unknown>).map(([k, val]) => [
+                k,
+                sanitizeJdField(val, maxLen),
+              ])
+            );
+          }
+          return v;
+        };
+        const sanitizedPreAnalyzed = preAnalyzed
+          ? (sanitizeJdField(preAnalyzed, 200) as Partial<JdAnalysis>)
+          : undefined;
+
+        let jdAnalysis: Partial<JdAnalysis> = sanitizedPreAnalyzed ?? {};
 
         const needsJd = !JD_OPTIONAL_TYPES.has(document_type);
 
-        if (!preAnalyzed && jd_text) {
+        if (!sanitizedPreAnalyzed && jd_text) {
           let cacheHit = false;
 
           if (redis) {
@@ -201,7 +236,7 @@ export async function POST(req: NextRequest) {
               redis.set(jdCacheKey(jd_text), jdAnalysis, { ex: JD_CACHE_TTL }).catch(() => {});
             }
           }
-        } else if (!preAnalyzed && !jd_text && needsJd) {
+        } else if (!sanitizedPreAnalyzed && !jd_text && needsJd) {
           // No JD provided and doc type requires it — proceed with empty analysis
           jdAnalysis = {};
         }
