@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
   try {
     const response = await anthropic.messages.create({
       model: MODELS.parser,
-      max_tokens: 1024,
+      max_tokens: 2048,
       messages: [{ role: "user", content: buildFitScorePrompt(trimmedResume, trimmedJd) }],
     });
 
