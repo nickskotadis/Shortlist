@@ -85,9 +85,9 @@
 - **Failure mode:** second-most-fragile JSON parse (§3) — `NegotiationResult` is large and can approach `max_tokens: 2048` → truncation → 500.
 - **Demo-ready:** No — Pro-gated end to end.
 
-### `/privacy` · 🟡 Working, unfinished-looking
-- Complete static policy, no auth. **Two visible defects:** (1) **not migrated to the dark theme** — still `bg-slate-50`/`bg-white`/`text-slate-900` (`app/privacy/page.tsx:10-24`), visually inconsistent with every other page; (2) **contact mismatch** — anchor is `mailto:nick@getshortlist.io` but the visible text is `nickskotadis@gmail.com` (`:165-170`).
-- **Demo-ready:** Renders, but looks half-finished; don't put it on screen.
+### `/privacy` · ✅ Working (was 🟡)
+- Complete static policy, no auth. ✅ **FIXED:** migrated to the dark palette (`var(--color-*)` — `page`/`surface`/`border`/`text-*`/`separator`, indigo-400 links) so it matches every other page; and the **contact mismatch is resolved** — the `mailto:` now matches the visible `nickskotadis@gmail.com`. **Verified:** no residual `slate-*`/`bg-white`/`indigo-600` classes; `tsc` clean.
+- **Demo-ready:** Yes.
 
 ### Navigation wiring
 - `NAV_LINKS` render **only when logged in** (`components/Nav.tsx:47-68`). A logged-out visitor sees only the brand + "Sign in" — every feature page is reachable only via landing CTAs or a direct URL. A global `Footer` provides LinkedIn/GitHub/Privacy/Pricing links (`components/Footer.tsx`).

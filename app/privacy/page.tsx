@@ -7,22 +7,22 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <nav className="bg-white border-b border-slate-100 px-6 py-4">
+    <div className="min-h-screen bg-[var(--color-page)]">
+      <nav className="bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center gap-4">
-          <Link href="/" className="text-lg font-semibold text-slate-900 tracking-tight">
+          <Link href="/" className="text-lg font-semibold text-[var(--color-text-primary)] tracking-tight">
             Shortlist
           </Link>
-          <span className="text-slate-300">·</span>
-          <span className="text-sm text-slate-500">Privacy Policy</span>
+          <span className="text-[var(--color-separator)]">·</span>
+          <span className="text-sm text-[var(--color-text-tertiary)]">Privacy Policy</span>
         </div>
       </nav>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 sm:p-12 space-y-8">
+        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-8 sm:p-12 space-y-8">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900 mb-2">Privacy Policy</h1>
-            <p className="text-sm text-slate-500">Last updated: March 2026</p>
+            <h1 className="text-2xl font-semibold text-[var(--color-text-primary)] mb-2">Privacy Policy</h1>
+            <p className="text-sm text-[var(--color-text-tertiary)]">Last updated: March 2026</p>
           </div>
 
           <Section title="Overview">
@@ -35,8 +35,8 @@ export default function PrivacyPage() {
           </Section>
 
           <Section title="Web Application">
-            <h3 className="text-sm font-semibold text-slate-800 mb-2">Data we collect</h3>
-            <ul className="list-disc list-inside space-y-1.5 text-sm text-slate-600">
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">Data we collect</h3>
+            <ul className="list-disc list-inside space-y-1.5 text-sm text-[var(--color-text-secondary)]">
               <li>
                 <strong>Account information</strong> — your email address, used for authentication
                 via magic link (no password stored).
@@ -58,16 +58,16 @@ export default function PrivacyPage() {
               </li>
             </ul>
 
-            <h3 className="text-sm font-semibold text-slate-800 mt-4 mb-2">How we use it</h3>
-            <ul className="list-disc list-inside space-y-1.5 text-sm text-slate-600">
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mt-4 mb-2">How we use it</h3>
+            <ul className="list-disc list-inside space-y-1.5 text-sm text-[var(--color-text-secondary)]">
               <li>To generate and deliver your tailored career documents.</li>
               <li>To maintain your account and generation history.</li>
               <li>To process subscription payments via Stripe.</li>
               <li>To improve output quality through aggregate, anonymised metrics.</li>
             </ul>
 
-            <h3 className="text-sm font-semibold text-slate-800 mt-4 mb-2">Third-party services</h3>
-            <ul className="list-disc list-inside space-y-1.5 text-sm text-slate-600">
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mt-4 mb-2">Third-party services</h3>
+            <ul className="list-disc list-inside space-y-1.5 text-sm text-[var(--color-text-secondary)]">
               <li>
                 <strong>Anthropic</strong> — your input text is sent to Claude to generate output.
                 See{" "}
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
                   href="https://www.anthropic.com/legal/privacy"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-indigo-600 hover:underline"
+                  className="text-indigo-400 hover:text-indigo-300 hover:underline"
                 >
                   Anthropic&rsquo;s privacy policy
                 </a>
@@ -103,8 +103,8 @@ export default function PrivacyPage() {
               supported job board pages (Greenhouse, Lever, Workday, Indeed, LinkedIn).
             </p>
 
-            <h3 className="text-sm font-semibold text-slate-800 mb-2">What the extension does</h3>
-            <ul className="list-disc list-inside space-y-1.5 text-sm text-slate-600">
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">What the extension does</h3>
+            <ul className="list-disc list-inside space-y-1.5 text-sm text-[var(--color-text-secondary)]">
               <li>
                 Reads the job description text from the current job posting page when you click the
                 button.
@@ -117,10 +117,10 @@ export default function PrivacyPage() {
               <li>Opens the Shortlist app in a new tab.</li>
             </ul>
 
-            <h3 className="text-sm font-semibold text-slate-800 mt-4 mb-2">
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mt-4 mb-2">
               What the extension does NOT do
             </h3>
-            <ul className="list-disc list-inside space-y-1.5 text-sm text-slate-600">
+            <ul className="list-disc list-inside space-y-1.5 text-sm text-[var(--color-text-secondary)]">
               <li>
                 <strong>Does not store any data</strong> — the extension has no backend and writes
                 nothing to local storage or any server.
@@ -130,7 +130,7 @@ export default function PrivacyPage() {
               <li>Does not collect personal information.</li>
             </ul>
 
-            <p className="mt-3 text-sm text-slate-600">
+            <p className="mt-3 text-sm text-[var(--color-text-secondary)]">
               Once you click the button, data handling is governed by the Shortlist web application
               privacy policy above.
             </p>
@@ -163,8 +163,8 @@ export default function PrivacyPage() {
             <p>
               Questions about this policy? Email{" "}
               <a
-                href="mailto:nick@getshortlist.io"
-                className="text-indigo-600 hover:underline"
+                href="mailto:nickskotadis@gmail.com"
+                className="text-indigo-400 hover:text-indigo-300 hover:underline"
               >
                 nickskotadis@gmail.com
               </a>
@@ -180,10 +180,10 @@ export default function PrivacyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-base font-semibold text-slate-900 mb-3 pb-2 border-b border-slate-100">
+      <h2 className="text-base font-semibold text-[var(--color-text-primary)] mb-3 pb-2 border-b border-[var(--color-border-subtle)]">
         {title}
       </h2>
-      <div className="text-sm text-slate-600 leading-relaxed space-y-2">{children}</div>
+      <div className="text-sm text-[var(--color-text-secondary)] leading-relaxed space-y-2">{children}</div>
     </section>
   );
 }
