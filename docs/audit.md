@@ -174,11 +174,11 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 
 | Path | Status | Evidence |
 |---|---|---|
-| **PDF upload** | 🔴 **BROKEN** | `package.json` pins **`pdf-parse@2.4.5`**, but `parse-resume/route.ts:46-49` calls the **v1 callable API** (`pdfParse(buffer)`). Verified against the published 2.4.5 package: it exports a **`PDFParse` class only — no callable default** (correct usage is `new PDFParse({ data: buffer }).getText()`). So `(mod).default ?? mod` resolves to a non-callable object → `TypeError` → caught at `:74-78` → **500 on every PDF upload**, across Generate, Score, Fit, and Interview. Masked at build time by the stale `@types/pdf-parse@1` (v1 signature) + the `as any` cast. |
+| **PDF upload** | ✅ **FIXED** (was 🔴) | Migrated `parse-resume/route.ts` to the pdf-parse v2 class API — `new PDFParse({ data: new Uint8Array(buffer) }).getText()` with `destroy()` in a `finally`, v2 page-delimiter lines stripped. Removed the `as any` cast and **uninstalled `@types/pdf-parse@1`** so the runtime API is now type-visible (package ships its own types). Response contract `{ text }` unchanged, so all four consumers work as-is (`GenerateForm.tsx:511-516` → `setCandidateInput`; `ScoreClient.tsx:154-159`, `FitClient.tsx:280-285`, `InterviewClient.tsx:837-842` → `setResumeText`). **Verified:** `tsc --noEmit` clean; an end-to-end test generated a real PDF via `@react-pdf/renderer` and extracted its marker text through the exact route path (PASS). |
 | DOCX upload | ✅ Working | `mammoth.extractRawText({ buffer })` (`route.ts:57-67`) — correct current API. |
 | Save master resume | ✅ Working | `profile/resume` GET/PUT stores `profiles.resume_text`, auth-gated, 20k cap (`route.ts:47-58`) — no parsing involved. |
 
-**This is the single highest-impact confirmed bug** — PDF is the more common resume format, and every PDF upload currently fails. Fix is a rewrite to the v2 `PDFParse` class API.
+~~**This is the single highest-impact confirmed bug**~~ — ✅ **FIXED**: rewritten to the v2 `PDFParse` class API and verified end-to-end. PDF upload now extracts text across Generate, Score, Fit, and Interview.
 
 ---
 
@@ -225,7 +225,7 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 - **`/admin/quality`** — real and useful, but admin-only; not a public demo.
 
 ### 🔴 Cut or rebuild (broken, or claimed-but-absent)
-- **PDF resume upload** — **broken on every PDF** across 4 pages (`pdf-parse` v1 API against a v2 package, `parse-resume/route.ts:46-49`). Rebuild to `new PDFParse({ data }).getText()`. Do **not** claim "PDF resume upload" until fixed.
+- ~~**PDF resume upload** broken on every PDF~~ — ✅ **FIXED** (§6): migrated to the v2 `PDFParse` class API, `@types/pdf-parse@1` removed, verified end-to-end. Safe to claim.
 - ~~**Chrome extension — Workday** never injects~~ — ✅ **FIXED** (§7): `*.myworkdayjobs.com` added to matches + host_permissions.
 - ~~**Chrome extension — popup button + `background.js`**~~ — ✅ **FIXED** (§7): popup handler moved to external `popup.js`; dead `background.js` deleted.
 - ~~**Chrome extension — unused permissions**~~ — ✅ **FIXED** (§7): `scripting`/`activeTab`/`storage` removed; `permissions: []`.

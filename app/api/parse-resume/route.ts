@@ -42,12 +42,19 @@ export async function POST(req: NextRequest) {
       if (!isPdf) {
         return NextResponse.json({ error: "File does not appear to be a valid PDF." }, { status: 400 });
       }
-      // Dynamic import — pdf-parse is CommonJS; use default with ESM compat fallback
-      const pdfModule = await import("pdf-parse");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const pdfParse = (pdfModule as any).default ?? pdfModule;
-      const result = await pdfParse(buffer);
-      const text = result.text?.trim() ?? "";
+      // pdf-parse v2 — class API: new PDFParse({ data }).getText(); dynamic
+      // import keeps the heavy pdfjs dependency out of module init.
+      const { PDFParse } = await import("pdf-parse");
+      const parser = new PDFParse({ data: new Uint8Array(buffer) });
+      let text: string;
+      try {
+        const result = await parser.getText();
+        // Strip v2 page-delimiter lines ("-- 1 of 3 --") so the resume text
+        // handed to the LLM consumers stays clean.
+        text = (result.text ?? "").replace(/^-- \d+ of \d+ --$/gm, "").trim();
+      } finally {
+        await parser.destroy();
+      }
       if (!text) {
         return NextResponse.json({ error: "Could not extract text from PDF — try pasting manually." }, { status: 422 });
       }

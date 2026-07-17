@@ -15,7 +15,6 @@
     "@stripe/stripe-js": "^8.8.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
-    "@types/pdf-parse": "^1.1.5",
     "@upstash/redis": "^1.36.2",
     "docx": "^9.6.0",
     "jszip": "^3.10.1",
