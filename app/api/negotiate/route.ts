@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { buildNegotiationPrompt, stripCodeFences } from "@/lib/prompts";
+import { buildNegotiationPrompt } from "@/lib/prompts";
+import { parseLlmJson } from "@/lib/llm-json";
 import { MODELS } from "@/lib/constants";
 import type { NegotiationResult } from "@/lib/types";
 
@@ -88,41 +89,40 @@ export async function POST(req: NextRequest) {
   const sanitize = (s: string) => (typeof s === "string" ? s.slice(0, MAX_FIELD_LEN) : "");
 
   try {
-    const response = await anthropic.messages.create({
-      model: MODELS.generator,
-      max_tokens: 2048,
-      messages: [
-        {
-          role: "user",
-          content: buildNegotiationPrompt(
-            {
-              company: sanitize(company),
-              role: sanitize(role),
-              current_offer,
-              target_offer,
-              currency: sanitize(currency),
-              bonus: sanitize(bonus),
-              equity: sanitize(equity),
-              competing_offer: sanitize(competing_offer),
-              notes: sanitize(notes),
-            },
-            resume_text ? sanitize(resume_text.slice(0, 8000)) : undefined
-          ),
-        },
-      ],
+    const parsed = await parseLlmJson<NegotiationResult>(async () => {
+      const response = await anthropic.messages.create({
+        model: MODELS.generator,
+        max_tokens: 2048,
+        messages: [
+          {
+            role: "user",
+            content: buildNegotiationPrompt(
+              {
+                company: sanitize(company),
+                role: sanitize(role),
+                current_offer,
+                target_offer,
+                currency: sanitize(currency),
+                bonus: sanitize(bonus),
+                equity: sanitize(equity),
+                competing_offer: sanitize(competing_offer),
+                notes: sanitize(notes),
+              },
+              resume_text ? sanitize(resume_text.slice(0, 8000)) : undefined
+            ),
+          },
+        ],
+      });
+      return response.content[0]?.type === "text" ? response.content[0].text : "";
     });
 
-    const raw = response.content[0].type === "text" ? response.content[0].text : "{}";
-
-    let result: NegotiationResult;
-    try {
-      result = JSON.parse(stripCodeFences(raw)) as NegotiationResult;
-    } catch {
+    if (!parsed.ok) {
       return NextResponse.json(
-        { error: "Failed to parse negotiation result — please try again." },
+        { error: "Couldn't read the negotiation result — please try again." },
         { status: 500 }
       );
     }
+    const result = parsed.value;
 
     // Track usage — fire-and-forget analytics counter
     void supabase

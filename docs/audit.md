@@ -128,15 +128,15 @@
 |---|---|---|---|
 | `/api/generate` | ✅ Working | Sonnet | Core pipeline above. |
 | `/api/score` | ✅ Working | Haiku | Small payload; single-shot `JSON.parse` (`route.ts:95`) → 500 on malformed, but low truncation risk. |
-| `/api/fit` | 🟡 Fragile | Haiku | **Largest payload; highest breakage risk.** `a60ba35` bumped `max_tokens` to 2048; still can truncate → `JSON.parse` 500 (`route.ts:110`). No repair/retry; `stripCodeFences` doesn't tolerate prose preambles. |
-| `/api/negotiate` | 🟡 Fragile | Sonnet | Second-worst: large `NegotiationResult` near `max_tokens: 2048` → truncation 500 (`route.ts:119`). Pro-gated. |
+| `/api/fit` | ✅ FIXED (was 🟡) | Haiku | Now parses via `parseLlmJson` (`lib/llm-json.ts`): extracts JSON from prose/fences, detects truncation, and **retries the model once** before a structured error. |
+| `/api/negotiate` | ✅ FIXED (was 🟡) | Sonnet | Same robust parse + one retry. Pro-gated. |
 | `/api/interview` | ✅ Working (rate-limited) | Haiku | Still unauthenticated by design, but now **IP rate-limited** (`INTERVIEW_IP_LIMIT` = 10/hr/IP via `lib/rate-limit.ts`) so the 4096-token call can't be scripted into unbounded spend. |
 | `/api/interview/mock` | ✅ Working | Sonnet | Multi-turn array correctly anchored; `turn` returns raw text (robust), `debrief` JSON-parses (`route.ts:145`). Pro-gated. |
 | `/api/interview/evaluate` | ✅ Working | Haiku | Auth + Pro; answer validated 10–3000 chars; single-shot parse. |
 | `/api/follow-up` | ✅ Working | Haiku | Auth + 30s per-user cooldown; returns raw text (no JSON parse) → **most robust** AI route. |
 | `/api/applications` | ✅ Working | — | **Not AI** — pure CRUD. |
 
-**Systemic finding:** 7 routes do `JSON.parse(stripCodeFences(raw))` in one try/catch with no repair, no retry, no prose tolerance. Any leading/trailing prose or `max_tokens` truncation is a hard 500 (or, uniquely in generate, a fail-open fake PASS). Risk order: **fit > negotiate > mock-debrief / interview-prep > score / evaluate.**
+**Systemic finding — ✅ FIXED:** the six dedicated structured routes (`fit`, `negotiate`, `score`, `interview`, `interview/evaluate`, `interview/mock` debrief) now parse via a shared `parseLlmJson` in `lib/llm-json.ts` — it strips fences, extracts the outermost balanced JSON value from surrounding prose (string/escape-aware), distinguishes truncation from malformed output, and **retries the LLM call once** on parse failure before returning a structured error. Also hardened the `content[0]` empty-array access in each. **Verified:** 9-case unit test (prose preamble, trailing prose, fences, arrays, string-with-braces, truncation, empty, invalid) all pass; `tsc` clean. (Generate's own parses — JD analysis + validator — are handled in §3-core / §5, since the validator additionally must fail *closed*.)
 
 ---
 

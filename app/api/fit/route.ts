@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { buildFitScorePrompt, stripCodeFences } from "@/lib/prompts";
+import { buildFitScorePrompt } from "@/lib/prompts";
+import { parseLlmJson } from "@/lib/llm-json";
 import { FREE_FIT_LIMIT, MODELS } from "@/lib/constants";
 import type { FitScoreResult } from "@/lib/types";
 
@@ -97,23 +98,22 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const response = await anthropic.messages.create({
-      model: MODELS.parser,
-      max_tokens: 2048,
-      messages: [{ role: "user", content: buildFitScorePrompt(trimmedResume, trimmedJd) }],
+    const parsed = await parseLlmJson<FitScoreResult>(async () => {
+      const response = await anthropic.messages.create({
+        model: MODELS.parser,
+        max_tokens: 2048,
+        messages: [{ role: "user", content: buildFitScorePrompt(trimmedResume, trimmedJd) }],
+      });
+      return response.content[0]?.type === "text" ? response.content[0].text : "";
     });
 
-    const raw = response.content[0].type === "text" ? response.content[0].text : "{}";
-
-    let result: FitScoreResult;
-    try {
-      result = JSON.parse(stripCodeFences(raw)) as FitScoreResult;
-    } catch {
+    if (!parsed.ok) {
       return NextResponse.json(
-        { error: "Failed to parse fit score — please try again." },
+        { error: "Couldn't read the fit score result — please try again." },
         { status: 500 }
       );
     }
+    const result = parsed.value;
 
     // Pro users: increment count after success (no limit enforcement needed)
     if (isPro) {

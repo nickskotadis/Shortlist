@@ -4,8 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import {
   buildMockInterviewSystemPrompt,
   buildMockInterviewDebriefPrompt,
-  stripCodeFences,
 } from "@/lib/prompts";
+import { parseLlmJson } from "@/lib/llm-json";
 import { MODELS } from "@/lib/constants";
 import type { MockInterviewDebrief, MockInterviewMessage } from "@/lib/types";
 
@@ -133,22 +133,22 @@ export async function POST(req: NextRequest) {
     const debriefPrompt = buildMockInterviewDebriefPrompt(conversation, resume_text, jd_text);
 
     try {
-      const response = await anthropic.messages.create({
-        model: MODELS.generator,
-        max_tokens: 1024,
-        messages: [{ role: "user", content: debriefPrompt }],
+      const parsed = await parseLlmJson<MockInterviewDebrief>(async () => {
+        const response = await anthropic.messages.create({
+          model: MODELS.generator,
+          max_tokens: 1024,
+          messages: [{ role: "user", content: debriefPrompt }],
+        });
+        return response.content[0]?.type === "text" ? response.content[0].text : "";
       });
 
-      const raw = response.content[0].type === "text" ? response.content[0].text : "{}";
-      let result: MockInterviewDebrief;
-      try {
-        result = JSON.parse(stripCodeFences(raw)) as MockInterviewDebrief;
-      } catch {
+      if (!parsed.ok) {
         return NextResponse.json(
-          { error: "Failed to parse debrief — please try again." },
+          { error: "Couldn't read the debrief — please try again." },
           { status: 500 }
         );
       }
+      const result = parsed.value;
 
       return NextResponse.json(result);
     } catch (err) {
