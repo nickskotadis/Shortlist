@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { usePostHog } from "posthog-js/react";
 import type { GenerateStatus, GenerateResult } from "@/hooks/useGenerate";
@@ -13,6 +14,7 @@ interface OutputPanelProps {
   error: string | null;
   documentType: DocumentType;
   tailoringSuggestions?: string[];
+  isAuthenticated?: boolean;
 }
 
 const scoreLabels: Record<string, string> = {
@@ -276,6 +278,7 @@ export default function OutputPanel({
   error,
   documentType,
   tailoringSuggestions,
+  isAuthenticated = false,
 }: OutputPanelProps) {
   const posthog = usePostHog();
   const [copied, setCopied] = useState(false);
@@ -584,25 +587,38 @@ export default function OutputPanel({
               )}
             </button>
 
-            {/* DOCX */}
-            <button
-              onClick={() => downloadExport("docx")}
-              disabled={exportLoading.docx}
-              className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-label)] bg-[var(--color-elevated)] hover:bg-[var(--color-border)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {exportLoading.docx ? <Spinner /> : <DownloadIcon />}
-              DOCX
-            </button>
+            {/* Export — requires auth (the /api/export route is auth-gated) */}
+            {isAuthenticated ? (
+              <>
+                {/* DOCX */}
+                <button
+                  onClick={() => downloadExport("docx")}
+                  disabled={exportLoading.docx}
+                  className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-label)] bg-[var(--color-elevated)] hover:bg-[var(--color-border)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {exportLoading.docx ? <Spinner /> : <DownloadIcon />}
+                  DOCX
+                </button>
 
-            {/* PDF */}
-            <button
-              onClick={() => downloadExport("pdf")}
-              disabled={exportLoading.pdf}
-              className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-label)] bg-[var(--color-elevated)] hover:bg-[var(--color-border)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {exportLoading.pdf ? <Spinner /> : <DownloadIcon />}
-              PDF
-            </button>
+                {/* PDF */}
+                <button
+                  onClick={() => downloadExport("pdf")}
+                  disabled={exportLoading.pdf}
+                  className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-label)] bg-[var(--color-elevated)] hover:bg-[var(--color-border)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {exportLoading.pdf ? <Spinner /> : <DownloadIcon />}
+                  PDF
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-label)] bg-[var(--color-elevated)] hover:bg-[var(--color-border)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] px-4 py-2 rounded-lg transition-colors"
+              >
+                <DownloadIcon />
+                Sign in to export DOCX / PDF
+              </Link>
+            )}
 
             {/* Feedback — only shown for authenticated users (generationId present) */}
             {result.generationId && (

@@ -291,10 +291,12 @@ function BatchOutputPanel({
   states,
   onDownloadZip,
   zipLoading,
+  isAuthenticated,
 }: {
   states: import("@/hooks/useBatchGenerate").BatchState[];
   onDownloadZip: () => void;
   zipLoading: boolean;
+  isAuthenticated: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<DocumentType>("bullets");
 
@@ -339,6 +341,7 @@ function BatchOutputPanel({
           status={active.status}
           streamText={active.streamText}
           jdAnalysis={null}
+          isAuthenticated={isAuthenticated}
           result={active.result
             ? {
                 output: active.result.output,
@@ -951,6 +954,7 @@ export default function GenerateForm({
               states={batchStates}
               onDownloadZip={handleDownloadZip}
               zipLoading={zipLoading}
+              isAuthenticated={!!userEmail}
             />
           ) : (
             <OutputPanel
@@ -961,6 +965,7 @@ export default function GenerateForm({
               error={error}
               documentType={documentType}
               tailoringSuggestions={tailoringSuggestions}
+              isAuthenticated={!!userEmail}
             />
           )}
         </div>

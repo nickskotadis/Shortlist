@@ -156,7 +156,7 @@
 
 ## 5. Export — DOCX / PDF / ZIP
 
-Real libraries (`docx@9.6`, `@react-pdf/renderer@4.3`, `jszip@3.10`), real binary output, correct headers. **All export routes require auth** (`export/route.ts:21-28`) — but the UI shows export buttons to logged-out users, so an anonymous user who generates then clicks Export gets a 401 → "Export failed" (`OutputPanel.tsx:334-336`).
+Real libraries (`docx@9.6`, `@react-pdf/renderer@4.3`, `jszip@3.10`), real binary output, correct headers. **All export routes require auth** (`export/route.ts:21-28`). ✅ **FIXED — logged-out export UX:** `OutputPanel` now takes an `isAuthenticated` prop (threaded from `GenerateForm` via `userEmail`); logged-out users see a **"Sign in to export DOCX / PDF"** link to `/auth/login` instead of dead buttons that 401. Applied to both single and batch panels. **Verified:** `tsc` clean; the two buttons are replaced by the sign-in link only when `!isAuthenticated`.
 
 | Format | Status | Evidence |
 |---|---|---|
