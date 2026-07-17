@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { buildInterviewPrepPrompt, stripCodeFences } from "@/lib/prompts";
-import { MODELS } from "@/lib/constants";
+import { MODELS, INTERVIEW_IP_LIMIT, INTERVIEW_IP_WINDOW_SEC } from "@/lib/constants";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import type { InterviewPrepResult } from "@/lib/types";
 
 export const maxDuration = 60;
@@ -9,6 +10,21 @@ export const maxDuration = 60;
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
+  // This route has no auth by design (free interview prep). Bound it per IP so
+  // the 4096-token Haiku call can't be scripted into unbounded spend.
+  const ip = getClientIp(req);
+  const { allowed, retryAfterSec } = await rateLimit(
+    `interview:${ip}`,
+    INTERVIEW_IP_LIMIT,
+    INTERVIEW_IP_WINDOW_SEC
+  );
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests — please wait a bit before generating more interview questions." },
+      { status: 429, headers: { "Retry-After": String(retryAfterSec) } }
+    );
+  }
+
   let body: { jd_text?: string; resume_text: string };
   try {
     body = await req.json();

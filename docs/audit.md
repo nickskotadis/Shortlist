@@ -130,7 +130,7 @@
 | `/api/score` | ✅ Working | Haiku | Small payload; single-shot `JSON.parse` (`route.ts:95`) → 500 on malformed, but low truncation risk. |
 | `/api/fit` | 🟡 Fragile | Haiku | **Largest payload; highest breakage risk.** `a60ba35` bumped `max_tokens` to 2048; still can truncate → `JSON.parse` 500 (`route.ts:110`). No repair/retry; `stripCodeFences` doesn't tolerate prose preambles. |
 | `/api/negotiate` | 🟡 Fragile | Sonnet | Second-worst: large `NegotiationResult` near `max_tokens: 2048` → truncation 500 (`route.ts:119`). Pro-gated. |
-| `/api/interview` | 🟡 Abuse vector | Haiku | Works, but **only unauthenticated LLM route — no auth, no rate limit, no cooldown**, 4096 output tokens. Anyone can burn tokens repeatedly. |
+| `/api/interview` | ✅ Working (rate-limited) | Haiku | Still unauthenticated by design, but now **IP rate-limited** (`INTERVIEW_IP_LIMIT` = 10/hr/IP via `lib/rate-limit.ts`) so the 4096-token call can't be scripted into unbounded spend. |
 | `/api/interview/mock` | ✅ Working | Sonnet | Multi-turn array correctly anchored; `turn` returns raw text (robust), `debrief` JSON-parses (`route.ts:145`). Pro-gated. |
 | `/api/interview/evaluate` | ✅ Working | Haiku | Auth + Pro; answer validated 10–3000 chars; single-shot parse. |
 | `/api/follow-up` | ✅ Working | Haiku | Auth + 30s per-user cooldown; returns raw text (no JSON parse) → **most robust** AI route. |
@@ -147,7 +147,7 @@
 - **Checkout · ✅ Working** — auth-gated (`checkout/route.ts:11-13`); price IDs resolved **server-side** from env, never from client (`:42-49`); real `checkout.sessions.create`, `mode: "subscription"`, `client_reference_id: user.id` (`:61-71`). Returns 500 if a price env is unset.
 - **Webhook · ✅ Working** — raw body via `req.text()` + signature verification (`webhook/route.ts:13,22`); service-role `@supabase/supabase-js` client (`:2,7-10`); handles `checkout.session.completed` (sets `plan: "pro"` + `stripe_customer_id`), `subscription.updated`, `subscription.deleted`. **DB errors throw → 500 so Stripe retries** (`:76-79`).
 - **Portal · ✅ Working** — requires `stripe_customer_id`, creates a real billing-portal session (`portal/route.ts:39-44`).
-- **Free/Pro state** — source of truth is `profiles.plan`, flipped only by the webhook. Free monthly cap (=2) enforced **before** the stream in `generate/route.ts:133-157`. **Gap:** the cap is inside `if (user)` (`:134`) — **anonymous users are never rate-limited**, so the free cap is bypassable by logging out.
+- **Free/Pro state** — source of truth is `profiles.plan`, flipped only by the webhook. Free monthly cap (=2) enforced **before** the stream in `generate/route.ts`. ✅ **FIXED — anonymous cost exposure:** the authed cap is inside `if (user)`, but the `else` branch now applies an **IP rate limit** to logged-out generation (`ANON_GENERATE_LIMIT` = 5/hr/IP via `lib/rate-limit.ts`) — logged-out generation stays available (deliberate) but is bounded per IP. **Verified:** unit test on the limiter's in-memory fallback caps at N and isolates keys; `tsc` clean.
 - ✅ **FIXED — Build-time crash** (was 🔴): the service-role client was instantiated at **module scope**, so `next build` evaluated it during "Collecting page data" and failed with `Error: supabaseUrl is required` when `NEXT_PUBLIC_SUPABASE_URL` was unset. Now lazy via `getSupabaseAdmin()` called inside `POST` (`webhook/route.ts:7-24`), mirroring `getStripe()`. **Verified:** `next build` with `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` unset now completes and collects page data for `/api/stripe/webhook`.
 - **Silent failure mode:** if `STRIPE_WEBHOOK_SECRET` is misconfigured (the documented trailing-newline hazard), checkout still opens but the plan **never upgrades** — "paid but still free." Not verifiable from the repo.
 - Minor: checkout/portal use `x-forwarded-host` unvalidated (`checkout/route.ts:31`), unlike the `*.vercel.app` restriction in the auth callback.
@@ -231,7 +231,7 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 - ~~**Chrome extension — unused permissions**~~ — ✅ **FIXED** (§7): `scripting`/`activeTab`/`storage` removed; `permissions: []`.
 - **LinkedIn OAuth** — documented as shipped but **not in the code**. Either implement it or stop claiming it (and fix `CLAUDE.md`).
 - **`handle_new_user()` signup trigger** — missing `SET search_path` / schema-qualification (`schema.sql:51-58`); the project's own gotchas say this breaks signup. Verify against the live DB and rebuild if it matches the repo.
-- **`/api/interview`** — the only unauthenticated LLM route (4096-token Haiku, no throttle). Add auth/rate-limiting or accept it as a standing cost/abuse exposure.
+- ~~**`/api/interview`** unthrottled~~ — ✅ **FIXED** (§3): IP rate-limited (10/hr/IP); anonymous `/generate` also IP-limited (5/hr/IP). Shared `lib/rate-limit.ts` (Upstash when configured, in-memory fallback).
 - ~~**Stripe webhook module-scope Supabase client**~~ — ✅ **FIXED** (§4): now lazy via `getSupabaseAdmin()` inside `POST`; `next build` succeeds with the Supabase env vars unset.
 
 ---

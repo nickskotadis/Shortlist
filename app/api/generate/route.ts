@@ -19,7 +19,8 @@ import {
   stripCodeFences,
   resolveVerdict,
 } from "@/lib/prompts";
-import { MODELS, MAX_RETRIES, PROMPT_VERSIONS, FREE_MONTHLY_LIMIT, PROMPT_AB_VARIANT } from "@/lib/constants";
+import { MODELS, MAX_RETRIES, PROMPT_VERSIONS, FREE_MONTHLY_LIMIT, PROMPT_AB_VARIANT, ANON_GENERATE_LIMIT, ANON_GENERATE_WINDOW_SEC } from "@/lib/constants";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import type {
   GenerateRequest,
   JdAnalysis,
@@ -153,6 +154,21 @@ export async function POST(req: NextRequest) {
           { status: 429 }
         );
       }
+    }
+  } else {
+    // Anonymous generation is deliberate, but must be bounded per IP so it
+    // can't be scripted into unlimited Sonnet spend.
+    const ip = getClientIp(req);
+    const { allowed, retryAfterSec } = await rateLimit(
+      `gen:${ip}`,
+      ANON_GENERATE_LIMIT,
+      ANON_GENERATE_WINDOW_SEC
+    );
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "You've reached the limit for anonymous generations. Sign in to keep going — it's free." },
+        { status: 429, headers: { "Retry-After": String(retryAfterSec) } }
+      );
     }
   }
 

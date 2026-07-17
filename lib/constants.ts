@@ -57,6 +57,18 @@ export const BANNED_PHRASES = [
 export const FREE_MONTHLY_LIMIT = 2;
 export const FREE_FIT_LIMIT = 1;
 
+// ── Anonymous / unauthenticated IP rate limits ────────────────────────────────
+// The authed free tier is capped per-month in the DB; these bound logged-out
+// traffic per IP so anonymous access can't be scripted into unbounded LLM spend.
+// /generate runs Sonnet (most expensive) but logged-out generation is a
+// deliberate try-before-signup path — 5/hr/IP lets a genuine evaluator try
+// several doc types while capping abuse. /interview is fully unauthenticated
+// Haiku at 4096 output tokens — 10/hr/IP covers real use (one prep = 6–8 Qs).
+export const ANON_GENERATE_LIMIT = 5;
+export const ANON_GENERATE_WINDOW_SEC = 3600;
+export const INTERVIEW_IP_LIMIT = 10;
+export const INTERVIEW_IP_WINDOW_SEC = 3600;
+
 export const MAX_RETRIES = 1;
 export const PASS_THRESHOLD = 7.0;
 export const MIN_DIMENSION_SCORE = 6;
