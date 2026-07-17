@@ -7,7 +7,7 @@
 **Verification caveats (read before trusting a "Working"):**
 - Statuses are primarily from source tracing + package-registry inspection (`node_modules` is not installed locally). One real build **was** observed: a Vercel build of this branch (commit `1c7853d`) **compiled successfully and passed TypeScript**, then **failed at "Collecting page data" with `Error: supabaseUrl is required` at `/api/stripe/webhook`** — a module-scope Supabase client that throws when `NEXT_PUBLIC_SUPABASE_URL` is unset at build time (see §4). So: the codebase typechecks; the webhook route has a build-time crash when env is not present.
 - Several features are real code that depends entirely on **deployment-time config** (Supabase provider toggles, Stripe env vars, Supabase Site URL). Those are marked "env-dependent" — the code works; whether the *deployment* works cannot be proven from the repo.
-- `CLAUDE.md` is stale in at least two places (claims LinkedIn OAuth and a `pdf-parse` gotcha that no longer match the code). Treat the docs as intent, not evidence.
+- The original audit found `CLAUDE.md` stale in two places (a LinkedIn OAuth claim and a `pdf-parse` gotcha). Both are now reconciled: LinkedIn was deliberately dropped and the doc updated; the `pdf-parse` code was migrated to v2.
 
 **Legend:** ✅ Working · 🟡 Partially working · 🔴 Broken · 🟦 Scaffolding only
 
@@ -45,12 +45,12 @@
 ### `/generate` — Main flow · ✅ Working (this is the real product)
 - Server wrapper fetches plan + monthly usage + saved resume (`app/generate/page.tsx:19-48`), passes to `GenerateForm`. `useGenerate` POSTs `/api/generate` and consumes SSE (`hooks/useGenerate.ts:54-142`); rendered in `OutputPanel` (`GenerateForm.tsx:955`).
 - **Works fully for logged-out users** — auth is optional (`app/api/generate/route.ts:127-131`); rate limit + DB save apply only to authed users.
-- **Failure modes:** (a) PDF upload is broken — see §6; (b) export buttons 401 for logged-out users — see §5. Core generation is unaffected.
+- **Failure modes (all since fixed):** (a) PDF upload was broken and (b) auth-walled for anonymous users — see §6; (c) export buttons 401'd for logged-out users — see §5. Core generation is unaffected.
 - **Demo-ready:** **Yes.** A stranger on a clean session gets real streamed output.
 
 ### `/auth/login` · ✅ Working (with a missing provider)
 - Magic link via `signInWithOtp` (`app/auth/login/page.tsx:57-62`); OAuth via `signInWithOAuth` (`:39-49`).
-- **`OAUTH_PROVIDERS` contains only Google and GitHub** (`:8-30`). **LinkedIn (`linkedin_oidc`) is absent** despite `CLAUDE.md` claiming it shipped. No password auth exists.
+- **`OAUTH_PROVIDERS` contains Google and GitHub** — the intended final auth surface (Google + GitHub + magic link). LinkedIn OIDC was evaluated and **deliberately excluded**; `CLAUDE.md` is now consistent. No password auth exists (by design).
 - **Demo-ready:** Yes for magic link + Google/GitHub — *if* the providers are enabled in the Supabase dashboard and Site/Redirect URLs point at prod. Not verifiable from the repo.
 
 ### `/dashboard` · ✅ Working
@@ -104,7 +104,7 @@
 | Password | — Not offered | No password field, no `signInWithPassword` anywhere. |
 | Google OAuth | 🟡 code Working, config-dependent | Real `signInWithOAuth` (`:39-49`); dead-ends unless enabled in Supabase dashboard. |
 | GitHub OAuth | 🟡 code Working, config-dependent | Same path, `provider: "github"`. |
-| **LinkedIn OAuth** | ✅ **FIXED** (was 🔴) | Wired `linkedin_oidc` into `OAUTH_PROVIDERS` (`login/page.tsx`) — chosen over removing the doc claim because this is a career product and LinkedIn is the most on-brand provider. `tsc` confirms `linkedin_oidc` is a valid `Provider`. **Manual:** must be enabled in Supabase → Auth → Providers (client ID/secret) to function. |
+| **LinkedIn OAuth** | ✅ **RESOLVED** (was 🔴 doc/reality mismatch) | Decision reversed: LinkedIn OIDC is **deliberately not part of the auth surface**. The `linkedin_oidc` button was removed from `OAUTH_PROVIDERS` and the claim removed from `CLAUDE.md`, so code and docs now agree. **Final auth surface: Google + GitHub + magic link.** No manual provider setup needed. |
 
 - **OAuth callback code exchange · ✅ Working** — builds `redirectResponse` first, wires `setAll` → `redirectResponse.cookies.set`, then `exchangeCodeForSession` (`callback/route.ts:27-49`). Open-redirect guard on `next` (`:11-12`); `x-forwarded-host` restricted to `*.vercel.app` (`:14-20`).
 - **Route protection (`proxy.ts`) · ✅ Working, narrow** — refreshes sessions everywhere but **only `/dashboard` is access-gated** (`proxy.ts:33-37`). `/generate`, `/applications`, `/fit`, `/score`, `/interview`, `/negotiate` rely on per-route API checks, not middleware.
@@ -172,7 +172,9 @@ Real libraries (`docx@9.6`, `@react-pdf/renderer@4.3`, `jszip@3.10`), real binar
 
 ## 6. Resume parsing from PDF/DOCX upload
 
-Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`, `FitClient.tsx:279`, `InterviewClient.tsx:836`), all feeding extracted text into live state that drives generation. Validation is solid: auth required, 5 MB cap, magic-byte anti-spoof, empty-text → 422 (`parse-resume/route.ts:8-38`).
+Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`, `FitClient.tsx:279`, `InterviewClient.tsx:836`), all feeding extracted text into live state that drives generation. Validation is solid: 5 MB cap, magic-byte anti-spoof, empty-text → 422.
+
+✅ **FIXED — anonymous upload (was a silent 401):** the upload button rendered for logged-out users but `/api/parse-resume` required auth (401), so it failed with no fill. Chose to **allow anonymous parsing** (option a) rather than gate the button: it's cheap CPU (not an LLM call) and upload→first-generation is the try-before-signup moment. Logged-out requests are now **IP rate-limited** (`PARSE_RESUME_IP_LIMIT` = 10/hr via `lib/rate-limit.ts`) with the 5 MB cap retained; authenticated users are unlimited. The client handler was hardened to **always surface a visible error** (safe JSON parse, status-coded fallback, explicit empty-text message); the other three consumers already surface `!res.ok`. **Verified:** `tsc` clean.
 
 | Path | Status | Evidence |
 |---|---|---|
@@ -231,7 +233,7 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 - ~~**Chrome extension — Workday** never injects~~ — ✅ **FIXED** (§7): `*.myworkdayjobs.com` added to matches + host_permissions.
 - ~~**Chrome extension — popup button + `background.js`**~~ — ✅ **FIXED** (§7): popup handler moved to external `popup.js`; dead `background.js` deleted.
 - ~~**Chrome extension — unused permissions**~~ — ✅ **FIXED** (§7): `scripting`/`activeTab`/`storage` removed; `permissions: []`.
-- ~~**LinkedIn OAuth** documented but absent~~ — ✅ **FIXED** (§2): `linkedin_oidc` button wired into the login page. Needs the provider enabled in the Supabase dashboard (manual).
+- ~~**LinkedIn OAuth** documented but absent~~ — ✅ **RESOLVED** (§2): decision reversed — LinkedIn OIDC deliberately dropped; button removed and `CLAUDE.md` claim removed. Auth surface is Google + GitHub + magic link. Code and docs now agree.
 - ~~**`handle_new_user()` signup trigger**~~ — ✅ **FIXED in code** (§2): `schema.sql` hardened + `migration_009.sql` added. **Still must be run against prod** (manual list).
 - ~~**`/api/interview`** unthrottled~~ — ✅ **FIXED** (§3): IP rate-limited (10/hr/IP); anonymous `/generate` also IP-limited (5/hr/IP). Shared `lib/rate-limit.ts` (Upstash when configured, in-memory fallback).
 - ~~**Stripe webhook module-scope Supabase client**~~ — ✅ **FIXED** (§4): now lazy via `getSupabaseAdmin()` inside `POST`; `next build` succeeds with the Supabase env vars unset.
@@ -239,7 +241,7 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 ---
 
 ### Résumé-claim guidance (blunt)
-Safe to claim without qualification: **an authenticated, streaming, self-critiquing LLM generation pipeline (generate → validate → retry) on Claude Sonnet/Haiku with SSE**, **Stripe subscription billing with webhook-driven entitlement**, **Supabase auth + RLS**, and **server-side DOCX/PDF/ZIP export**. After the remediation pass, **PDF resume ingestion** now works, the structured LLM routes parse robustly (retry-once, fail-closed validator), anonymous traffic is rate-limited, and the **Chrome extension** match patterns / popup / permissions are fixed. Two things still hinge on config you must apply by hand: **LinkedIn sign-in** (button wired, provider not yet enabled) and the **signup-trigger migration** (written, not yet run in prod) — see below. The breadth of features is real; the remaining risk is deployment config, not code.
+Safe to claim without qualification: **an authenticated, streaming, self-critiquing LLM generation pipeline (generate → validate → retry) on Claude Sonnet/Haiku with SSE**, **Stripe subscription billing with webhook-driven entitlement**, **Supabase auth + RLS**, and **server-side DOCX/PDF/ZIP export**. After the remediation pass, **PDF resume ingestion** now works, the structured LLM routes parse robustly (retry-once, fail-closed validator), anonymous traffic is rate-limited, and the **Chrome extension** match patterns / popup / permissions are fixed. One thing still hinges on config you must apply by hand: the **signup-trigger migration** (written, not yet run in prod) — see below. (LinkedIn sign-in was intentionally dropped; the auth surface is Google + GitHub + magic link.) The breadth of features is real; the remaining risk is deployment config, not code.
 
 ---
 
@@ -249,8 +251,7 @@ These changes are complete in code and verified as far as this environment allow
 
 1. **Run `migration_009.sql` against production** (§2, signup trigger). The fix is in `schema.sql` + `supabase/migration_009.sql`, but the live DB still runs the old function until applied. Apply via the Supabase SQL editor (paste the file) **or** the Management API:
    `POST https://api.supabase.com/v1/projects/{ref}/database/query` with `Authorization: Bearer <PERSONAL_ACCESS_TOKEN>` and body `{"query": "<contents of migration_009.sql>"}`. Then confirm a fresh signup creates a `profiles` row with no "Database error saving new user".
-2. **Enable LinkedIn (OIDC) provider** (§2). The `linkedin_oidc` button is wired, but does nothing until enabled: Supabase Dashboard → Authentication → Providers → LinkedIn (OIDC) → add client ID + secret. (Same prerequisite already applies to Google/GitHub if those were never enabled.)
-3. **Load the Chrome extension unpacked and test each board** (§7). Match patterns are code-verified; live DOM extraction is not. Load `chrome-extension/` via `chrome://extensions` → Developer mode → Load unpacked, then confirm the button injects and captures the JD on: a **Workday tenant** (`*.wdN.myworkdayjobs.com`), a **`job-boards.greenhouse.io`** posting, the **Indeed `?vjk=` right pane**, the **LinkedIn `?currentJobId=` search pane**, and a **Lever** posting (full description, not just requirements). Also confirm the popup **"Open Shortlist"** button works (external `popup.js` under MV3 CSP).
-4. **Rate limiting with Upstash configured** (§3). Verified the in-memory fallback (caps + key isolation) via unit test. With `UPSTASH_REDIS_REST_URL`/`_TOKEN` set, confirm the Redis path limits across instances, and that Vercel's `x-forwarded-for` yields a usable client IP (not a shared/`unknown` bucket).
-5. **Stripe redirect smoke test on the live domain** (§4). The `x-forwarded-host` validation + lazy webhook client are code-verified; do one real checkout on `shortlist-amber.vercel.app` and confirm success/cancel/portal redirects land correctly and the plan flips to Pro.
-6. *(optional, deterministic in code)* **Visual checks**: the logged-out "Sign in to export" state (§5), the neutral "Not graded" validator badge (§5), and the dark `/privacy` page (P2) all render from deterministic conditionals verified by `tsc`; a quick look while logged out / on a forced-unavailable validation is nice-to-have, not required.
+2. **Load the Chrome extension unpacked and test each board** (§7). Match patterns are code-verified; live DOM extraction is not. Load `chrome-extension/` via `chrome://extensions` → Developer mode → Load unpacked, then confirm the button injects and captures the JD on: a **Workday tenant** (`*.wdN.myworkdayjobs.com`), a **`job-boards.greenhouse.io`** posting, the **Indeed `?vjk=` right pane**, the **LinkedIn `?currentJobId=` search pane**, and a **Lever** posting (full description, not just requirements). Also confirm the popup **"Open Shortlist"** button works (external `popup.js` under MV3 CSP).
+3. **Rate limiting with Upstash configured** (§3). Verified the in-memory fallback (caps + key isolation) via unit test. With `UPSTASH_REDIS_REST_URL`/`_TOKEN` set, confirm the Redis path limits across instances, and that Vercel's `x-forwarded-for` yields a usable client IP (not a shared/`unknown` bucket).
+4. **Stripe redirect smoke test on the live domain** (§4). The `x-forwarded-host` validation + lazy webhook client are code-verified; do one real checkout on `shortlist-amber.vercel.app` and confirm success/cancel/portal redirects land correctly and the plan flips to Pro.
+5. *(optional, deterministic in code)* **Visual checks**: the logged-out "Sign in to export" state (§5), the neutral "Not graded" validator badge (§5), the anonymous resume-upload → textarea fill (§6), and the dark `/privacy` page (P2) all render from deterministic conditionals verified by `tsc`; a quick look is nice-to-have, not required.
