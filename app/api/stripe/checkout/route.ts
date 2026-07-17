@@ -27,15 +27,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid billingPeriod" }, { status: 400 });
   }
 
-  // Derive redirect URLs server-side — never accept them from the client
+  // Derive redirect URLs server-side — never accept them from the client.
+  // Only trust x-forwarded-host for known Vercel domains (same rule as
+  // auth/callback); otherwise fall back to localhost (dev) or the canonical URL.
+  const ALLOWED_HOST_PATTERN = /^[a-z0-9-]+\.vercel\.app$/;
   const forwardedHost = req.headers.get("x-forwarded-host");
   const hostHeader = req.headers.get("host") ?? "";
   const isLocal = hostHeader.includes("localhost") || hostHeader.includes("127.0.0.1");
-  const host = forwardedHost
-    ? `https://${forwardedHost}`
-    : isLocal
-    ? `http://${hostHeader}`
-    : "https://shortlist-amber.vercel.app";
+  const host =
+    forwardedHost && ALLOWED_HOST_PATTERN.test(forwardedHost)
+      ? `https://${forwardedHost}`
+      : isLocal
+      ? `http://${hostHeader}`
+      : "https://shortlist-amber.vercel.app";
   const successUrl = `${host}/dashboard?upgraded=1`;
   const cancelUrl = `${host}/pricing`;
 

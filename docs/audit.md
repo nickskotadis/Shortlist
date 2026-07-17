@@ -150,7 +150,7 @@
 - **Free/Pro state** — source of truth is `profiles.plan`, flipped only by the webhook. Free monthly cap (=2) enforced **before** the stream in `generate/route.ts`. ✅ **FIXED — anonymous cost exposure:** the authed cap is inside `if (user)`, but the `else` branch now applies an **IP rate limit** to logged-out generation (`ANON_GENERATE_LIMIT` = 5/hr/IP via `lib/rate-limit.ts`) — logged-out generation stays available (deliberate) but is bounded per IP. **Verified:** unit test on the limiter's in-memory fallback caps at N and isolates keys; `tsc` clean.
 - ✅ **FIXED — Build-time crash** (was 🔴): the service-role client was instantiated at **module scope**, so `next build` evaluated it during "Collecting page data" and failed with `Error: supabaseUrl is required` when `NEXT_PUBLIC_SUPABASE_URL` was unset. Now lazy via `getSupabaseAdmin()` called inside `POST` (`webhook/route.ts:7-24`), mirroring `getStripe()`. **Verified:** `next build` with `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` unset now completes and collects page data for `/api/stripe/webhook`.
 - **Silent failure mode:** if `STRIPE_WEBHOOK_SECRET` is misconfigured (the documented trailing-newline hazard), checkout still opens but the plan **never upgrades** — "paid but still free." Not verifiable from the repo.
-- Minor: checkout/portal use `x-forwarded-host` unvalidated (`checkout/route.ts:31`), unlike the `*.vercel.app` restriction in the auth callback.
+- ✅ **FIXED — Minor:** checkout/portal now validate `x-forwarded-host` against the same `/^[a-z0-9-]+\.vercel\.app$/` pattern as the auth callback; an unrecognized/spoofed host falls back to localhost (dev) or the canonical URL instead of being trusted. **Verified:** `tsc` clean; logic mirrors `auth/callback`.
 
 ---
 

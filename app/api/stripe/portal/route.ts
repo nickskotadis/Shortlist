@@ -12,15 +12,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Derive return URL server-side — never trust client-supplied redirect targets
+  // Derive return URL server-side — never trust client-supplied redirect
+  // targets. Only trust x-forwarded-host for known Vercel domains (same rule as
+  // auth/callback); otherwise fall back to localhost (dev) or the canonical URL.
+  const ALLOWED_HOST_PATTERN = /^[a-z0-9-]+\.vercel\.app$/;
   const forwardedHost = req.headers.get("x-forwarded-host");
   const hostHeader = req.headers.get("host") ?? "";
   const isLocal = hostHeader.includes("localhost") || hostHeader.includes("127.0.0.1");
-  const host = forwardedHost
-    ? `https://${forwardedHost}`
-    : isLocal
-    ? `http://${hostHeader}`
-    : "https://shortlist-amber.vercel.app";
+  const host =
+    forwardedHost && ALLOWED_HOST_PATTERN.test(forwardedHost)
+      ? `https://${forwardedHost}`
+      : isLocal
+      ? `http://${hostHeader}`
+      : "https://shortlist-amber.vercel.app";
   const returnUrl = `${host}/dashboard`;
 
   const { data: profile } = await supabase
