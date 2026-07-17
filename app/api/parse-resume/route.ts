@@ -1,16 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { PARSE_RESUME_IP_LIMIT, PARSE_RESUME_IP_WINDOW_SEC } from "@/lib/constants";
 
 // POST — parse a PDF or DOCX file and return its plain text
 // Accepts multipart/form-data with a "file" field
 export async function POST(req: NextRequest) {
-  // BUG-02: require auth — pdf-parse + mammoth are memory-heavy parsers
+  // Anonymous upload is allowed on purpose (upload→first generation is the
+  // try-before-signup moment). It's cheap CPU, not an LLM call — but the
+  // parsers are memory-heavy, so bound logged-out traffic per IP against abuse.
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    const ip = getClientIp(req);
+    const { allowed, retryAfterSec } = await rateLimit(
+      `parse:${ip}`,
+      PARSE_RESUME_IP_LIMIT,
+      PARSE_RESUME_IP_WINDOW_SEC
+    );
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Too many uploads — please wait a bit, or paste your resume instead." },
+        { status: 429, headers: { "Retry-After": String(retryAfterSec) } }
+      );
+    }
   }
 
   let formData: FormData;

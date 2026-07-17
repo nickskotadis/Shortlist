@@ -512,9 +512,13 @@ export default function GenerateForm({
 
     try {
       const res = await fetch("/api/parse-resume", { method: "POST", body: formData });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({} as { error?: string; text?: string }));
       if (!res.ok) {
-        setParseError(data.error ?? "Failed to parse file");
+        setParseError(data.error ?? `Couldn't read that file (error ${res.status}) — try pasting instead.`);
+        return;
+      }
+      if (!data.text) {
+        setParseError("No text found in that file — try pasting your resume instead.");
         return;
       }
       setCandidateInput(data.text);
