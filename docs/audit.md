@@ -102,7 +102,7 @@
 | Password | — Not offered | No password field, no `signInWithPassword` anywhere. |
 | Google OAuth | 🟡 code Working, config-dependent | Real `signInWithOAuth` (`:39-49`); dead-ends unless enabled in Supabase dashboard. |
 | GitHub OAuth | 🟡 code Working, config-dependent | Same path, `provider: "github"`. |
-| **LinkedIn OAuth** | 🔴 **Absent** | Documented as shipped; **not in the code** (`login/page.tsx:8-30`). Doc/reality mismatch. |
+| **LinkedIn OAuth** | ✅ **FIXED** (was 🔴) | Wired `linkedin_oidc` into `OAUTH_PROVIDERS` (`login/page.tsx`) — chosen over removing the doc claim because this is a career product and LinkedIn is the most on-brand provider. `tsc` confirms `linkedin_oidc` is a valid `Provider`. **Manual:** must be enabled in Supabase → Auth → Providers (client ID/secret) to function. |
 
 - **OAuth callback code exchange · ✅ Working** — builds `redirectResponse` first, wires `setAll` → `redirectResponse.cookies.set`, then `exchangeCodeForSession` (`callback/route.ts:27-49`). Open-redirect guard on `next` (`:11-12`); `x-forwarded-host` restricted to `*.vercel.app` (`:14-20`).
 - **Route protection (`proxy.ts`) · ✅ Working, narrow** — refreshes sessions everywhere but **only `/dashboard` is access-gated** (`proxy.ts:33-37`). `/generate`, `/applications`, `/fit`, `/score`, `/interview`, `/negotiate` rely on per-route API checks, not middleware.
@@ -229,7 +229,7 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 - ~~**Chrome extension — Workday** never injects~~ — ✅ **FIXED** (§7): `*.myworkdayjobs.com` added to matches + host_permissions.
 - ~~**Chrome extension — popup button + `background.js`**~~ — ✅ **FIXED** (§7): popup handler moved to external `popup.js`; dead `background.js` deleted.
 - ~~**Chrome extension — unused permissions**~~ — ✅ **FIXED** (§7): `scripting`/`activeTab`/`storage` removed; `permissions: []`.
-- **LinkedIn OAuth** — documented as shipped but **not in the code**. Either implement it or stop claiming it (and fix `CLAUDE.md`).
+- ~~**LinkedIn OAuth** documented but absent~~ — ✅ **FIXED** (§2): `linkedin_oidc` button wired into the login page. Needs the provider enabled in the Supabase dashboard (manual).
 - ~~**`handle_new_user()` signup trigger**~~ — ✅ **FIXED in code** (§2): `schema.sql` hardened + `migration_009.sql` added. **Still must be run against prod** (manual list).
 - ~~**`/api/interview`** unthrottled~~ — ✅ **FIXED** (§3): IP rate-limited (10/hr/IP); anonymous `/generate` also IP-limited (5/hr/IP). Shared `lib/rate-limit.ts` (Upstash when configured, in-memory fallback).
 - ~~**Stripe webhook module-scope Supabase client**~~ — ✅ **FIXED** (§4): now lazy via `getSupabaseAdmin()` inside `POST`; `next build` succeeds with the Supabase env vars unset.
