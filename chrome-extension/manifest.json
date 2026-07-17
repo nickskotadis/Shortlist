@@ -6,11 +6,12 @@
   "description": "One click to tailor your resume, cover letter, and LinkedIn profile to any job posting.",
   "homepage_url": "https://shortlist-amber.vercel.app",
   "minimum_chrome_version": "102",
-  "permissions": ["activeTab", "scripting", "storage"],
+  "permissions": [],
   "host_permissions": [
     "https://boards.greenhouse.io/*",
+    "https://job-boards.greenhouse.io/*",
     "https://jobs.lever.co/*",
-    "https://myworkdayjobs.com/*",
+    "https://*.myworkdayjobs.com/*",
     "https://www.indeed.com/*",
     "https://www.linkedin.com/*",
     "https://*.greenhouse.io/*",
@@ -30,21 +31,21 @@
     {
       "matches": [
         "https://boards.greenhouse.io/*",
+        "https://job-boards.greenhouse.io/*",
         "https://jobs.lever.co/*",
         "https://*.greenhouse.io/jobs/*",
         "https://*.lever.co/*",
-        "https://myworkdayjobs.com/*",
+        "https://*.myworkdayjobs.com/*",
         "https://*.workday.com/*/job/*",
         "https://www.indeed.com/viewjob*",
-        "https://www.linkedin.com/jobs/view/*"
+        "https://www.indeed.com/jobs*",
+        "https://www.linkedin.com/jobs/view/*",
+        "https://www.linkedin.com/jobs/search/*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],
-  "background": {
-    "service_worker": "background.js"
-  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

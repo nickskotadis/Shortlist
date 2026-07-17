@@ -186,19 +186,21 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 
 **One functional mechanism, no API integration.** `content.js` injects a floating button; on click it scrapes JD text via DOM selectors and `window.open`s `https://shortlist-amber.vercel.app/generate?jd=<encoded>` (`content.js:144-158`). **No API call, no auth, no session sharing, no `chrome.storage`.** The 12k-char slice (`content.js:156`) fits under the app's 20k `?jd=` cap (`GenerateForm.tsx:442-444`), so the hand-off path itself works. Whether the button appears is gated by `manifest.json` `matches`; extraction quality is gated by the per-board selector.
 
-| Board | Status | Root cause |
+| Board | Status | Root cause / fix |
 |---|---|---|
-| Greenhouse | 🟡 Partial | Injects on classic `boards.greenhouse.io`; **misses modern `job-boards.greenhouse.io`** (path doesn't match `*.greenhouse.io/jobs/*`, `manifest.json:34`) and embedded iframes (`all_frames` unset). Named selectors (`content.js:19-27`) look stale → likely falls to generic fallback. |
-| Lever | 🟡 Partial | `jobs.lever.co` matches and injects, but `.posting-requirements` / first `<section>` (`content.js:30-35`) capture only a **fragment** of the JD. |
-| **Workday** | 🔴 **Broken** | Real reqs live at tenant subdomains (`company.wd5.myworkdayjobs.com`); manifest has `myworkdayjobs.com/*` with **no `*.myworkdayjobs.com`** (`manifest.json:36`), so the script **never injects** — the one genuinely-correct selector (`[data-automation-id='jobPostingDescription']`) never runs. |
-| Indeed | 🟡 Partial | Correct selector `#jobDescriptionText` (`content.js:48-53`), but match is limited to legacy `www.indeed.com/viewjob*` — misses the modern `?vjk=` pane and all international hosts. |
-| LinkedIn | 🟡 Partial | Plausible selectors + SPA re-injection (`content.js:57-63,178-185`), but matches only `/jobs/view/*` — misses the `/jobs/search/?currentJobId=` pane; classes are rotated/obfuscated; JD often collapsed behind "see more." |
+| Greenhouse | 🟡→✅ match fixed | Added `https://job-boards.greenhouse.io/*` to `matches` + `host_permissions`. Selectors unchanged. Live extraction still needs an unpacked-load check. |
+| Lever | 🟡→✅ selector improved | Selector now prefers full-posting containers (`.posting-page` → `.section-wrapper.page-full-width` → `.content-wrapper`) before the old fragment fallbacks. Live check pending. |
+| **Workday** | 🔴→✅ match fixed | Bare `myworkdayjobs.com/*` replaced with tenant-wildcard `https://*.myworkdayjobs.com/*` in `matches` + `host_permissions`, so the script now injects on `company.wdN.myworkdayjobs.com`. The correct `[data-automation-id='jobPostingDescription']` selector is unchanged. Live check pending. |
+| Indeed | 🟡→✅ match fixed | Added `https://www.indeed.com/jobs*` so the modern `?vjk=` right-pane is covered (legacy `/viewjob*` retained). Selector `#jobDescriptionText` unchanged. |
+| LinkedIn | 🟡→✅ match fixed | Added `https://www.linkedin.com/jobs/search/*`; content.js guard broadened to accept `/jobs/search/` so the `?currentJobId=` pane extracts. SPA re-injection retained. Classes remain fragile (rotation risk). |
 
-**Cross-cutting extension defects:**
-- **`popup.html` "Open Shortlist" button is dead** — behavior is an **inline `<script>`** (`popup.html:151-155`), blocked by MV3's default `script-src 'self'` CSP. And it wouldn't extract a JD anyway (opens a blank `/generate`).
-- **`background.js` is dead code** — the `chrome.action.onClicked` handler body is `if (!tab.id) return;` (`:4-8`), and `onClicked` never fires while `default_popup` is set. No message passing, no API, no auth.
-- **Unused permissions** — `scripting`, `activeTab`, `storage` are declared (`manifest.json:9`) but never used → Chrome Web Store rejection risk.
-- A stray untracked **`shortlist-extension.zip`** sits in the repo root (in sync with the source, but binary + untracked).
+**Cross-cutting extension defects — all ✅ FIXED:**
+- ✅ **Popup button** — inline `<script>` (MV3 CSP-blocked) moved to external `chrome-extension/popup.js`, referenced via `<script src="popup.js">`.
+- ✅ **`background.js` dead code** — file deleted; `background`/`service_worker` block removed from the manifest.
+- ✅ **Unused permissions** — `scripting`, `activeTab`, `storage` removed; `permissions` is now `[]` (host permissions only). README permissions table updated to match.
+- ✅ **Stray zip** — `shortlist-extension.zip` deleted from the repo root and added to `.gitignore`.
+
+**Verification:** manifest re-parsed as valid JSON (`permissions: []`, no `background` key, 11 matches); no residual `chrome.scripting`/`chrome.storage`/`activeTab` references in code. **Match-pattern coverage is code-verified; live DOM extraction on each board requires loading the extension unpacked (manual — see list).**
 
 ---
 
@@ -224,9 +226,9 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 
 ### 🔴 Cut or rebuild (broken, or claimed-but-absent)
 - **PDF resume upload** — **broken on every PDF** across 4 pages (`pdf-parse` v1 API against a v2 package, `parse-resume/route.ts:46-49`). Rebuild to `new PDFParse({ data }).getText()`. Do **not** claim "PDF resume upload" until fixed.
-- **Chrome extension — Workday** — **never injects** (subdomain match gap, `manifest.json:36`). Either fix the match patterns or drop Workday from the supported-boards claim.
-- **Chrome extension — popup button + `background.js`** — dead under MV3 (inline-script CSP; suppressed `onClicked`). Rebuild the popup with an external `popup.js`; cut the empty service worker.
-- **Chrome extension — unused `scripting`/`activeTab`/`storage` permissions** — cut before any Web Store submission.
+- ~~**Chrome extension — Workday** never injects~~ — ✅ **FIXED** (§7): `*.myworkdayjobs.com` added to matches + host_permissions.
+- ~~**Chrome extension — popup button + `background.js`**~~ — ✅ **FIXED** (§7): popup handler moved to external `popup.js`; dead `background.js` deleted.
+- ~~**Chrome extension — unused permissions**~~ — ✅ **FIXED** (§7): `scripting`/`activeTab`/`storage` removed; `permissions: []`.
 - **LinkedIn OAuth** — documented as shipped but **not in the code**. Either implement it or stop claiming it (and fix `CLAUDE.md`).
 - **`handle_new_user()` signup trigger** — missing `SET search_path` / schema-qualification (`schema.sql:51-58`); the project's own gotchas say this breaks signup. Verify against the live DB and rebuild if it matches the repo.
 - **`/api/interview`** — the only unauthenticated LLM route (4096-token Haiku, no throttle). Add auth/rate-limiting or accept it as a standing cost/abuse exposure.
