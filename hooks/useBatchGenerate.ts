@@ -20,6 +20,7 @@ export interface BatchDocResult {
   scores: ValidatorResult["scores"];
   overall: number;
   verdict: ValidatorVerdict;
+  validationUnavailable: boolean;
   issues: ValidatorIssue[];
   generationId: string | null;
   keywords: string[];
@@ -147,6 +148,7 @@ export function useBatchGenerate() {
                     scores: event.scores,
                     overall: event.overall,
                     verdict: event.verdict,
+                    validationUnavailable: event.validation_unavailable ?? false,
                     issues: event.issues ?? [],
                     generationId: event.generation_id ?? null,
                     keywords: event.keywords ?? [],

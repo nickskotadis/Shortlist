@@ -462,6 +462,27 @@ export default function OutputPanel({
       {/* Scores — shown when done */}
       {status === "done" && result && (
         <>
+          {result.validationUnavailable ? (
+            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full border border-[var(--color-border)] flex items-center justify-center text-[var(--color-text-tertiary)]">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">Generation quality</p>
+                    <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">The automatic quality check wasn&apos;t available for this generation — your text is unchanged, just not graded.</p>
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] bg-[var(--color-elevated)] border border-[var(--color-border)] px-2.5 py-1 rounded-full whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 bg-[var(--color-text-tertiary)] rounded-full"></span>
+                  Not graded
+                </span>
+              </div>
+            </div>
+          ) : (
           <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -492,6 +513,7 @@ export default function OutputPanel({
               </div>
             )}
           </div>
+          )}
 
           {/* Keyword gap analysis */}
           {result.keywords && result.keywords.length > 0 && (

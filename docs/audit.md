@@ -120,7 +120,7 @@
 - All **5 `DocumentType` values** (`bullets`, `summary`, `cover_letter`, `linkedin_about`, `linkedin_headline`) are handled in `VALID_DOC_TYPES`, the `buildPrompt()` switch (`route.ts:250-269`), and `PROMPT_VERSIONS` (`constants.ts:9-24`). No fall-through.
 - **`maxDuration` present on every LLM route** (generate/interview/mock/negotiate = 60; score/fit/evaluate/follow-up = 30). None missing.
 - **No PII logging** — grep for `console.*` over `candidate_input|jd_text|resume_text|user_answer` is empty; `input_snapshot` stores only word counts + a boolean (`route.ts:384-390`).
-- **⚠️ Validator fails OPEN:** if the validator's JSON fails to parse, it **defaults to a fabricated PASS** (`route.ts:327-335`, `reason: "Validator parse failed"`). A malformed validator response silently ships unvalidated content. Don't over-claim "every output is quality-gated."
+- ✅ **FIXED — Validator now fails CLOSED:** the validator parses via `parseLlmJson` (robust extraction + one retry). If it still can't be read, the route **no longer fabricates a PASS** — it returns `unavailable: true`, skips the generation retry (an ungraded output can't inform one), stores `null` validator scores/verdict in the DB, and emits `validation_unavailable` on the `done` SSE event. `OutputPanel` shows a **neutral "Not graded" badge** (not a fake pass, not a scary error); the generated text is unchanged. Threaded through single + batch flows. **Verified:** `tsc` clean; a stubbed-LLM test confirms `parseLlmJson` retries once, fails on persistent garbage (→ unavailable path), and recovers on a transient failure.
 
 ### Per-endpoint
 
@@ -221,7 +221,7 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 - **ZIP export** — Pro-only, and packs **DOCX only** while calling itself an "application package."
 - **Chrome extension on Greenhouse / Lever / Indeed / LinkedIn** — partial: may silently fail to inject or grab only a fragment. A live demo can no-op unpredictably.
 - **`/privacy`** — off-theme and shows the wrong contact address; looks half-finished.
-- **"Quality-gated output" as a claim** — the validator **fails open** to a fake PASS on a parse error; the gate is real but not airtight.
+- ~~**"Quality-gated output"** — validator fails open~~ — ✅ **FIXED** (§3/§5): validator now fails **closed** to a neutral "Not graded" state; no fabricated PASS.
 - **`/admin/quality`** — real and useful, but admin-only; not a public demo.
 
 ### 🔴 Cut or rebuild (broken, or claimed-but-absent)

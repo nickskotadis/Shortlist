@@ -346,6 +346,7 @@ function BatchOutputPanel({
                 scores: active.result.scores,
                 overall: active.result.overall,
                 verdict: active.result.verdict,
+                validationUnavailable: active.result.validationUnavailable,
                 retryCount: 0,
                 issues: active.result.issues,
                 generationId: active.result.generationId,

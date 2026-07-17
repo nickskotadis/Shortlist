@@ -16,9 +16,9 @@ import {
   buildValidatorPrompt,
   buildRetryPrompt,
   buildTailoringRecommendationsPrompt,
-  stripCodeFences,
   resolveVerdict,
 } from "@/lib/prompts";
+import { parseJson, parseLlmJson } from "@/lib/llm-json";
 import { MODELS, MAX_RETRIES, PROMPT_VERSIONS, FREE_MONTHLY_LIMIT, PROMPT_AB_VARIANT, ANON_GENERATE_LIMIT, ANON_GENERATE_WINDOW_SEC } from "@/lib/constants";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import type {
@@ -240,12 +240,9 @@ export async function POST(req: NextRequest) {
             totalOutputTokens += jdResponse.usage.output_tokens;
 
             const raw =
-              jdResponse.content[0].type === "text" ? jdResponse.content[0].text : "{}";
-            try {
-              jdAnalysis = JSON.parse(stripCodeFences(raw));
-            } catch {
-              jdAnalysis = {};
-            }
+              jdResponse.content[0]?.type === "text" ? jdResponse.content[0].text : "";
+            const parsedJd = parseJson<Partial<JdAnalysis>>(raw);
+            jdAnalysis = parsedJd.ok ? parsedJd.value : {};
 
             // Store in cache — fire-and-forget, never block the response
             if (redis && Object.keys(jdAnalysis).length > 0) {
@@ -318,43 +315,48 @@ export async function POST(req: NextRequest) {
 
         // ── Stage 4: Validate ────────────────────────────────────────────────────
         const validate = async (text: string): Promise<ValidatorResult> => {
-          const validatorResponse = await anthropic.messages.create({
-            model: MODELS.validator,
-            max_tokens: 1024,
-            messages: [
-              {
-                role: "user",
-                content: buildValidatorPrompt(document_type, jdAnalysis, text, user_type, candidate_input),
-              },
-            ],
+          const parsed = await parseLlmJson<ValidatorResult>(async () => {
+            const validatorResponse = await anthropic.messages.create({
+              model: MODELS.validator,
+              max_tokens: 1024,
+              messages: [
+                {
+                  role: "user",
+                  content: buildValidatorPrompt(document_type, jdAnalysis, text, user_type, candidate_input),
+                },
+              ],
+            });
+            totalInputTokens += validatorResponse.usage.input_tokens;
+            totalOutputTokens += validatorResponse.usage.output_tokens;
+            return validatorResponse.content[0]?.type === "text"
+              ? validatorResponse.content[0].text
+              : "";
           });
 
-          totalInputTokens += validatorResponse.usage.input_tokens;
-          totalOutputTokens += validatorResponse.usage.output_tokens;
-
-          const raw =
-            validatorResponse.content[0].type === "text"
-              ? validatorResponse.content[0].text
-              : "{}";
-          try {
-            const parsed = JSON.parse(stripCodeFences(raw)) as ValidatorResult;
-            parsed.verdict = resolveVerdict(parsed);
-            return parsed;
-          } catch {
-            return {
-              scores: { specificity: 7, relevance: 7, authenticity: 7, impact: 7, clean: 7 },
-              overall: 7.0,
-              issues: [],
-              verdict: "PASS",
-              verdict_reason: "Validator parse failed — defaulting to PASS",
-            };
+          if (parsed.ok) {
+            parsed.value.verdict = resolveVerdict(parsed.value);
+            return parsed.value;
           }
+
+          // Fail CLOSED: the validator response was unparseable even after one
+          // retry. Never fabricate a PASS — report the quality gate as
+          // unavailable so the client can show a neutral (not fake-pass) state.
+          return {
+            scores: { specificity: 0, relevance: 0, authenticity: 0, impact: 0, clean: 0 },
+            overall: 0,
+            issues: [],
+            verdict: "REVISE",
+            verdict_reason: "Quality validation unavailable — output not graded.",
+            unavailable: true,
+          };
         };
 
         validatorResult = await validate(fullText);
 
         // ── Retry if needed ──────────────────────────────────────────────────────
-        if (validatorResult.verdict !== "PASS" && retryCount < MAX_RETRIES) {
+        // Don't retry when validation was unavailable — an ungraded output tells
+        // us nothing about whether a retry would help.
+        if (!validatorResult.unavailable && validatorResult.verdict !== "PASS" && retryCount < MAX_RETRIES) {
           retryCount++;
           send({ type: "retry", message: "Refining output..." });
 
@@ -410,8 +412,8 @@ export async function POST(req: NextRequest) {
               input_tokens: totalInputTokens,
               output_tokens: totalOutputTokens,
               latency_ms: Date.now() - startTime,
-              validator_scores: validatorResult.scores,
-              validator_verdict: validatorResult.verdict,
+              validator_scores: validatorResult.unavailable ? null : validatorResult.scores,
+              validator_verdict: validatorResult.unavailable ? null : validatorResult.verdict,
               retry_count: retryCount,
               ab_variant: PROMPT_AB_VARIANT,
             })
@@ -434,6 +436,7 @@ export async function POST(req: NextRequest) {
           scores: validatorResult.scores,
           overall: validatorResult.overall,
           verdict: validatorResult.verdict,
+          validation_unavailable: validatorResult.unavailable ?? false,
           retry_count: retryCount,
           prompt_version: promptVersion,
           issues: validatorResult.issues,
@@ -453,10 +456,10 @@ export async function POST(req: NextRequest) {
                 content: buildTailoringRecommendationsPrompt(candidate_input, jdAnalysis, fullText),
               }],
             });
-            const raw = tailoringResponse.content[0].type === "text" ? tailoringResponse.content[0].text : "[]";
-            const suggestions = JSON.parse(stripCodeFences(raw)) as string[];
-            if (Array.isArray(suggestions) && suggestions.length > 0) {
-              send({ type: "tailoring_suggestions", suggestions });
+            const raw = tailoringResponse.content[0]?.type === "text" ? tailoringResponse.content[0].text : "";
+            const parsedTailoring = parseJson<string[]>(raw);
+            if (parsedTailoring.ok && Array.isArray(parsedTailoring.value) && parsedTailoring.value.length > 0) {
+              send({ type: "tailoring_suggestions", suggestions: parsedTailoring.value });
             }
           } catch {
             // Non-critical — tailoring recs are optional
