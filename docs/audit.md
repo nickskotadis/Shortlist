@@ -162,7 +162,7 @@ Real libraries (`docx@9.6`, `@react-pdf/renderer@4.3`, `jszip@3.10`), real binar
 |---|---|---|
 | DOCX | ✅ Working | `lib/export.ts:26-87`, real `Packer.toBuffer`; `Content-Type` + disposition + length correct (`export/route.ts:103-118`). Wired in `OutputPanel.tsx:566-573` and dashboard cards. |
 | PDF | ✅ Working | `lib/export.ts:134-180`, real `renderToBuffer`; `serverExternalPackages` includes `@react-pdf/renderer` + `canvas` (`next.config.ts:5`). |
-| ZIP | ✅ Working (design note) | `export/route.ts:44-82`; JSZip `arraybuffer` gotcha handled; ≤10-doc cap. **ZIP always packs DOCX only** (`:64-65`), never PDF, despite being called an "application package." Batch mode is **Pro-gated**, so ZIP is Pro-only. |
+| ZIP | ✅ Working | `export/route.ts:44-90`; JSZip `arraybuffer` gotcha handled; ≤10-doc cap. ✅ **FIXED — now packs BOTH `.docx` and `.pdf` per document** (each format fails independently), so it's a genuine "application package." **Verified:** end-to-end test builds a ZIP and confirms both entries present. Batch mode is Pro-gated, so ZIP is Pro-only. |
 
 **Demo-ready:** Yes for a signed-in user. A cold stranger's export 401s.
 
@@ -218,7 +218,7 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 - **`/fit`** — works, but intermittently **500s on long inputs** (JSON truncation) and burns the 1 free use behind a paywall. High risk of failing live.
 - **`/negotiate`, Mock Interview, Answer Coach** — real but **Pro-only end to end**; a cold stranger can't reach them, and negotiate shares the truncation-500 risk.
 - **`/score`** — works, but auth-gated + 1 free use, then paywall.
-- **ZIP export** — Pro-only, and packs **DOCX only** while calling itself an "application package."
+- ~~**ZIP export** packs DOCX only~~ — ✅ **FIXED** (§5): ZIP now includes both DOCX and PDF per doc. (Still Pro-only, which is by design.)
 - **Chrome extension on Greenhouse / Lever / Indeed / LinkedIn** — partial: may silently fail to inject or grab only a fragment. A live demo can no-op unpredictably.
 - **`/privacy`** — off-theme and shows the wrong contact address; looks half-finished.
 - ~~**"Quality-gated output"** — validator fails open~~ — ✅ **FIXED** (§3/§5): validator now fails **closed** to a neutral "Not graded" state; no fabricated PASS.
