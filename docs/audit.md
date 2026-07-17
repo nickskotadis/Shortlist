@@ -11,6 +11,8 @@
 
 **Legend:** ✅ Working · 🟡 Partially working · 🔴 Broken · 🟦 Scaffolding only
 
+> **Remediation pass (2026-07-16):** the P0/P1/P2 defects below were fixed on branch `worktree-audit-inventory` — one commit per item, each verified as noted inline (typecheck + targeted end-to-end tests; a full `next build` with all env vars unset now exits 0). Items that require access this environment doesn't have (production DB, provider dashboards, loading the extension unpacked) are **not** marked done — see **[Needs manual verification](#needs-manual-verification)** at the end.
+
 ---
 
 ## Route inventory (including routes not in the original list)
@@ -237,4 +239,18 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 ---
 
 ### Résumé-claim guidance (blunt)
-Safe to claim without qualification: **an authenticated, streaming, self-critiquing LLM generation pipeline (generate → validate → retry) on Claude Sonnet/Haiku with SSE**, **Stripe subscription billing with webhook-driven entitlement**, **Supabase auth + RLS**, and **server-side DOCX/PDF/ZIP export**. Claim with care or fix first: **PDF resume ingestion** (broken), **the Chrome extension** (one board broken, popup dead, several boards fragile), and **LinkedIn sign-in** (absent). The breadth of features is real; the reliability of the *edges* is where a live demo or a technical interviewer will catch a gap.
+Safe to claim without qualification: **an authenticated, streaming, self-critiquing LLM generation pipeline (generate → validate → retry) on Claude Sonnet/Haiku with SSE**, **Stripe subscription billing with webhook-driven entitlement**, **Supabase auth + RLS**, and **server-side DOCX/PDF/ZIP export**. After the remediation pass, **PDF resume ingestion** now works, the structured LLM routes parse robustly (retry-once, fail-closed validator), anonymous traffic is rate-limited, and the **Chrome extension** match patterns / popup / permissions are fixed. Two things still hinge on config you must apply by hand: **LinkedIn sign-in** (button wired, provider not yet enabled) and the **signup-trigger migration** (written, not yet run in prod) — see below. The breadth of features is real; the remaining risk is deployment config, not code.
+
+---
+
+## Needs manual verification
+
+These changes are complete in code and verified as far as this environment allows, but their real-world effect depends on access this environment doesn't have. **Not marked done.**
+
+1. **Run `migration_009.sql` against production** (§2, signup trigger). The fix is in `schema.sql` + `supabase/migration_009.sql`, but the live DB still runs the old function until applied. Apply via the Supabase SQL editor (paste the file) **or** the Management API:
+   `POST https://api.supabase.com/v1/projects/{ref}/database/query` with `Authorization: Bearer <PERSONAL_ACCESS_TOKEN>` and body `{"query": "<contents of migration_009.sql>"}`. Then confirm a fresh signup creates a `profiles` row with no "Database error saving new user".
+2. **Enable LinkedIn (OIDC) provider** (§2). The `linkedin_oidc` button is wired, but does nothing until enabled: Supabase Dashboard → Authentication → Providers → LinkedIn (OIDC) → add client ID + secret. (Same prerequisite already applies to Google/GitHub if those were never enabled.)
+3. **Load the Chrome extension unpacked and test each board** (§7). Match patterns are code-verified; live DOM extraction is not. Load `chrome-extension/` via `chrome://extensions` → Developer mode → Load unpacked, then confirm the button injects and captures the JD on: a **Workday tenant** (`*.wdN.myworkdayjobs.com`), a **`job-boards.greenhouse.io`** posting, the **Indeed `?vjk=` right pane**, the **LinkedIn `?currentJobId=` search pane**, and a **Lever** posting (full description, not just requirements). Also confirm the popup **"Open Shortlist"** button works (external `popup.js` under MV3 CSP).
+4. **Rate limiting with Upstash configured** (§3). Verified the in-memory fallback (caps + key isolation) via unit test. With `UPSTASH_REDIS_REST_URL`/`_TOKEN` set, confirm the Redis path limits across instances, and that Vercel's `x-forwarded-for` yields a usable client IP (not a shared/`unknown` bucket).
+5. **Stripe redirect smoke test on the live domain** (§4). The `x-forwarded-host` validation + lazy webhook client are code-verified; do one real checkout on `shortlist-amber.vercel.app` and confirm success/cancel/portal redirects land correctly and the plan flips to Pro.
+6. *(optional, deterministic in code)* **Visual checks**: the logged-out "Sign in to export" state (§5), the neutral "Not graded" validator badge (§5), and the dark `/privacy` page (P2) all render from deterministic conditionals verified by `tsc`; a quick look while logged out / on a forced-unavailable validation is nice-to-have, not required.
