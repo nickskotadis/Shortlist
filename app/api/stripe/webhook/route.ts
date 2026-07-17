@@ -1,15 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { getStripe } from "@/lib/stripe";
 import type Stripe from "stripe";
 
-// Service-role client — bypasses RLS, only used here for webhook writes
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Lazy singleton — deferred until first use so `next build` doesn't crash
+// evaluating this module when NEXT_PUBLIC_SUPABASE_URL is unset at build time.
+let _supabaseAdmin: SupabaseClient | null = null;
+
+function getSupabaseAdmin(): SupabaseClient {
+  if (!_supabaseAdmin) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) {
+      throw new Error("Supabase service-role env vars are not set");
+    }
+    _supabaseAdmin = createClient(url, key);
+  }
+  return _supabaseAdmin;
+}
 
 export async function POST(req: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin();
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
 
