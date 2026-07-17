@@ -5,7 +5,7 @@
 **Method:** Static tracing from user action → hook → API route → external service → result, cross-checked across five independent passes. Every claim is cited to `file:line`. Where a runtime library's behavior mattered (`pdf-parse`), it was verified against the published package on the npm registry.
 
 **Verification caveats (read before trusting a "Working"):**
-- `node_modules` is **not installed** in this checkout, so **no build, typecheck, or runtime test was executed**. Statuses are from source tracing + package-registry inspection, not from running the app.
+- Statuses are primarily from source tracing + package-registry inspection (`node_modules` is not installed locally). One real build **was** observed: a Vercel build of this branch (commit `1c7853d`) **compiled successfully and passed TypeScript**, then **failed at "Collecting page data" with `Error: supabaseUrl is required` at `/api/stripe/webhook`** — a module-scope Supabase client that throws when `NEXT_PUBLIC_SUPABASE_URL` is unset at build time (see §4). So: the codebase typechecks; the webhook route has a build-time crash when env is not present.
 - Several features are real code that depends entirely on **deployment-time config** (Supabase provider toggles, Stripe env vars, Supabase Site URL). Those are marked "env-dependent" — the code works; whether the *deployment* works cannot be proven from the repo.
 - `CLAUDE.md` is stale in at least two places (claims LinkedIn OAuth and a `pdf-parse` gotcha that no longer match the code). Treat the docs as intent, not evidence.
 
@@ -148,6 +148,7 @@
 - **Webhook · ✅ Working** — raw body via `req.text()` + signature verification (`webhook/route.ts:13,22`); service-role `@supabase/supabase-js` client (`:2,7-10`); handles `checkout.session.completed` (sets `plan: "pro"` + `stripe_customer_id`), `subscription.updated`, `subscription.deleted`. **DB errors throw → 500 so Stripe retries** (`:76-79`).
 - **Portal · ✅ Working** — requires `stripe_customer_id`, creates a real billing-portal session (`portal/route.ts:39-44`).
 - **Free/Pro state** — source of truth is `profiles.plan`, flipped only by the webhook. Free monthly cap (=2) enforced **before** the stream in `generate/route.ts:133-157`. **Gap:** the cap is inside `if (user)` (`:134`) — **anonymous users are never rate-limited**, so the free cap is bypassable by logging out.
+- 🔴 **Build-time crash (confirmed on a real Vercel build):** the service-role client is instantiated at **module scope** (`webhook/route.ts:7-10`), so `next build` evaluates it during "Collecting page data." With `NEXT_PUBLIC_SUPABASE_URL` unset at build time — e.g. a Preview deployment where the Supabase env vars are scoped to Production only — the build fails with `Error: supabaseUrl is required` at `/api/stripe/webhook` (observed on commit `1c7853d`; compile + TypeScript passed first). This is the exact anti-pattern the project deliberately avoided for Stripe via the lazy `getStripe()` singleton (`lib/stripe.ts`), but the Supabase admin client was left eager. Fix: lazy-init the client inside `POST`, or scope the Supabase env vars to Preview as well.
 - **Silent failure mode:** if `STRIPE_WEBHOOK_SECRET` is misconfigured (the documented trailing-newline hazard), checkout still opens but the plan **never upgrades** — "paid but still free." Not verifiable from the repo.
 - Minor: checkout/portal use `x-forwarded-host` unvalidated (`checkout/route.ts:31`), unlike the `*.vercel.app` restriction in the auth callback.
 
@@ -229,6 +230,7 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 - **LinkedIn OAuth** — documented as shipped but **not in the code**. Either implement it or stop claiming it (and fix `CLAUDE.md`).
 - **`handle_new_user()` signup trigger** — missing `SET search_path` / schema-qualification (`schema.sql:51-58`); the project's own gotchas say this breaks signup. Verify against the live DB and rebuild if it matches the repo.
 - **`/api/interview`** — the only unauthenticated LLM route (4096-token Haiku, no throttle). Add auth/rate-limiting or accept it as a standing cost/abuse exposure.
+- **Stripe webhook module-scope Supabase client** (`webhook/route.ts:7-10`) — **crashes `next build`** ("Collecting page data") when `NEXT_PUBLIC_SUPABASE_URL` is absent, breaking any Preview/CI build that lacks the env var. Make it lazy like `getStripe()`. Confirmed on a real Vercel build.
 
 ---
 
