@@ -106,7 +106,7 @@
 
 - **OAuth callback code exchange · ✅ Working** — builds `redirectResponse` first, wires `setAll` → `redirectResponse.cookies.set`, then `exchangeCodeForSession` (`callback/route.ts:27-49`). Open-redirect guard on `next` (`:11-12`); `x-forwarded-host` restricted to `*.vercel.app` (`:14-20`).
 - **Route protection (`proxy.ts`) · ✅ Working, narrow** — refreshes sessions everywhere but **only `/dashboard` is access-gated** (`proxy.ts:33-37`). `/generate`, `/applications`, `/fit`, `/score`, `/interview`, `/negotiate` rely on per-route API checks, not middleware.
-- **Profile-on-signup trigger · ⚠️ Risk** — `handle_new_user()` in `supabase/schema.sql:51-58` is `SECURITY DEFINER` but **lacks `SET search_path = public` and does not schema-qualify `public.profiles`** — the exact anti-pattern `CLAUDE.md`'s own gotchas say causes "Database error saving new user." A later migration fixes a *different* trigger, but this one as written in the repo is the risky form. If the live DB runs this version, **new signups can fail at the trigger.** Not confirmable from the repo — flag as a real risk, not a confirmed break.
+- **Profile-on-signup trigger · ✅ FIXED in code (⚠️ prod apply pending)** — `handle_new_user()` now pins `SET search_path = public` and inserts into `public.profiles` (`schema.sql`), matching the proven pattern in `migration_003`. `migration_009.sql` re-creates the function safely in production via `CREATE OR REPLACE` (the existing `on_auth_user_created` trigger keeps pointing at it — no drop/recreate). **Verified:** SQL mirrors the working `migration_003` form. **Manual:** must be run against the production DB (see manual-verification list) — cannot be applied from this environment.
 
 ---
 
@@ -230,7 +230,7 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 - ~~**Chrome extension — popup button + `background.js`**~~ — ✅ **FIXED** (§7): popup handler moved to external `popup.js`; dead `background.js` deleted.
 - ~~**Chrome extension — unused permissions**~~ — ✅ **FIXED** (§7): `scripting`/`activeTab`/`storage` removed; `permissions: []`.
 - **LinkedIn OAuth** — documented as shipped but **not in the code**. Either implement it or stop claiming it (and fix `CLAUDE.md`).
-- **`handle_new_user()` signup trigger** — missing `SET search_path` / schema-qualification (`schema.sql:51-58`); the project's own gotchas say this breaks signup. Verify against the live DB and rebuild if it matches the repo.
+- ~~**`handle_new_user()` signup trigger**~~ — ✅ **FIXED in code** (§2): `schema.sql` hardened + `migration_009.sql` added. **Still must be run against prod** (manual list).
 - ~~**`/api/interview`** unthrottled~~ — ✅ **FIXED** (§3): IP rate-limited (10/hr/IP); anonymous `/generate` also IP-limited (5/hr/IP). Shared `lib/rate-limit.ts` (Upstash when configured, in-memory fallback).
 - ~~**Stripe webhook module-scope Supabase client**~~ — ✅ **FIXED** (§4): now lazy via `getSupabaseAdmin()` inside `POST`; `next build` succeeds with the Supabase env vars unset.
 

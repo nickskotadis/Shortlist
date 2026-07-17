@@ -47,15 +47,17 @@ create table profiles (
   updated_at      timestamptz not null default now()
 );
 
--- Auto-create a profile row when a user signs up
+-- Auto-create a profile row when a user signs up.
+-- SECURITY DEFINER functions must pin search_path and fully qualify table
+-- names, or the insert fails with "Database error saving new user".
 create or replace function handle_new_user()
 returns trigger as $$
 begin
-  insert into profiles (id)
+  insert into public.profiles (id)
   values (new.id);
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = public;
 
 create trigger on_auth_user_created
   after insert on auth.users
