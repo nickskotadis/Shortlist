@@ -10,7 +10,7 @@ const ANNUAL_PRICE_CENTS = 6300;  // $63.00/yr ($5.25/mo, 3 months free)
 
 function CheckIcon() {
   return (
-    <svg className="w-4 h-4 text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+    <svg className="w-4 h-4 text-[var(--color-success)] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 6L9 17l-5-5" />
     </svg>
   );
@@ -96,7 +96,7 @@ export default function PricingPage() {
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
           <Link
             href="/"
-            className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-indigo-400 transition-colors"
+            className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors"
           >
             Shortlist
           </Link>
@@ -130,7 +130,7 @@ export default function PricingPage() {
 
         {/* Billing toggle */}
         <div className="flex justify-center mb-10">
-          <div className="inline-flex items-center bg-[var(--color-elevated)] rounded-xl p-1 gap-1 border border-[var(--color-border)]">
+          <div className="inline-flex items-center bg-[var(--color-elevated)] rounded-md p-1 gap-1 border border-[var(--color-border)]">
             <button
               onClick={() => setBilling("monthly")}
               className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -150,7 +150,7 @@ export default function PricingPage() {
               }`}
             >
               Annual
-              <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-400 border border-emerald-200 dark:border-emerald-900/40">
+              <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--color-success-bg)] text-[var(--color-success)] border border-[var(--color-success-border)]">
                 Save {fmt(annualSavings)}
               </span>
             </button>
@@ -161,7 +161,7 @@ export default function PricingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
           {/* Free */}
-          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-8 flex flex-col">
+          <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-8 flex flex-col">
             <div className="mb-6">
               <p className="text-sm font-medium text-[var(--color-text-secondary)] mb-2">Free</p>
               <div className="flex items-baseline gap-1">
@@ -182,14 +182,14 @@ export default function PricingPage() {
 
             <Link
               href="/generate"
-              className="w-full text-center py-3 rounded-xl text-sm font-semibold border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)] transition-all"
+              className="w-full text-center py-3 rounded-md text-sm font-semibold border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)] transition-all"
             >
               Get started free
             </Link>
           </div>
 
           {/* Pro */}
-          <div className="bg-indigo-600 rounded-2xl border border-indigo-600 p-8 shadow-sm flex flex-col relative overflow-hidden">
+          <div className="bg-[var(--color-accent)] rounded-md border border-[var(--color-accent)] p-8 shadow-sm flex flex-col relative overflow-hidden">
             <div className="absolute top-4 right-4">
               <span className="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white">
                 Most popular
@@ -197,15 +197,15 @@ export default function PricingPage() {
             </div>
 
             <div className="mb-6">
-              <p className="text-sm font-medium text-indigo-200 mb-2">Pro</p>
+              <p className="text-sm font-medium text-white/70 mb-2">Pro</p>
               <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-white">{monthlyDisplay}</span>
-                <span className="text-sm text-indigo-200">
+                <span className="text-sm text-white/70">
                   /{billing === "annual" ? "mo, billed annually" : "mo"}
                 </span>
               </div>
               {billing === "annual" && (
-                <p className="text-sm text-indigo-200 mt-2">
+                <p className="text-sm text-white/70 mt-2">
                   {fmt(ANNUAL_PRICE_CENTS)}/year — 3 months free
                 </p>
               )}
@@ -217,23 +217,23 @@ export default function PricingPage() {
                   <svg className="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
-                  <span className="text-sm text-indigo-100">{f}</span>
+                  <span className="text-sm text-white/90">{f}</span>
                 </li>
               ))}
             </ul>
 
             {error && (
-              <p className="text-xs text-red-200 mb-3">{error}</p>
+              <p className="text-xs text-[var(--color-error)] mb-3">{error}</p>
             )}
 
             <button
               onClick={handleUpgrade}
               disabled={loading}
-              className="w-full py-3 rounded-xl text-sm font-semibold bg-white text-indigo-700 hover:bg-indigo-50 transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+              className="w-full py-3 rounded-md text-sm font-semibold bg-white text-[var(--color-accent)] hover:bg-[var(--color-accent-weak)] transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
                   Redirecting...
                 </span>
               ) : (
