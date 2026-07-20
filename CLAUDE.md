@@ -32,6 +32,11 @@ Be decisive. If there are options, pick one and justify it.
 
 ## Current state (updated as work progresses)
 
+### "Paper & Ink" redesign — DONE
+- Wholesale reskin from the old deep-navy/indigo dark theme to a **single light editorial theme** (warm paper `#FAF9F6`, ink `#211E1A`, one forest-green accent `#2F4A3C`). No dark mode, no toggle. Print/editorial typography, structure over decoration. **Zero functional changes** — presentation only.
+- Display serif **Fraunces** added via `next/font` (`--font-fraunces`) for headings/key moments; Geist Sans (body) + Geist Mono (output) unchanged. See **Design system** below for tokens, type scale, and recipes.
+- Removed `next-themes`/`ThemeProvider` + the UserMenu mode toggle; deleted the aurora gradient, grain overlay, `.btn-shimmer`, `.text-gradient`, `.cursor-blink`. All indigo → accent; status colors redefined muted-editorial for light bg. Chrome extension (`content.js` button + `popup.html`) got a matching pass.
+
 ### Week 1 — DONE
 - Supabase auth (magic link) wired
 - `proxy.ts` refreshes sessions on every request; protects `/dashboard`
@@ -200,129 +205,114 @@ Be decisive. If there are options, pick one and justify it.
 
 ## Design system
 
-**Theme:** Deep navy dark. All pages use hex-based Tailwind arbitrary values — no light mode.
+**Theme:** "Paper & ink" — a single **light** editorial theme. No dark mode, no toggle. The design language is print/editorial typography: warm paper, near-black ink, one restrained accent, hairline rules, whitespace and type hierarchy over borders/cards.
 
-### Colors (hex palette)
-| Role | Value | Usage |
+**All themable values are CSS custom properties in `app/globals.css` (`:root`).** Components reference them via `var(--color-*)` in Tailwind arbitrary values — **never raw hex in components.** A future retheme is a one-file edit. Surfaces/text/borders across every page already flow through these tokens.
+
+### Tokens (semantic CSS vars — the source of truth)
+| Token | Value | Role |
 |---|---|---|
-| Page background | `#090C18` | `bg-[#090C18]` on every page wrapper |
-| Card surface | `#0D1122` | `bg-[#0D1122]` on cards, panels |
-| Deep inset | `#0B0E1E` | `bg-[#0B0E1E]` for pre blocks, inset areas |
-| Elevated / inputs | `#13182C` | `bg-[#13182C]` on inputs, textareas, hover states |
-| Disabled button bg | `#141830` | `bg-[#141830]` |
-| Border default | `#232548` | `border-[#232548]` — main card borders (visible) |
-| Border subtle | `#1A1D38` | `border-[#1A1D38]` — dividers inside cards |
-| Border strong | `#2E3165` | `border-[#2E3165]` — hover state border |
-| Dim separator | `#363960` | `text-[#363960]` on `·` separators |
-| Text primary | `#EEEEFC` | headings, active labels |
-| Text secondary | `#8888A8` | body, meta, inactive nav links |
-| Text tertiary | `#5A5A80` | hints, timestamps, icons |
-| Text placeholder | `#4A4A68` | `placeholder-[#4A4A68]` |
-| Text output | `#C8C8F0` | generated content, pre blocks |
-| Text label | `#E0E0F8` | form field labels |
+| `--color-page` | `#FAF9F6` | warm paper background (every page wrapper: `bg-[var(--color-page)]`) |
+| `--color-surface` | `#FFFFFF` | document/card paper |
+| `--color-inset` | `#F3F1EA` | recessed areas, pre blocks, marginalia |
+| `--color-elevated` | `#F6F4EE` | inputs, subtle raised |
+| `--color-disabled` | `#EEEBE3` | disabled button bg |
+| `--color-ink` | `#211E1A` | primary text (warm near-black) |
+| `--color-ink-secondary` | `#57524A` | body, meta |
+| `--color-ink-tertiary` | `#726C60` | hints, timestamps, editorial labels |
+| `--color-ink-placeholder` | `#9A9488` | input placeholders |
+| `--color-rule` | `#E5E1D8` | hairline borders/dividers |
+| `--color-rule-strong` | `#CFC9BB` | hover/emphasis borders |
+| `--color-separator` | `#BDB6A6` | `·` separators |
+| `--color-accent` | `#2F4A3C` | **forest green** — primary actions, active/selected, focus |
+| `--color-accent-hover` | `#24382D` | accent hover |
+| `--color-accent-weak` | `#E9EEE9` | pale wash for active pills/badges |
+| `--color-accent-weak-border` | `#C6D4C6` | active pill border |
+| `--color-accent-contrast` | `#FAF9F6` | paper text on accent fill |
 
-**Accent — indigo:**
-- Primary button: `bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/20`
-- Generate button: `.btn-shimmer` class (animated gradient in globals.css)
-- Active nav pill / selected card: `border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500 text-indigo-400`
-- Badges / tags: `text-indigo-400 bg-indigo-950/40 border border-indigo-900/50`
+**Legacy aliases** (`--color-text-primary/secondary/tertiary/placeholder/label`, `--color-text-output`, `--color-border`, `--color-border-subtle`, `--color-border-strong`) are kept in `:root`, mapped onto the ink/rule tokens above, so pre-existing `var(--color-text-*)`/`var(--color-border*)` references resolve unchanged. New code should prefer the `--color-ink*` / `--color-rule*` names.
 
-**Status colors (dark variants):**
-- Success/pass: `text-emerald-400 bg-emerald-950/30 border border-emerald-900/40`
-- Warning/review: `text-amber-400 bg-amber-950/30 border border-amber-900/40`
-- Error/reject: `text-red-400 bg-red-950/30 border border-red-900/40`
-- Neutral/withdrawn: `text-[#5A5A80] bg-[#13182C] border border-[#232548]`
+**Accent — forest green, used sparingly** (primary actions + active/selected + focus rings only; nothing else is accent-colored):
+- Primary button: `bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-accent-contrast)]`
+- Active nav pill / selected card / badge: `border-[var(--color-accent)] bg-[var(--color-accent-weak)] text-[var(--color-accent)]` (weak-border variant for pills)
+- Focus ring: `focus:ring-2 focus:ring-[var(--color-accent)]` (visible focus is required for a11y)
+- Editorial links: `text-[var(--color-accent)] hover:underline`
 
-**globals.css effects:**
-- Aurora glow: `body { background-image: radial-gradient(ellipse 90% 55% at 50% -10%, rgba(99,102,241,0.18)...) }` — indigo bleed from top
-- Grain texture: `body::before` SVG fractalNoise at 2.8% opacity — eliminates flat/plastic feel
-- `.btn-shimmer` — animated indigo shimmer for the active generate button
-- `.animate-fade-up` + `.animate-delay-1/2/3/4` — staggered entrance animations
-- `.text-gradient` — indigo→violet gradient text for hero headlines
-- `.cursor-blink::after` — streaming cursor in `#818CF8`
+**Status colors (muted editorial, tuned for paper — text meets WCAG AA):**
+| Status | text / bg / border tokens |
+|---|---|
+| Success/pass/offer | `--color-success #35583F` / `--color-success-bg #E7EEE6` / `--color-success-border #C6D6C4` |
+| Warning/review/interview | `--color-warning #7A5C1E` / `--color-warning-bg #F3EAD4` / `--color-warning-border #E0CFA3` |
+| Error/reject/rejected | `--color-error #8F3A28` / `--color-error-bg #F3E2DC` / `--color-error-border #E2C1B4` |
+| Neutral/withdrawn | `--color-text-tertiary` / `--color-elevated` / `--color-border` |
+
+Use as `text-[var(--color-success)] bg-[var(--color-success-bg)] border border-[var(--color-success-border)]`. There is **no** `.dark:` variant — never add one. SVG score-ring `stroke`/`color` accept CSS vars directly: `stroke="var(--color-success)"` (score tiers map success ≥8 / accent 6–8 / warning 4–6 / error <4).
 
 ### Typography
-- Font: Geist Sans (body), Geist Mono (generated output only — `font-mono`)
-- Section headings: `text-sm font-semibold text-[#EEEEFC] mb-1`
-- Section subtext: `text-xs text-[#5A5A80] mb-4`
-- Labels: `text-sm font-medium text-[#E0E0F8] mb-1.5`
-- Hint text: `text-xs text-[#5A5A80] mt-1.5`
-- Nav brand: `text-base font-semibold text-[#EEEEFC] tracking-tight`
+Three families: **Fraunces** (display serif, via `next/font` → `var(--font-fraunces)`), **Geist Sans** (UI/body), **Geist Mono** (generated output only). Strong display↔body contrast is deliberate.
+
+Display utility classes (defined in `globals.css`, all Fraunces with optical sizing):
+- `.display-xl` — hero, `clamp(2.75rem,6vw,4.5rem)` / 1.05
+- `.display-l` — key moments / section heroes, `clamp(2rem,4vw,3rem)` / 1.1
+- `.display-m` — document & card titles, `1.75rem` / 1.2
+- `.font-serif` — apply Fraunces at any size
+- `.label-editorial` — uppercase tracked marginalia label, `0.75rem`, ink-tertiary
+
+UI text (Geist Sans): section headings `text-base font-semibold text-[var(--color-text-primary)]`; subtext/hints `text-xs text-[var(--color-text-tertiary)]`; labels `text-sm font-medium text-[var(--color-text-label)]`. Generated output is Geist Mono: `font-mono text-[var(--color-text-output)]`.
 
 ### Components
 
-**Cards (content sections):**
+**Card / panel (use sparingly — prefer hairline rules + whitespace):**
 ```
-bg-[#0D1122] rounded-2xl border border-[#232548] p-6
-```
-
-**Form inputs:**
-```
-w-full border border-[#232548] rounded-lg px-4 py-2.5 text-sm text-[#EEEEFC]
-placeholder-[#4A4A68] focus:outline-none focus:ring-2 focus:ring-indigo-500
-focus:border-transparent bg-[#13182C] transition
+bg-[var(--color-surface)] rounded-md border border-[var(--color-rule)] p-6
 ```
 
-**Textareas:** same as input but `px-4 py-3` and `resize-none`
+**Form input / textarea:**
+```
+w-full border border-[var(--color-border)] rounded px-4 py-2.5 text-sm text-[var(--color-text-primary)]
+placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]
+focus:border-transparent bg-[var(--color-elevated)] transition
+```
+(textarea: `px-4 py-3 resize-none`)
 
-**Primary button (active):**
+**Primary button (active / disabled):**
 ```
-bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl
-shadow-sm shadow-indigo-600/20 hover:-translate-y-px transition-all
+bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-accent-contrast)]
+font-semibold rounded-md transition-colors
+— disabled: bg-[var(--color-disabled)] text-[var(--color-text-placeholder)] cursor-not-allowed
 ```
+The generate button is a plain accent button (the old `.btn-shimmer` is deleted — do not reintroduce animated gradients).
 
-**Primary button (disabled):**
+**Selected vs unselected card (user/doc/tone selectors):**
 ```
-bg-[#141830] text-[#4A4A68] cursor-not-allowed
-```
-
-**Generate button (active):** use `.btn-shimmer` class instead of `bg-indigo-600`
-
-**Selected/active card state** (user type selector, doc type selector):
-```
-border-indigo-500 bg-indigo-950/40 ring-1 ring-indigo-500
-```
-Text inside selected card: `text-indigo-400`
-
-**Unselected card state:**
-```
-border-[#232548] bg-[#13182C] hover:border-[#2E3165]
+selected:   border-[var(--color-accent)] bg-[var(--color-accent-weak)] text-[var(--color-accent)]
+unselected: border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]
 ```
 
-**Nav pill buttons:**
-- Active: `px-3 py-1.5 rounded-lg text-sm font-medium text-[#EEEEFC] bg-[#13182C] border border-[#232548]`
-- Inactive: `px-3 py-1.5 rounded-lg text-sm font-medium text-[#8888A8] hover:text-[#EEEEFC] hover:bg-[#13182C] transition-all`
+**Nav pill:** active `px-3 py-1.5 rounded text-sm font-medium text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)]`; inactive swaps to `text-[var(--color-text-secondary)]` with `hover:bg-[var(--color-elevated)]`.
 
-**Pills/badges:**
-```
-inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border
-```
-See status colors above for each variant's classes.
+**Pill / badge:** `inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border` + a status or accent-weak color set.
 
-**Loading spinner:**
-```
-w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin
-```
-(Use `border-indigo-400` when on a dark surface without a solid button bg)
+**Streaming caret:** apply `.caret` (globals.css — thin accent caret) to output text while streaming. The old `.cursor-blink` is deleted.
 
-**Streaming cursor:** apply `.cursor-blink` class (defined in globals.css) to output text while streaming
+**Loading spinner:** `w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin` (inherits text color).
 
 ### Layout
-- Max width: `max-w-7xl mx-auto` for all pages **and** the shared Nav (fixed — no variation)
-- Page padding: `px-4 sm:px-6 py-8`
-- Nav: `bg-[#090C18]/80 backdrop-blur-xl border-b border-[#1A1D38] sticky top-0 z-10` with inner `max-w-7xl mx-auto px-6 h-14`
-- Two-column generate layout: `lg:grid lg:grid-cols-[1fr_1fr] lg:gap-8 lg:items-start`
-- Sticky right panel: `lg:sticky lg:top-24`
-- Section spacing inside a card: `space-y-6`
-- Grid for form fields: `grid grid-cols-1 sm:grid-cols-2 gap-4`
+- Max width `max-w-7xl mx-auto` for all pages **and** the shared Nav. Page padding `px-4 sm:px-6 py-8`.
+- Nav: `bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] sticky top-0 z-10`, inner `max-w-7xl mx-auto px-6 h-14`.
+- Two-column generate: `lg:grid lg:grid-cols-[1fr_1fr] lg:gap-8 lg:items-start`; sticky right panel `lg:sticky lg:top-24`.
 
-### Rounded corners
-- `rounded-lg` — inputs, small elements
-- `rounded-xl` — buttons, doc type selectors
-- `rounded-2xl` — cards, output panels, user type selectors
+### Rounded corners (sharper = more editorial)
+- `rounded` — inputs, small elements
+- `rounded-md` — cards, panels, buttons, doc-type selectors
+- `rounded-full` — pills, badges, dots **only**
+- Do **not** use `rounded-2xl`/`rounded-xl` (the old default) for new work.
+
+### globals.css utilities
+`.display-xl/.display-l/.display-m`, `.font-serif`, `.label-editorial`, `.caret` (+ `caret-blink` keyframes), `.animate-fade-up` + `.animate-delay-1..4`. **Deleted (do not reintroduce):** aurora `body` gradient, `body::before` grain overlay, `.btn-shimmer`, `.text-gradient`, `.cursor-blink`, `@variant dark`, and the `html.light` block.
 
 ### Section numbering pattern
-Form sections on the generate page are numbered (1., 2., 3. etc.) with the heading `text-sm font-semibold text-[#EEEEFC] mb-1` and a one-line description `text-xs text-[#5A5A80] mb-4` below it. Follow this pattern for any new form sections.
+Generate-page form sections are numbered (1., 2., 3.) with a Geist-Sans heading `text-base font-semibold text-[var(--color-text-primary)]` and a one-line `text-xs text-[var(--color-text-tertiary)]` description. Numbers are dynamic (`sectionNum()` in `GenerateForm`) — keep that. Follow this pattern for new form sections.
 
 ---
 
@@ -487,6 +477,7 @@ These have been explicitly decided against. Don't suggest or implement them:
 - Social OAuth providers (Google, GitHub) must be enabled in Supabase Dashboard → Authentication → Providers with client ID + secret before the buttons do anything. LinkedIn OIDC is intentionally not part of the auth surface.
 - Nav `maxWidth` prop was removed — all pages must use the shared `max-w-7xl` inner container. Do not add per-page width overrides to Nav or the buttons will shift between pages. Page content can use its own max-width independently.
 - Nav `px-6` must be on the inner `<div>` not the `<nav>` element — if moved to `<nav>`, `mx-auto` centers within a narrowed viewport and content shifts relative to page body.
+- **Theme is light-only ("paper & ink").** `next-themes`/`ThemeProvider` and the mode toggle were removed; `<html>` carries no theme class. Do **not** add `dark:` variants, `useTheme`, or a toggle — a single `:root` in `globals.css` is the whole theme. Style with `var(--color-*)` tokens only; never hardcode hex in components. Accent is forest green (`--color-accent`) for actions/active/focus only — no indigo anywhere.
 - **`maxDuration` on every LLM route is mandatory** — Vercel defaults to 10s; Haiku generating 4096 tokens takes 15–25s. Every route that calls `anthropic.messages.create` must export `export const maxDuration = 60` (long outputs) or `30` (short outputs). Missing this causes silent timeout failures on the first attempt.
 - **Supabase fire-and-forget increment**: use `void supabase.from(...).update(...).eq(...)` — do NOT chain `.then().catch()` on the Supabase query builder; its return type is `PromiseLike`, not a full `Promise`, so `.catch()` doesn't exist on it and TypeScript will error.
 - **Supabase CLI ad-hoc SQL**: `supabase db execute` doesn't exist in v2.75. To run a migration against remote, use `supabase db push` (for tracked migrations) or connect via database URL. The Management API (`POST /v1/projects/{ref}/database/query`) requires a Personal Access Token (PAT), not the service role key.

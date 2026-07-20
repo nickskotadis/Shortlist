@@ -40,7 +40,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
         <div className="flex items-center gap-1">
           <Link
             href="/"
-            className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-indigo-400 transition-colors mr-4"
+            className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors mr-4"
           >
             Shortlist
           </Link>
@@ -50,7 +50,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
                 activePage === link.page ? (
                   <span
                     key={link.href}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-primary)] bg-[var(--color-elevated)] border border-[var(--color-border)]"
+                    className="px-3 py-1.5 rounded text-sm font-medium text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)]"
                   >
                     {link.label}
                   </span>
@@ -58,7 +58,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all"
+                    className="px-3 py-1.5 rounded text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all"
                   >
                     {link.label}
                   </Link>
@@ -73,8 +73,8 @@ export default async function Nav({ activePage, actions }: NavProps) {
           {user ? (
             <>
               {plan === "pro" ? (
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-900/50">
-                  <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)]">
+                  <span className="w-1.5 h-1.5 bg-[var(--color-accent)] rounded-full" />
                   Pro
                 </span>
               ) : (
@@ -82,7 +82,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
                   Free
                   <Link
                     href="/pricing"
-                    className="text-indigo-400 hover:text-indigo-300 font-semibold ml-0.5 transition-colors"
+                    className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] font-semibold ml-0.5 transition-colors"
                   >
                     Upgrade →
                   </Link>
