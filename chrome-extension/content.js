@@ -114,23 +114,23 @@ function injectButton() {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #4f46e5;
-      color: white;
+      background: #2F4A3C;
+      color: #FAF9F6;
       border: none;
-      border-radius: 12px;
+      border-radius: 6px;
       padding: 10px 16px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+      box-shadow: 0 4px 16px rgba(30, 25, 18, 0.18);
       transition: all 0.2s ease;
       white-space: nowrap;
     }
     #shortlist-ext-btn:hover {
-      background: #4338ca;
+      background: #24382D;
       transform: translateY(-1px);
-      box-shadow: 0 6px 24px rgba(79, 70, 229, 0.5);
+      box-shadow: 0 6px 20px rgba(30, 25, 18, 0.24);
     }
     #shortlist-ext-btn:active {
       transform: translateY(0);
