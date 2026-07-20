@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { buildAnswerCoachPrompt, stripCodeFences } from "@/lib/prompts";
+import { buildAnswerCoachPrompt } from "@/lib/prompts";
+import { parseLlmJson } from "@/lib/llm-json";
 import { MODELS } from "@/lib/constants";
 import type { AnswerCoachResult } from "@/lib/types";
 
@@ -76,34 +77,33 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const response = await anthropic.messages.create({
-      model: MODELS.parser,
-      max_tokens: 1024,
-      messages: [
-        {
-          role: "user",
-          content: buildAnswerCoachPrompt(
-            question,
-            trimmedAnswer,
-            framework ?? "",
-            resume_text,
-            jd_text
-          ),
-        },
-      ],
+    const parsed = await parseLlmJson<AnswerCoachResult>(async () => {
+      const response = await anthropic.messages.create({
+        model: MODELS.parser,
+        max_tokens: 1024,
+        messages: [
+          {
+            role: "user",
+            content: buildAnswerCoachPrompt(
+              question,
+              trimmedAnswer,
+              framework ?? "",
+              resume_text,
+              jd_text
+            ),
+          },
+        ],
+      });
+      return response.content[0]?.type === "text" ? response.content[0].text : "";
     });
 
-    const raw = response.content[0].type === "text" ? response.content[0].text : "{}";
-
-    let result: AnswerCoachResult;
-    try {
-      result = JSON.parse(stripCodeFences(raw)) as AnswerCoachResult;
-    } catch {
+    if (!parsed.ok) {
       return NextResponse.json(
-        { error: "Failed to evaluate answer — please try again." },
+        { error: "Couldn't read the evaluation — please try again." },
         { status: 500 }
       );
     }
+    const result = parsed.value;
 
     return NextResponse.json(result);
   } catch (err) {

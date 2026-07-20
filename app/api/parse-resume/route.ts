@@ -1,16 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { PARSE_RESUME_IP_LIMIT, PARSE_RESUME_IP_WINDOW_SEC } from "@/lib/constants";
 
 // POST — parse a PDF or DOCX file and return its plain text
 // Accepts multipart/form-data with a "file" field
 export async function POST(req: NextRequest) {
-  // BUG-02: require auth — pdf-parse + mammoth are memory-heavy parsers
+  // Anonymous upload is allowed on purpose (upload→first generation is the
+  // try-before-signup moment). It's cheap CPU, not an LLM call — but the
+  // parsers are memory-heavy, so bound logged-out traffic per IP against abuse.
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    const ip = getClientIp(req);
+    const { allowed, retryAfterSec } = await rateLimit(
+      `parse:${ip}`,
+      PARSE_RESUME_IP_LIMIT,
+      PARSE_RESUME_IP_WINDOW_SEC
+    );
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Too many uploads — please wait a bit, or paste your resume instead." },
+        { status: 429, headers: { "Retry-After": String(retryAfterSec) } }
+      );
+    }
   }
 
   let formData: FormData;
@@ -42,12 +57,14 @@ export async function POST(req: NextRequest) {
       if (!isPdf) {
         return NextResponse.json({ error: "File does not appear to be a valid PDF." }, { status: 400 });
       }
-      // Dynamic import — pdf-parse is CommonJS; use default with ESM compat fallback
-      const pdfModule = await import("pdf-parse");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const pdfParse = (pdfModule as any).default ?? pdfModule;
-      const result = await pdfParse(buffer);
-      const text = result.text?.trim() ?? "";
+      // unpdf ships a serverless-safe pdfjs build — no DOMMatrix / native
+      // canvas needed. (pdf-parse@2's pdfjs-dist requires DOMMatrix, which
+      // throws on Vercel's serverless runtime.) Dynamic import keeps pdfjs
+      // out of module init.
+      const { extractText, getDocumentProxy } = await import("unpdf");
+      const pdf = await getDocumentProxy(new Uint8Array(buffer));
+      const { text: raw } = await extractText(pdf, { mergePages: true });
+      const text = (Array.isArray(raw) ? raw.join("\n") : raw).trim();
       if (!text) {
         return NextResponse.json({ error: "Could not extract text from PDF — try pasting manually." }, { status: 422 });
       }

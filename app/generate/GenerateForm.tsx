@@ -291,10 +291,12 @@ function BatchOutputPanel({
   states,
   onDownloadZip,
   zipLoading,
+  isAuthenticated,
 }: {
   states: import("@/hooks/useBatchGenerate").BatchState[];
   onDownloadZip: () => void;
   zipLoading: boolean;
+  isAuthenticated: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<DocumentType>("bullets");
 
@@ -339,6 +341,7 @@ function BatchOutputPanel({
           status={active.status}
           streamText={active.streamText}
           jdAnalysis={null}
+          isAuthenticated={isAuthenticated}
           result={active.result
             ? {
                 output: active.result.output,
@@ -346,6 +349,7 @@ function BatchOutputPanel({
                 scores: active.result.scores,
                 overall: active.result.overall,
                 verdict: active.result.verdict,
+                validationUnavailable: active.result.validationUnavailable,
                 retryCount: 0,
                 issues: active.result.issues,
                 generationId: active.result.generationId,
@@ -508,9 +512,13 @@ export default function GenerateForm({
 
     try {
       const res = await fetch("/api/parse-resume", { method: "POST", body: formData });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({} as { error?: string; text?: string }));
       if (!res.ok) {
-        setParseError(data.error ?? "Failed to parse file");
+        setParseError(data.error ?? `Couldn't read that file (error ${res.status}) — try pasting instead.`);
+        return;
+      }
+      if (!data.text) {
+        setParseError("No text found in that file — try pasting your resume instead.");
         return;
       }
       setCandidateInput(data.text);
@@ -950,6 +958,7 @@ export default function GenerateForm({
               states={batchStates}
               onDownloadZip={handleDownloadZip}
               zipLoading={zipLoading}
+              isAuthenticated={!!userEmail}
             />
           ) : (
             <OutputPanel
@@ -960,6 +969,7 @@ export default function GenerateForm({
               error={error}
               documentType={documentType}
               tailoringSuggestions={tailoringSuggestions}
+              isAuthenticated={!!userEmail}
             />
           )}
         </div>

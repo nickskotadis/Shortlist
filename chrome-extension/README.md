@@ -4,11 +4,11 @@ Adds a floating "Shortlist this job" button to supported job boards. One click e
 
 ## Supported job boards
 
-- Greenhouse (`boards.greenhouse.io`, `*.greenhouse.io/jobs/*`)
+- Greenhouse (`boards.greenhouse.io`, `job-boards.greenhouse.io`, `*.greenhouse.io/jobs/*`)
 - Lever (`jobs.lever.co`, `*.lever.co`)
-- Workday (`*.workday.com`, `myworkdayjobs.com`)
-- Indeed (`www.indeed.com/viewjob`)
-- LinkedIn (`www.linkedin.com/jobs/view/*`)
+- Workday (`*.myworkdayjobs.com`, `*.workday.com/*/job/*`)
+- Indeed (`www.indeed.com/viewjob`, `www.indeed.com/jobs`)
+- LinkedIn (`www.linkedin.com/jobs/view/*`, `www.linkedin.com/jobs/search/*`)
 
 ---
 
@@ -94,11 +94,11 @@ FEATURES
 
 SUPPORTED SITES
 ───────────────
-• Greenhouse (boards.greenhouse.io, *.greenhouse.io/jobs/*)
+• Greenhouse (boards.greenhouse.io, job-boards.greenhouse.io, *.greenhouse.io/jobs/*)
 • Lever (jobs.lever.co)
-• Workday (*.workday.com, myworkdayjobs.com)
-• Indeed (www.indeed.com/viewjob)
-• LinkedIn (www.linkedin.com/jobs/view/*)
+• Workday (*.myworkdayjobs.com, *.workday.com)
+• Indeed (www.indeed.com/viewjob, www.indeed.com/jobs)
+• LinkedIn (www.linkedin.com/jobs/view/*, www.linkedin.com/jobs/search/*)
 
 PRIVACY
 ───────
@@ -115,16 +115,16 @@ The extension only reads job description text when you click the button. It stor
 
 ## Permissions justification (for store review form)
 
-| Permission | Justification |
+No extension API permissions are requested. The extension injects its button via declarative `content_scripts` and opens the app with `chrome.tabs.create` (no permission required). It requests only host permissions for the supported job boards:
+
+| Host permission | Justification |
 |---|---|
-| `activeTab` | Required to read the job description from the current tab when the user clicks the button. |
-| `scripting` | Required to inject the floating "Shortlist this job" button into job board pages. |
-| `storage` | Reserved for future use (e.g. persisting user preferences). Not actively used in v1.0. |
 | `https://boards.greenhouse.io/*` | Inject button and extract JD on Greenhouse job boards. |
+| `https://job-boards.greenhouse.io/*` | Inject button and extract JD on modern Greenhouse job boards. |
 | `https://*.greenhouse.io/*` | Inject button and extract JD on company-hosted Greenhouse pages. |
 | `https://jobs.lever.co/*` | Inject button and extract JD on Lever job postings. |
 | `https://*.lever.co/*` | Inject button and extract JD on company-hosted Lever pages. |
-| `https://myworkdayjobs.com/*` | Inject button and extract JD on Workday job postings. |
+| `https://*.myworkdayjobs.com/*` | Inject button and extract JD on Workday tenant job postings. |
 | `https://*.workday.com/*` | Inject button and extract JD on company-hosted Workday pages. |
 | `https://www.indeed.com/*` | Inject button and extract JD on Indeed job postings. |
 | `https://www.linkedin.com/*` | Inject button and extract JD on LinkedIn job postings. |
@@ -139,4 +139,4 @@ The extension only reads job description text when you click the button. It stor
 3. Encodes up to 12,000 characters and opens `shortlist-amber.vercel.app/generate?jd=<encoded>` in a new tab
 4. `app/generate/GenerateForm.tsx` reads `?jd=` on mount and pre-fills the JD textarea
 
-`background.js` is a minimal service worker (MV3 requirement) with a fallback handler for direct toolbar icon clicks.
+`popup.html` + `popup.js` provide a toolbar popup whose "Open Shortlist" button opens the app in a new tab (handler in `popup.js` to comply with the MV3 `script-src 'self'` CSP).

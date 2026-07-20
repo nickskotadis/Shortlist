@@ -23,6 +23,7 @@ export interface GenerateResult {
   scores: ValidatorResult["scores"];
   overall: number;
   verdict: ValidatorVerdict;
+  validationUnavailable: boolean;
   retryCount: number;
   issues: ValidatorIssue[];
   generationId: string | null;
@@ -119,6 +120,7 @@ export function useGenerate() {
                   scores: event.scores,
                   overall: event.overall,
                   verdict: event.verdict,
+                  validationUnavailable: event.validation_unavailable ?? false,
                   retryCount: event.retry_count,
                   issues: event.issues ?? [],
                   generationId: event.generation_id ?? null,

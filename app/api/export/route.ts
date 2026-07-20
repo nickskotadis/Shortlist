@@ -60,11 +60,19 @@ export async function POST(req: Request) {
       ) {
         continue;
       }
+      // Include both DOCX and PDF per document so the ZIP is a real
+      // application package (not DOCX-only). Each format fails independently.
       try {
-        const buf = await generateDocx(item.output_text, item.document_type);
-        zip.file(`shortlist-${item.document_type}.docx`, buf);
+        const docxBuf = await generateDocx(item.output_text, item.document_type);
+        zip.file(`shortlist-${item.document_type}.docx`, docxBuf);
       } catch {
-        // Skip failed exports — don't fail the whole ZIP
+        // Skip failed DOCX — don't fail the whole ZIP
+      }
+      try {
+        const pdfBuf = await generatePdf(item.output_text, item.document_type);
+        zip.file(`shortlist-${item.document_type}.pdf`, pdfBuf);
+      } catch {
+        // Skip failed PDF — don't fail the whole ZIP
       }
     }
 

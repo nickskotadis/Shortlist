@@ -68,6 +68,9 @@ export interface ValidatorResult {
   issues: ValidatorIssue[];
   verdict: ValidatorVerdict;
   verdict_reason: string;
+  // True when the validator response could not be parsed — the quality gate
+  // is reported as unavailable (fail closed) rather than a fabricated PASS.
+  unavailable?: boolean;
 }
 
 export interface HealthScoreResult {
@@ -172,6 +175,6 @@ export type SseEvent =
   | { type: "jd_analysis"; data: JdAnalysis }
   | { type: "text"; content: string }
   | { type: "retry"; message: string }
-  | { type: "done"; output: string; jd_analysis: JdAnalysis; scores: ValidatorResult["scores"]; overall: number; verdict: ValidatorVerdict; retry_count: number; prompt_version?: string; issues?: ValidatorIssue[]; generation_id?: string; keywords?: string[] }
+  | { type: "done"; output: string; jd_analysis: JdAnalysis; scores: ValidatorResult["scores"]; overall: number; verdict: ValidatorVerdict; validation_unavailable?: boolean; retry_count: number; prompt_version?: string; issues?: ValidatorIssue[]; generation_id?: string; keywords?: string[] }
   | { type: "tailoring_suggestions"; suggestions: string[] }
   | { type: "error"; message: string };

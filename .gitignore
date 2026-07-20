@@ -43,3 +43,6 @@ supabase/.temp/
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# Chrome extension build artifact
+shortlist-extension.zip

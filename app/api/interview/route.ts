@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { buildInterviewPrepPrompt, stripCodeFences } from "@/lib/prompts";
-import { MODELS } from "@/lib/constants";
+import { buildInterviewPrepPrompt } from "@/lib/prompts";
+import { parseLlmJson } from "@/lib/llm-json";
+import { MODELS, INTERVIEW_IP_LIMIT, INTERVIEW_IP_WINDOW_SEC } from "@/lib/constants";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import type { InterviewPrepResult } from "@/lib/types";
 
 export const maxDuration = 60;
@@ -9,6 +11,21 @@ export const maxDuration = 60;
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
+  // This route has no auth by design (free interview prep). Bound it per IP so
+  // the 4096-token Haiku call can't be scripted into unbounded spend.
+  const ip = getClientIp(req);
+  const { allowed, retryAfterSec } = await rateLimit(
+    `interview:${ip}`,
+    INTERVIEW_IP_LIMIT,
+    INTERVIEW_IP_WINDOW_SEC
+  );
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests — please wait a bit before generating more interview questions." },
+      { status: 429, headers: { "Retry-After": String(retryAfterSec) } }
+    );
+  }
+
   let body: { jd_text?: string; resume_text: string };
   try {
     body = await req.json();
@@ -49,23 +66,22 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const response = await anthropic.messages.create({
-      model: MODELS.parser,
-      max_tokens: 4096,
-      messages: [{ role: "user", content: buildInterviewPrepPrompt(jd_text ?? "", trimmedResume) }],
+    const parsed = await parseLlmJson<InterviewPrepResult>(async () => {
+      const response = await anthropic.messages.create({
+        model: MODELS.parser,
+        max_tokens: 4096,
+        messages: [{ role: "user", content: buildInterviewPrepPrompt(jd_text ?? "", trimmedResume) }],
+      });
+      return response.content[0]?.type === "text" ? response.content[0].text : "";
     });
 
-    const raw = response.content[0].type === "text" ? response.content[0].text : "{}";
-
-    let result: InterviewPrepResult;
-    try {
-      result = JSON.parse(stripCodeFences(raw)) as InterviewPrepResult;
-    } catch {
+    if (!parsed.ok) {
       return NextResponse.json(
-        { error: "Failed to parse interview prep result — please try again." },
+        { error: "Couldn't read the interview questions — please try again." },
         { status: 500 }
       );
     }
+    const result = parsed.value;
 
     return NextResponse.json(result);
   } catch (err) {

@@ -29,6 +29,9 @@ function extractJobDescription() {
   // Lever — jobs.lever.co/company/id
   if (hostname.includes("lever.co")) {
     const el =
+      document.querySelector(".posting-page") ??
+      document.querySelector(".section-wrapper.page-full-width") ??
+      document.querySelector(".content-wrapper") ??
       document.querySelector(".posting-requirements") ??
       document.querySelector(".content-wrapper section") ??
       document.querySelector("[class*='posting']");
@@ -53,8 +56,11 @@ function extractJobDescription() {
     if (el) return el.innerText.trim();
   }
 
-  // LinkedIn — linkedin.com/jobs/view/id
-  if (hostname.includes("linkedin.com") && pathname.includes("/jobs/view/")) {
+  // LinkedIn — linkedin.com/jobs/view/id and the /jobs/search/ pane (?currentJobId=)
+  if (
+    hostname.includes("linkedin.com") &&
+    (pathname.includes("/jobs/view/") || pathname.includes("/jobs/search/"))
+  ) {
     const el =
       document.querySelector(".jobs-description__content") ??
       document.querySelector(".jobs-description-content__text") ??
