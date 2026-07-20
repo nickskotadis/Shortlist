@@ -77,7 +77,7 @@ function Input({
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+      className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
     />
   );
 }
@@ -102,7 +102,7 @@ function Textarea({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
-        className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
+        className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
       />
       {hint && <p className="text-xs text-[var(--color-text-tertiary)] mt-1.5">{hint}</p>}
     </div>
@@ -243,8 +243,8 @@ function UsageMeter({ usage }: { usage: PlanUsage }) {
   if (usage.plan === "pro") {
     return (
       <div className="flex items-center gap-2 mb-4">
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-900/50">
-          <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)]">
+          <span className="w-1.5 h-1.5 bg-[var(--color-accent)] rounded-full" />
           Pro · Unlimited
         </span>
       </div>
@@ -259,19 +259,19 @@ function UsageMeter({ usage }: { usage: PlanUsage }) {
   return (
     <div className="mb-4">
       <div className="flex items-center justify-between mb-1.5">
-        <span className={`text-xs font-medium ${atLimit ? "text-amber-400" : "text-[var(--color-text-secondary)]"}`}>
+        <span className={`text-xs font-medium ${atLimit ? "text-[var(--color-warning)]" : "text-[var(--color-text-secondary)]"}`}>
           {used} of {limit} used this month
         </span>
         <Link
           href="/pricing"
-          className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+          className="text-xs font-medium text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors"
         >
           Upgrade to Pro →
         </Link>
       </div>
       <div className="h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all ${atLimit ? "bg-amber-500" : "bg-indigo-500"}`}
+          className={`h-full rounded-full transition-all ${atLimit ? "bg-[var(--color-warning)]" : "bg-[var(--color-accent)]"}`}
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -306,7 +306,7 @@ function BatchOutputPanel({
   return (
     <div className="flex flex-col gap-4">
       {/* Tab bar */}
-      <div className="flex gap-1 bg-[var(--color-elevated)] p-1 rounded-xl border border-[var(--color-border)]">
+      <div className="flex gap-1 bg-[var(--color-elevated)] p-1 rounded-md border border-[var(--color-border)]">
         {states.map((s) => {
           const done = s.status === "done";
           const running = s.status === "parsing" || s.status === "generating" || s.status === "validating";
@@ -321,10 +321,10 @@ function BatchOutputPanel({
               }`}
             >
               {running && (
-                <span className="w-2.5 h-2.5 border border-indigo-500 border-t-transparent rounded-full animate-spin shrink-0" />
+                <span className="w-2.5 h-2.5 border border-[var(--color-accent)] border-t-transparent rounded-full animate-spin shrink-0" />
               )}
               {done && (
-                <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0" />
+                <span className="w-2.5 h-2.5 bg-[var(--color-success)] rounded-full shrink-0" />
               )}
               {!running && !done && (
                 <span className="w-2.5 h-2.5 bg-[var(--color-border-strong)] rounded-full shrink-0" />
@@ -367,10 +367,10 @@ function BatchOutputPanel({
         <button
           onClick={onDownloadZip}
           disabled={zipLoading}
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-indigo-300 dark:border-indigo-800/50 text-sm font-semibold text-indigo-700 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-950/50 transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-md border border-[var(--color-accent-weak-border)] text-sm font-semibold text-[var(--color-accent)] bg-[var(--color-accent-weak)] hover:brightness-95 transition-all disabled:opacity-50"
         >
           {zipLoading ? (
-            <span className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <span className="w-4 h-4 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
           ) : (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
@@ -563,13 +563,13 @@ export default function GenerateForm({
       <nav className="bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-1">
-            <Link href="/" className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-indigo-400 transition-colors mr-4">
+            <Link href="/" className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors mr-4">
               Shortlist
             </Link>
             <div className="hidden sm:flex items-center gap-0.5">
               <Link href="/dashboard" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Dashboard</Link>
               <Link href="/applications" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Applications</Link>
-              <span className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-primary)] bg-[var(--color-elevated)] border border-[var(--color-border)]">Generate</span>
+              <span className="px-3 py-1.5 rounded text-sm font-medium text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)]">Generate</span>
               <Link href="/fit" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Fit</Link>
               <Link href="/score" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Score</Link>
               <Link href="/interview" className="px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all">Interview</Link>
@@ -598,7 +598,7 @@ export default function GenerateForm({
         <div className="space-y-6 mb-8 lg:mb-0">
 
           {/* Section 1: Who are you? */}
-          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+          <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-6">
             <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
               1. Who are you?
             </h2>
@@ -613,13 +613,13 @@ export default function GenerateForm({
                     setUserType(t.value);
                     setUserData({});
                   }}
-                  className={`text-left rounded-xl border px-4 py-3.5 transition-all ${
+                  className={`text-left rounded-md border px-4 py-3.5 transition-all ${
                     userType === t.value
-                      ? "border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 ring-1 ring-indigo-500"
+                      ? "border-[var(--color-accent)] bg-[var(--color-accent-weak)] ring-1 ring-[var(--color-accent)]"
                       : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
-                  <p className={`text-sm font-medium mb-0.5 ${userType === t.value ? "text-indigo-400" : "text-[var(--color-text-primary)]"}`}>
+                  <p className={`text-sm font-medium mb-0.5 ${userType === t.value ? "text-[var(--color-accent)]" : "text-[var(--color-text-primary)]"}`}>
                     {t.label}
                   </p>
                   <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">{t.description}</p>
@@ -630,7 +630,7 @@ export default function GenerateForm({
 
           {/* Section 2: Your background (only when type selected) */}
           {userType && (
-            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+            <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-6">
               <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
                 2. Your background
               </h2>
@@ -647,7 +647,7 @@ export default function GenerateForm({
 
           {/* Section: The job */}
           {!selectedDocType?.noJd && (
-            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+            <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-6">
               <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
                 {userType ? "3." : "2."} The job
               </h2>
@@ -665,7 +665,7 @@ export default function GenerateForm({
           )}
 
           {/* Section: Your resume / experience */}
-          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+          <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-6">
             <div className="flex items-center justify-between mb-1">
               <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">
                 {sectionNum(4)}. Your resume
@@ -673,8 +673,8 @@ export default function GenerateForm({
               <div className="flex items-center gap-2">
                 {/* Save resume badge */}
                 {resumeSaved && candidateInput.trim() && (
-                  <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 px-2 py-0.5 rounded-full">
-                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                  <span className="inline-flex items-center gap-1 text-xs text-[var(--color-success)] bg-[var(--color-success-bg)] border border-[var(--color-success-border)] px-2 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 bg-[var(--color-success)] rounded-full" />
                     Saved
                   </span>
                 )}
@@ -693,7 +693,7 @@ export default function GenerateForm({
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={parseLoading}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-800/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] bg-[var(--color-elevated)] hover:bg-[var(--color-accent-weak)] border border-[var(--color-border)] hover:border-[var(--color-accent-weak-border)] px-3 py-1.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {parseLoading ? (
                     <span className="w-3 h-3 border-2 border-[var(--color-text-placeholder)] border-t-transparent rounded-full animate-spin" />
@@ -710,7 +710,7 @@ export default function GenerateForm({
               Paste your resume or upload a file. No need to make it perfect — raw bullet points work great.
             </p>
             {parseError && (
-              <p className="text-xs text-red-400 mb-2">{parseError}</p>
+              <p className="text-xs text-[var(--color-error)] mb-2">{parseError}</p>
             )}
             <Textarea
               placeholder="Paste your resume or describe your experience...&#10;&#10;e.g. I managed a team of 5 engineers and shipped 3 major features that grew ARR from $2M to $8M. Previously at Acme Corp where I led the migration to microservices..."
@@ -730,8 +730,8 @@ export default function GenerateForm({
                   disabled={resumeSaving || resumeSaved}
                   className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${
                     resumeSaved
-                      ? "text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40 cursor-default"
-                      : "text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-50 dark:hover:bg-indigo-950/30 border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-800/50"
+                      ? "text-[var(--color-success)] bg-[var(--color-success-bg)] border-[var(--color-success-border)] cursor-default"
+                      : "text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] bg-[var(--color-elevated)] hover:bg-[var(--color-accent-weak)] border-[var(--color-border)] hover:border-[var(--color-accent-weak-border)]"
                   } disabled:opacity-50`}
                 >
                   {resumeSaving ? "Saving..." : resumeSaved ? "✓ Saved as default" : "Save as default resume"}
@@ -741,7 +741,7 @@ export default function GenerateForm({
           </div>
 
           {/* Section: What to generate */}
-          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+          <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-6">
             <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
               {sectionNum(5)}. What to generate
             </h2>
@@ -758,13 +758,13 @@ export default function GenerateForm({
                     setDocumentType(d.value);
                     posthog?.capture("document_type_selected", { doc_type: d.value });
                   }}
-                  className={`text-left rounded-xl border px-3 py-3 transition-all ${
+                  className={`text-left rounded-md border px-3 py-3 transition-all ${
                     documentType === d.value
-                      ? "border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 ring-1 ring-indigo-500"
+                      ? "border-[var(--color-accent)] bg-[var(--color-accent-weak)] ring-1 ring-[var(--color-accent)]"
                       : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
-                  <p className={`text-sm font-medium mb-0.5 ${documentType === d.value ? "text-indigo-400" : "text-[var(--color-text-primary)]"}`}>
+                  <p className={`text-sm font-medium mb-0.5 ${documentType === d.value ? "text-[var(--color-accent)]" : "text-[var(--color-text-primary)]"}`}>
                     {d.label}
                   </p>
                   <p className="text-xs text-[var(--color-text-secondary)]">{d.description}</p>
@@ -779,17 +779,17 @@ export default function GenerateForm({
                     setDocumentType(d.value);
                     posthog?.capture("document_type_selected", { doc_type: d.value });
                   }}
-                  className={`text-left rounded-xl border px-3 py-3 transition-all ${
+                  className={`text-left rounded-md border px-3 py-3 transition-all ${
                     documentType === d.value
-                      ? "border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 ring-1 ring-indigo-500"
+                      ? "border-[var(--color-accent)] bg-[var(--color-accent-weak)] ring-1 ring-[var(--color-accent)]"
                       : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-0.5">
-                    <p className={`text-sm font-medium ${documentType === d.value ? "text-indigo-400" : "text-[var(--color-text-primary)]"}`}>
+                    <p className={`text-sm font-medium ${documentType === d.value ? "text-[var(--color-accent)]" : "text-[var(--color-text-primary)]"}`}>
                       {d.label}
                     </p>
-                    <span className="text-xs text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-1.5 py-0.5 rounded-full font-medium">
+                    <span className="text-xs text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)] px-1.5 py-0.5 rounded-full font-medium">
                       LinkedIn
                     </span>
                   </div>
@@ -800,15 +800,15 @@ export default function GenerateForm({
 
             {/* Batch mode toggle */}
             {initialUsage?.plan === "pro" ? (
-              <div className="mb-4 flex items-start justify-between gap-3 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/30 rounded-xl px-4 py-3">
+              <div className="mb-4 flex items-start justify-between gap-3 bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)] rounded-md px-4 py-3">
                 <div>
-                  <p className="text-sm font-medium text-indigo-300">Full application package</p>
-                  <p className="text-xs text-indigo-400/70 mt-0.5">Generate resume bullets, cover letter, and LinkedIn About at once. Counts as 3 generations.</p>
+                  <p className="text-sm font-medium text-[var(--color-ink)]">Full application package</p>
+                  <p className="text-xs text-[var(--color-ink-secondary)] mt-0.5">Generate resume bullets, cover letter, and LinkedIn About at once. Counts as 3 generations.</p>
                 </div>
                 <button
                   onClick={() => setBatchMode((b) => !b)}
                   className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                    batchMode ? "bg-indigo-600" : "bg-[var(--color-border-strong)]"
+                    batchMode ? "bg-[var(--color-accent)]" : "bg-[var(--color-border-strong)]"
                   }`}
                   role="switch"
                   aria-checked={batchMode}
@@ -817,12 +817,12 @@ export default function GenerateForm({
                 </button>
               </div>
             ) : (
-              <Link href="/pricing" className="mb-4 flex items-start justify-between gap-3 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/30 rounded-xl px-4 py-3 hover:border-indigo-300 dark:hover:border-indigo-900/60 transition-colors">
+              <Link href="/pricing" className="mb-4 flex items-start justify-between gap-3 bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)] rounded-md px-4 py-3 hover:border-[var(--color-rule-strong)] transition-colors">
                 <div>
-                  <p className="text-sm font-medium text-indigo-300">Full application package</p>
-                  <p className="text-xs text-indigo-400/50 mt-0.5">Generate resume bullets, cover letter, and LinkedIn About at once. Counts as 3 generations.</p>
+                  <p className="text-sm font-medium text-[var(--color-ink)]">Full application package</p>
+                  <p className="text-xs text-[var(--color-ink-secondary)] mt-0.5">Generate resume bullets, cover letter, and LinkedIn About at once. Counts as 3 generations.</p>
                 </div>
-                <span className="shrink-0 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-2 py-0.5 rounded-full self-center">Pro</span>
+                <span className="shrink-0 text-xs font-semibold text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)] px-2 py-0.5 rounded-full self-center">Pro</span>
               </Link>
             )}
 
@@ -840,7 +840,7 @@ export default function GenerateForm({
                     title={t.description}
                     className={`flex-1 text-center rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
                       tone === t.value
-                        ? "border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 text-indigo-400 ring-1 ring-indigo-500"
+                        ? "border-[var(--color-accent)] bg-[var(--color-accent-weak)] text-[var(--color-accent)] ring-1 ring-[var(--color-accent)]"
                         : "border-[var(--color-border)] bg-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)]"
                     }`}
                   >
@@ -858,11 +858,11 @@ export default function GenerateForm({
 
             {/* Session expired */}
             {effectiveSessionExpired && (
-              <div className="mb-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 rounded-xl p-4 text-center">
-                <p className="text-sm font-medium text-amber-300 mb-2">Session expired</p>
+              <div className="mb-4 bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] rounded-md p-4 text-center">
+                <p className="text-sm font-medium text-[var(--color-warning)] mb-2">Session expired</p>
                 <Link
                   href="/auth/login"
-                  className="inline-flex items-center bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all"
+                  className="inline-flex items-center bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-accent-contrast)] text-sm font-semibold px-5 py-2.5 rounded-md shadow-sm transition-all"
                 >
                   Log in again →
                 </Link>
@@ -871,17 +871,17 @@ export default function GenerateForm({
 
             {/* Limit reached — replace button with upgrade CTA */}
             {effectiveLimitReached ? (
-              <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 rounded-xl p-4 text-center">
-                <p className="text-sm font-medium text-amber-300 mb-1">
+              <div className="bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] rounded-md p-4 text-center">
+                <p className="text-sm font-medium text-[var(--color-warning)] mb-1">
                   Monthly limit reached
                 </p>
-                <p className="text-xs text-amber-400/80 mb-3">
+                <p className="text-xs text-[var(--color-warning)]/80 mb-3">
                   You&apos;ve used {FREE_MONTHLY_LIMIT} of {FREE_MONTHLY_LIMIT} free generations this month.
                 </p>
                 <Link
                   href="/pricing"
                   onClick={() => posthog?.capture("upgrade_clicked", { source: "generate_limit" })}
-                  className="inline-flex items-center bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all"
+                  className="inline-flex items-center bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-accent-contrast)] text-sm font-semibold px-5 py-2.5 rounded-md shadow-sm transition-all"
                 >
                   Upgrade to Pro →
                 </Link>
@@ -891,9 +891,9 @@ export default function GenerateForm({
                 <button
                   onClick={handleGenerate}
                   disabled={!canGenerate}
-                  className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all ${
+                  className={`w-full py-3.5 rounded-md text-sm font-semibold transition-all ${
                     canGenerate
-                      ? "btn-shimmer text-white shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/25 hover:-translate-y-px cursor-pointer"
+                      ? "bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-accent-contrast)] hover:brightness-95 cursor-pointer"
                       : "bg-[var(--color-disabled)] text-[var(--color-text-placeholder)] cursor-not-allowed"
                   }`}
                 >
@@ -946,7 +946,7 @@ export default function GenerateForm({
                     tone,
                   })
                 }
-                className="text-xs text-[var(--color-text-secondary)] hover:text-indigo-400 transition-colors font-medium"
+                className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors font-medium"
               >
                 ↻ Regenerate
               </button>
