@@ -33,12 +33,13 @@ const DOC_LABELS: Record<DocumentType, string> = {
   linkedin_headline: "LinkedIn Headline",
 };
 
-// Score → semantic color token (SVG stroke + Tailwind bg both accept the var)
+// Score → status color. Hex mirrors of the tokens (success/accent/warning/error):
+// CSS var() does not resolve inside an SVG `stroke` presentation attribute.
 function scoreVar(score: number): string {
-  if (score >= 8) return "var(--color-success)";
-  if (score >= 6) return "var(--color-accent)";
-  if (score >= 4) return "var(--color-warning)";
-  return "var(--color-error)";
+  if (score >= 8) return "#35583F"; // --color-success
+  if (score >= 6) return "#2F4A3C"; // --color-accent
+  if (score >= 4) return "#7A5C1E"; // --color-warning
+  return "#8F3A28"; // --color-error
 }
 
 function ScoreBar({ label, score }: { label: string; score: number }) {

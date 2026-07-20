@@ -246,7 +246,7 @@ Be decisive. If there are options, pick one and justify it.
 | Error/reject/rejected | `--color-error #8F3A28` / `--color-error-bg #F3E2DC` / `--color-error-border #E2C1B4` |
 | Neutral/withdrawn | `--color-text-tertiary` / `--color-elevated` / `--color-border` |
 
-Use as `text-[var(--color-success)] bg-[var(--color-success-bg)] border border-[var(--color-success-border)]`. There is **no** `.dark:` variant — never add one. SVG score-ring `stroke`/`color` accept CSS vars directly: `stroke="var(--color-success)"` (score tiers map success ≥8 / accent 6–8 / warning 4–6 / error <4).
+Use as `text-[var(--color-success)] bg-[var(--color-success-bg)] border border-[var(--color-success-border)]`. There is **no** `.dark:` variant — never add one. Score tiers map success ≥8 / accent 6–8 / warning 4–6 / error <4. **SVG score-ring stroke colors are hex mirrors** of these tokens (`#35583F` success / `#2F4A3C` accent / `#7A5C1E` warning / `#8F3A28` error) — CSS `var()` does **not** resolve inside an SVG `stroke` presentation attribute, so the ring color helpers return hex; keep them in sync if you retheme.
 
 ### Typography
 Three families: **Fraunces** (display serif, via `next/font` → `var(--font-fraunces)`), **Geist Sans** (UI/body), **Geist Mono** (generated output only). Strong display↔body contrast is deliberate.
