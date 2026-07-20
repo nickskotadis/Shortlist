@@ -96,7 +96,7 @@ export default function PricingPage() {
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
           <Link
             href="/"
-            className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors"
+            className="font-serif text-xl text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors"
           >
             Shortlist
           </Link>

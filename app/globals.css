@@ -118,7 +118,7 @@ body {
   color: var(--color-ink-tertiary);
 }
 
-/* ── Streaming caret (replaces the old indigo cursor-blink) ──── */
+/* ── Streaming caret (thin accent bar) ──────────────────────── */
 @keyframes caret-blink { 50% { opacity: 0; } }
 .caret::after {
   content: "▍";

@@ -40,7 +40,7 @@ export default async function Nav({ activePage, actions }: NavProps) {
         <div className="flex items-center gap-1">
           <Link
             href="/"
-            className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors mr-4"
+            className="font-serif text-xl text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors mr-4"
           >
             Shortlist
           </Link>

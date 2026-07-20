@@ -10,7 +10,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-[var(--color-page)]">
       <nav className="bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center gap-4">
-          <Link href="/" className="text-lg font-semibold text-[var(--color-text-primary)] tracking-tight">
+          <Link href="/" className="font-serif text-xl text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors">
             Shortlist
           </Link>
           <span className="text-[var(--color-separator)]">·</span>

@@ -563,7 +563,7 @@ export default function GenerateForm({
       <nav className="bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-1">
-            <Link href="/" className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors mr-4">
+            <Link href="/" className="font-serif text-xl text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors mr-4">
               Shortlist
             </Link>
             <div className="hidden sm:flex items-center gap-0.5">
