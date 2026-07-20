@@ -43,7 +43,7 @@ export default function QualityClient({
     <>
       {/* Filter toolbar */}
       {stats.length > 0 && (
-        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-4 mb-4">
+        <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-4 mb-4">
           {/* Search row */}
           <div className="relative mb-3">
             <svg
@@ -58,7 +58,7 @@ export default function QualityClient({
               placeholder="Search by prompt version..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-[var(--color-border)] rounded-lg pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+              className="w-full border border-[var(--color-border)] rounded-lg pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
             />
           </div>
 
@@ -67,10 +67,10 @@ export default function QualityClient({
             {(["all", "A", "B"] as VariantFilter[]).map((v) => {
               const activeClass =
                 v === "B"
-                  ? "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
+                  ? "border-[var(--color-accent)] bg-[var(--color-accent-weak)] ring-1 ring-[var(--color-accent)] text-[var(--color-accent)]"
                   : v === "A"
                   ? "border-[var(--color-text-tertiary)] bg-[var(--color-elevated)] ring-1 ring-[var(--color-text-tertiary)] text-[var(--color-text-secondary)]"
-                  : "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400";
+                  : "border-[var(--color-accent)] bg-[var(--color-accent-weak)] ring-1 ring-[var(--color-accent)] text-[var(--color-accent)]";
               const label = v === "all" ? `All (${stats.length})` : `Variant ${v}`;
               return (
                 <button
@@ -97,7 +97,7 @@ export default function QualityClient({
               <button
                 type="button"
                 onClick={clearFilters}
-                className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] font-medium transition-colors"
               >
                 Clear filters ×
               </button>
@@ -107,7 +107,7 @@ export default function QualityClient({
       )}
 
       {/* Table */}
-      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden">
+      <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[var(--color-border-subtle)]">
@@ -142,7 +142,7 @@ export default function QualityClient({
                     <span
                       className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full border ${
                         row.ab_variant === "B"
-                          ? "text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/50"
+                          ? "text-[var(--color-accent)] bg-[var(--color-accent-weak)] border-[var(--color-accent-weak-border)]"
                           : "text-[var(--color-text-secondary)] bg-[var(--color-elevated)] border-[var(--color-border)]"
                       }`}
                     >
@@ -157,10 +157,10 @@ export default function QualityClient({
                   <span
                     className={`font-medium ${
                       row.avg_overall >= 7
-                        ? "text-emerald-400"
+                        ? "text-[var(--color-success)]"
                         : row.avg_overall >= 5.5
-                        ? "text-amber-400"
-                        : "text-red-400"
+                        ? "text-[var(--color-warning)]"
+                        : "text-[var(--color-error)]"
                     }`}
                   >
                     {row.avg_overall}/10
@@ -170,10 +170,10 @@ export default function QualityClient({
                   <span
                     className={`font-medium ${
                       row.pass_rate >= 80
-                        ? "text-emerald-400"
+                        ? "text-[var(--color-success)]"
                         : row.pass_rate >= 60
-                        ? "text-amber-400"
-                        : "text-red-400"
+                        ? "text-[var(--color-warning)]"
+                        : "text-[var(--color-error)]"
                     }`}
                   >
                     {row.pass_rate}%
@@ -182,7 +182,7 @@ export default function QualityClient({
                 <td className="px-6 py-4 text-right">
                   <span
                     className={`font-medium ${
-                      row.feedback_positive_rate >= 70 ? "text-emerald-400" : "text-[var(--color-text-secondary)]"
+                      row.feedback_positive_rate >= 70 ? "text-[var(--color-success)]" : "text-[var(--color-text-secondary)]"
                     }`}
                   >
                     {row.feedback_positive_rate > 0
@@ -201,7 +201,7 @@ export default function QualityClient({
                       <button
                         type="button"
                         onClick={clearFilters}
-                        className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                        className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] font-medium transition-colors"
                       >
                         Clear filters
                       </button>
