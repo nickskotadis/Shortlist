@@ -7,7 +7,7 @@
 **Verification caveats (read before trusting a "Working"):**
 - Statuses are primarily from source tracing + package-registry inspection (`node_modules` is not installed locally). One real build **was** observed: a Vercel build of this branch (commit `1c7853d`) **compiled successfully and passed TypeScript**, then **failed at "Collecting page data" with `Error: supabaseUrl is required` at `/api/stripe/webhook`** — a module-scope Supabase client that throws when `NEXT_PUBLIC_SUPABASE_URL` is unset at build time (see §4). So: the codebase typechecks; the webhook route has a build-time crash when env is not present.
 - Several features are real code that depends entirely on **deployment-time config** (Supabase provider toggles, Stripe env vars, Supabase Site URL). Those are marked "env-dependent" — the code works; whether the *deployment* works cannot be proven from the repo.
-- The original audit found `CLAUDE.md` stale in two places (a LinkedIn OAuth claim and a `pdf-parse` gotcha). Both are now reconciled: LinkedIn was deliberately dropped and the doc updated; the `pdf-parse` code was migrated to v2.
+- The original audit found `CLAUDE.md` stale in two places (a LinkedIn OAuth claim and a `pdf-parse` gotcha). Both are now reconciled: LinkedIn was deliberately dropped and the doc updated; PDF parsing was moved off `pdf-parse` to `unpdf` (serverless-safe) and the gotcha rewritten.
 
 **Legend:** ✅ Working · 🟡 Partially working · 🔴 Broken · 🟦 Scaffolding only
 
@@ -178,11 +178,11 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 
 | Path | Status | Evidence |
 |---|---|---|
-| **PDF upload** | ✅ **FIXED** (was 🔴) | Migrated `parse-resume/route.ts` to the pdf-parse v2 class API — `new PDFParse({ data: new Uint8Array(buffer) }).getText()` with `destroy()` in a `finally`, v2 page-delimiter lines stripped. Removed the `as any` cast and **uninstalled `@types/pdf-parse@1`** so the runtime API is now type-visible (package ships its own types). Response contract `{ text }` unchanged, so all four consumers work as-is (`GenerateForm.tsx:511-516` → `setCandidateInput`; `ScoreClient.tsx:154-159`, `FitClient.tsx:280-285`, `InterviewClient.tsx:837-842` → `setResumeText`). **Verified:** `tsc --noEmit` clean; an end-to-end test generated a real PDF via `@react-pdf/renderer` and extracted its marker text through the exact route path (PASS). |
+| **PDF upload** | ✅ **FIXED** (was 🔴) | Two rounds: (1) migrated off the broken `pdf-parse` v1 call, then (2) **replaced `pdf-parse` entirely with `unpdf`** after live-preview logs showed `pdf-parse@2` 500ing on Vercel with `ReferenceError: DOMMatrix is not defined` (its `pdfjs-dist/legacy` build needs a native canvas polyfill absent on serverless — local Node passed, serverless didn't). `unpdf` is a serverless-native pdfjs wrapper (no DOM/canvas): `extractText(await getDocumentProxy(new Uint8Array(buffer)), { mergePages: true })`. Response contract `{ text }` unchanged, so all four consumers work as-is (`GenerateForm` → `setCandidateInput`; Score/Fit/Interview → `setResumeText`). **Verified end-to-end on the deployed serverless preview:** anonymous PDF upload → HTTP 200 with extracted text (and DOCX via mammoth → 200); `tsc` clean. |
 | DOCX upload | ✅ Working | `mammoth.extractRawText({ buffer })` (`route.ts:57-67`) — correct current API. |
 | Save master resume | ✅ Working | `profile/resume` GET/PUT stores `profiles.resume_text`, auth-gated, 20k cap (`route.ts:47-58`) — no parsing involved. |
 
-~~**This is the single highest-impact confirmed bug**~~ — ✅ **FIXED**: rewritten to the v2 `PDFParse` class API and verified end-to-end. PDF upload now extracts text across Generate, Score, Fit, and Interview.
+~~**This is the single highest-impact confirmed bug**~~ — ✅ **FIXED**: PDF extraction now uses `unpdf` (serverless-safe), verified returning 200 + text on the deployed preview. Works across Generate, Score, Fit, and Interview, for anonymous and authenticated users alike.
 
 ---
 
@@ -229,7 +229,7 @@ Upload UI is wired on four pages (`GenerateForm.tsx:510`, `ScoreClient.tsx:153`,
 - **`/admin/quality`** — real and useful, but admin-only; not a public demo.
 
 ### 🔴 Cut or rebuild (broken, or claimed-but-absent)
-- ~~**PDF resume upload** broken on every PDF~~ — ✅ **FIXED** (§6): migrated to the v2 `PDFParse` class API, `@types/pdf-parse@1` removed, verified end-to-end. Safe to claim.
+- ~~**PDF resume upload** broken on every PDF~~ — ✅ **FIXED** (§6): now uses `unpdf` (serverless-safe pdfjs) after `pdf-parse` proved DOMMatrix-incompatible with Vercel's runtime; verified returning 200 + text on the deployed preview. Safe to claim.
 - ~~**Chrome extension — Workday** never injects~~ — ✅ **FIXED** (§7): `*.myworkdayjobs.com` added to matches + host_permissions.
 - ~~**Chrome extension — popup button + `background.js`**~~ — ✅ **FIXED** (§7): popup handler moved to external `popup.js`; dead `background.js` deleted.
 - ~~**Chrome extension — unused permissions**~~ — ✅ **FIXED** (§7): `scripting`/`activeTab`/`storage` removed; `permissions: []`.

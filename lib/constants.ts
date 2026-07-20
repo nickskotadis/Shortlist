@@ -68,7 +68,7 @@ export const ANON_GENERATE_LIMIT = 5;
 export const ANON_GENERATE_WINDOW_SEC = 3600;
 export const INTERVIEW_IP_LIMIT = 10;
 export const INTERVIEW_IP_WINDOW_SEC = 3600;
-// Resume parsing is cheap CPU (pdf-parse/mammoth), not an LLM call, and
+// Resume parsing is cheap CPU (unpdf/mammoth), not an LLM call, and
 // upload→first-generation is the core try-before-signup moment — so anonymous
 // upload is allowed, bounded per IP against parser-DoS abuse.
 export const PARSE_RESUME_IP_LIMIT = 10;
