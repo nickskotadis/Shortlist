@@ -61,14 +61,14 @@ export default async function DashboardPage() {
             {plan === "free" && (
               <div className="min-w-[200px] max-w-xs w-full sm:w-auto">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className={`text-xs font-medium ${usedThisMonth >= FREE_MONTHLY_LIMIT ? "text-amber-400" : "text-[var(--color-text-secondary)]"}`}>
+                  <span className={`text-xs font-medium ${usedThisMonth >= FREE_MONTHLY_LIMIT ? "text-[var(--color-warning)]" : "text-[var(--color-text-secondary)]"}`}>
                     {usedThisMonth} of {FREE_MONTHLY_LIMIT} used this month
                   </span>
                 </div>
                 <div className="h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all ${
-                      usedThisMonth >= FREE_MONTHLY_LIMIT ? "bg-amber-500" : "bg-indigo-500"
+                      usedThisMonth >= FREE_MONTHLY_LIMIT ? "bg-[var(--color-warning)]" : "bg-[var(--color-accent)]"
                     }`}
                     style={{ width: `${Math.min((usedThisMonth / FREE_MONTHLY_LIMIT) * 100, 100)}%` }}
                   />
