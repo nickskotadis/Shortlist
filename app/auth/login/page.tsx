@@ -73,8 +73,8 @@ export default function LoginPage() {
     return (
       <div className="min-h-screen bg-[var(--color-page)] flex items-center justify-center px-6">
         <div className="max-w-md w-full text-center">
-          <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-900/50 rounded-xl flex items-center justify-center mx-auto mb-6">
-            <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-12 h-12 bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)] rounded-md flex items-center justify-center mx-auto mb-6">
+            <svg className="w-6 h-6 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
@@ -101,7 +101,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[var(--color-page)] flex items-center justify-center px-6">
       <div className="max-w-md w-full">
         <div className="mb-8 text-center">
-          <Link href="/" className="text-lg font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-indigo-400 transition-colors">
+          <Link href="/" className="text-lg font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors">
             Shortlist
           </Link>
           <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mt-6 mb-2">Sign in</h1>
@@ -122,12 +122,12 @@ export default function LoginPage() {
               placeholder="you@example.com"
               required
               autoFocus
-              className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+              className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-lg px-3 py-2">
+            <p className="text-sm text-[var(--color-error)] bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-lg px-3 py-2">
               {error}
             </p>
           )}
@@ -135,10 +135,10 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading || !email.trim()}
-            className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${
+            className={`w-full py-3 rounded-md text-sm font-semibold transition-all ${
               loading || !email.trim()
                 ? "bg-[var(--color-disabled)] text-[var(--color-text-placeholder)] cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
+                : "bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white shadow-sm hover:-translate-y-px"
             }`}
           >
             {loading ? "Sending..." : "Send login link"}
@@ -168,7 +168,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => handleOAuth(provider)}
               disabled={oauthLoading !== null}
-              className="w-full flex items-center justify-center gap-3 border border-[var(--color-border)] bg-[var(--color-elevated)] hover:bg-[var(--color-border)] text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] px-4 py-2.5 rounded-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-3 border border-[var(--color-border)] bg-[var(--color-elevated)] hover:bg-[var(--color-border)] text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] px-4 py-2.5 rounded-md transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {oauthLoading === provider ? (
                 <span className="w-4 h-4 border-2 border-[var(--color-text-secondary)] border-t-transparent rounded-full animate-spin" />
