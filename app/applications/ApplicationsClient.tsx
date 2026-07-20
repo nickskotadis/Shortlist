@@ -17,10 +17,10 @@ interface Application {
 }
 
 const STATUS_CONFIG: Record<ApplicationStatus, { label: string; color: string; dot: string }> = {
-  applied:    { label: "Applied",    color: "text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/50",   dot: "bg-indigo-400" },
-  interview:  { label: "Interview",  color: "text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40",     dot: "bg-amber-400" },
-  offer:      { label: "Offer",      color: "text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40", dot: "bg-emerald-400" },
-  rejected:   { label: "Rejected",   color: "text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border-red-200 dark:border-red-900/40",           dot: "bg-red-400" },
+  applied:    { label: "Applied",    color: "text-[var(--color-accent)] bg-[var(--color-accent-weak)] border-[var(--color-accent-weak-border)]",   dot: "bg-[var(--color-accent)]" },
+  interview:  { label: "Interview",  color: "text-[var(--color-warning)] bg-[var(--color-warning-bg)] border-[var(--color-warning-border)]",     dot: "bg-[var(--color-warning)]" },
+  offer:      { label: "Offer",      color: "text-[var(--color-success)] bg-[var(--color-success-bg)] border-[var(--color-success-border)]", dot: "bg-[var(--color-success)]" },
+  rejected:   { label: "Rejected",   color: "text-[var(--color-error)] bg-[var(--color-error-bg)] border-[var(--color-error-border)]",           dot: "bg-[var(--color-error)]" },
   withdrawn:  { label: "Withdrawn",  color: "text-[var(--color-text-tertiary)] bg-[var(--color-elevated)] border-[var(--color-border)]",           dot: "bg-[var(--color-text-tertiary)]" },
 };
 
@@ -73,7 +73,7 @@ function AddForm({ onAdd }: AddFormProps) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl px-4 py-2 shadow-sm shadow-indigo-600/20 transition-all hover:-translate-y-px"
+        className="flex items-center gap-2 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-semibold text-sm rounded-md px-4 py-2 shadow-sm transition-all hover:-translate-y-px"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -84,7 +84,7 @@ function AddForm({ onAdd }: AddFormProps) {
   }
 
   return (
-    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-5 space-y-4">
+    <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-5 space-y-4">
       <p className="text-sm font-semibold text-[var(--color-text-primary)]">Add application</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
@@ -94,7 +94,7 @@ function AddForm({ onAdd }: AddFormProps) {
             placeholder="Acme Corp"
             value={form.company_name}
             onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))}
-            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
           />
         </div>
         <div>
@@ -104,7 +104,7 @@ function AddForm({ onAdd }: AddFormProps) {
             placeholder="Product Manager"
             value={form.job_title}
             onChange={(e) => setForm((f) => ({ ...f, job_title: e.target.value }))}
-            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
           />
         </div>
         <div>
@@ -114,7 +114,7 @@ function AddForm({ onAdd }: AddFormProps) {
             placeholder="https://..."
             value={form.url}
             onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
-            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
           />
         </div>
         <div>
@@ -122,7 +122,7 @@ function AddForm({ onAdd }: AddFormProps) {
           <select
             value={form.status}
             onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as ApplicationStatus }))}
-            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
           >
             {Object.entries(STATUS_CONFIG).map(([val, cfg]) => (
               <option key={val} value={val}>{cfg.label}</option>
@@ -130,12 +130,12 @@ function AddForm({ onAdd }: AddFormProps) {
           </select>
         </div>
       </div>
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-[var(--color-error)]">{error}</p>}
       <div className="flex items-center gap-3">
         <button
           onClick={submit}
           disabled={loading}
-          className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl px-4 py-2 transition-all disabled:opacity-50"
+          className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-semibold text-sm rounded-md px-4 py-2 transition-all disabled:opacity-50"
         >
           {loading ? "Adding..." : "Add"}
         </button>
@@ -191,10 +191,10 @@ function FollowUpPanel({ application }: FollowUpPanelProps) {
         <button
           onClick={generate}
           disabled={loading}
-          className="text-xs font-medium text-indigo-400 hover:text-indigo-300 disabled:opacity-50 flex items-center gap-1.5 transition-colors"
+          className="text-xs font-medium text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] disabled:opacity-50 flex items-center gap-1.5 transition-colors"
         >
           {loading ? (
-            <span className="w-3 h-3 border border-indigo-400 border-t-transparent rounded-full animate-spin" />
+            <span className="w-3 h-3 border border-[var(--color-accent-weak-border)] border-t-transparent rounded-full animate-spin" />
           ) : (
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -208,7 +208,7 @@ function FollowUpPanel({ application }: FollowUpPanelProps) {
             <p className="text-xs font-medium text-[var(--color-text-tertiary)]">Follow-up email</p>
             <button
               onClick={copy}
-              className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+              className="text-xs font-medium text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] flex items-center gap-1 transition-colors"
             >
               {copied ? "Copied ✓" : "Copy"}
             </button>
@@ -217,7 +217,7 @@ function FollowUpPanel({ application }: FollowUpPanelProps) {
           <button onClick={() => setEmail(null)} className="text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] mt-1.5 transition-colors">Regenerate</button>
         </div>
       )}
-      {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
+      {error && <p className="text-xs text-[var(--color-error)] mt-1">{error}</p>}
     </div>
   );
 }
@@ -254,7 +254,7 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
   const date = new Date(application.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
   return (
-    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] hover:border-[var(--color-border-strong)] overflow-hidden transition-colors">
+    <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] hover:border-[var(--color-border-strong)] overflow-hidden transition-colors">
       <div
         className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-[var(--color-elevated)] transition-colors"
         onClick={() => setExpanded((e) => !e)}
@@ -277,7 +277,7 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                className="text-xs text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] flex items-center gap-1 transition-colors"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -299,10 +299,10 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
             <div className="flex flex-wrap gap-2">
               {(Object.keys(STATUS_CONFIG) as ApplicationStatus[]).map((s) => {
                 const activeColors: Record<ApplicationStatus, string> = {
-                  applied:   "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400",
-                  interview: "border-amber-500 bg-amber-50 ring-1 ring-amber-500 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400",
-                  offer:     "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400",
-                  rejected:  "border-red-500 bg-red-50 ring-1 ring-red-500 text-red-700 dark:bg-red-950/30 dark:text-red-400",
+                  applied:   "border-[var(--color-accent)] bg-[var(--color-accent-weak)] ring-1 ring-[var(--color-accent)] text-[var(--color-accent)]",
+                  interview: "border-[var(--color-warning-border)] bg-[var(--color-warning-bg)] ring-1 ring-[var(--color-warning)] text-[var(--color-warning)]",
+                  offer:     "border-[var(--color-success-border)] bg-[var(--color-success-bg)] ring-1 ring-[var(--color-success)] text-[var(--color-success)]",
+                  rejected:  "border-[var(--color-error-border)] bg-[var(--color-error-bg)] ring-1 ring-[var(--color-error)] text-[var(--color-error)]",
                   withdrawn: "border-[var(--color-text-tertiary)] bg-[var(--color-elevated)] ring-1 ring-[var(--color-text-tertiary)] text-[var(--color-text-secondary)]",
                 };
                 return (
@@ -338,7 +338,7 @@ function ApplicationRow({ application, onStatusChange }: ApplicationRowProps) {
           <div className="mt-3 flex items-center gap-3">
             <Link
               href={`/generate`}
-              className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+              className="text-xs font-medium text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] flex items-center gap-1 transition-colors"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -392,7 +392,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
 
       {/* Search + filter toolbar */}
       {applications.length > 0 && (
-        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-4">
+        <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-4">
           {/* Search row */}
           <div className="relative mb-3">
             <svg
@@ -407,7 +407,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               placeholder="Search by company or role..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-[var(--color-border)] rounded-lg pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+              className="w-full border border-[var(--color-border)] rounded-lg pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
             />
           </div>
 
@@ -418,7 +418,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               onClick={() => setStatusFilter("all")}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                 statusFilter === "all"
-                  ? "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400"
+                  ? "border-[var(--color-accent)] bg-[var(--color-accent-weak)] ring-1 ring-[var(--color-accent)] text-[var(--color-accent)]"
                   : "border-[var(--color-border)] bg-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
               }`}
             >
@@ -428,10 +428,10 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               const count = applications.filter((a) => a.status === s).length;
               if (count === 0) return null;
               const activeColors: Record<ApplicationStatus, string> = {
-                applied:   "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400",
-                interview: "border-amber-500 bg-amber-50 ring-1 ring-amber-500 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400",
-                offer:     "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400",
-                rejected:  "border-red-500 bg-red-50 ring-1 ring-red-500 text-red-700 dark:bg-red-950/30 dark:text-red-400",
+                applied:   "border-[var(--color-accent)] bg-[var(--color-accent-weak)] ring-1 ring-[var(--color-accent)] text-[var(--color-accent)]",
+                interview: "border-[var(--color-warning-border)] bg-[var(--color-warning-bg)] ring-1 ring-[var(--color-warning)] text-[var(--color-warning)]",
+                offer:     "border-[var(--color-success-border)] bg-[var(--color-success-bg)] ring-1 ring-[var(--color-success)] text-[var(--color-success)]",
+                rejected:  "border-[var(--color-error-border)] bg-[var(--color-error-bg)] ring-1 ring-[var(--color-error)] text-[var(--color-error)]",
                 withdrawn: "border-[var(--color-text-tertiary)] bg-[var(--color-elevated)] ring-1 ring-[var(--color-text-tertiary)] text-[var(--color-text-secondary)]",
               };
               return (
@@ -459,7 +459,7 @@ export default function ApplicationsClient({ initialApplications }: Props) {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] font-medium transition-colors"
               >
                 Clear filters ×
               </button>
@@ -478,13 +478,13 @@ export default function ApplicationsClient({ initialApplications }: Props) {
           <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Add your first application above to start tracking.</p>
         </div>
       ) : filtered.length === 0 && isFiltered ? (
-        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-12 text-center">
+        <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-12 text-center">
           <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">No applications match your filters</p>
           <p className="text-xs text-[var(--color-text-secondary)] mb-4">Try adjusting your search or status filter.</p>
           <button
             type="button"
             onClick={clearFilters}
-            className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm shadow-indigo-600/20 transition-all hover:-translate-y-px"
+            className="inline-flex items-center gap-1 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-semibold px-4 py-2 rounded-md shadow-sm transition-all hover:-translate-y-px"
           >
             Clear filters
           </button>
