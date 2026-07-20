@@ -41,7 +41,7 @@ export default function NavMobileMenu({ activePage }: { activePage?: string }) {
               activePage === link.page ? (
                 <span
                   key={link.href}
-                  className="flex items-center px-4 py-3 rounded-xl text-sm font-medium text-[var(--color-text-primary)] bg-[var(--color-elevated)] border border-[var(--color-border)]"
+                  className="flex items-center px-4 py-3 rounded-md text-sm font-medium text-[var(--color-text-primary)] bg-[var(--color-elevated)] border border-[var(--color-border)]"
                 >
                   {link.label}
                 </span>
@@ -50,7 +50,7 @@ export default function NavMobileMenu({ activePage }: { activePage?: string }) {
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="flex items-center px-4 py-3 rounded-xl text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all"
+                  className="flex items-center px-4 py-3 rounded-md text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] transition-all"
                 >
                   {link.label}
                 </Link>
