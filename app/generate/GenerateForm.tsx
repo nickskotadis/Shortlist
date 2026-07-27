@@ -189,7 +189,7 @@ function UserDataFields({
         </div>
         <div>
           <Label>School</Label>
-          <Input placeholder="e.g. University of Michigan" value={userData.school ?? ""} onChange={set("school")} />
+          <Input placeholder="e.g. Indiana University" value={userData.school ?? ""} onChange={set("school")} />
         </div>
         <div>
           <Label>Grad year</Label>
