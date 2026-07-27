@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Shortlist — AI Career Writing",
   "short_name": "Shortlist",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "One click to tailor your resume, cover letter, and LinkedIn profile to any job posting.",
   "homepage_url": "https://shortlist-amber.vercel.app",
   "minimum_chrome_version": "102",
