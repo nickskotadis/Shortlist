@@ -22,7 +22,7 @@ function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) 
   return (
     <button
       onClick={handleCopy}
-      className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-100 dark:hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all shrink-0"
+      className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] bg-[var(--color-elevated)] hover:bg-[var(--color-accent-weak)] border border-[var(--color-border)] hover:border-[var(--color-accent-weak-border)] px-3 py-1.5 rounded-lg transition-all shrink-0"
     >
       {copied ? (
         <>
@@ -66,11 +66,11 @@ function ResultPanel({ result, currentOffer, targetOffer }: { result: Negotiatio
   ];
 
   return (
-    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden">
+    <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] overflow-hidden">
       {/* Summary bar */}
       <div className="px-6 py-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 px-2.5 py-1 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-success)] bg-[var(--color-success-bg)] border border-[var(--color-success-border)] px-2.5 py-1 rounded-full">
             +{delta.toLocaleString()} ({deltaPct}% ask)
           </span>
           <span className="text-xs text-[var(--color-text-tertiary)]">
@@ -99,7 +99,7 @@ function ResultPanel({ result, currentOffer, targetOffer }: { result: Negotiatio
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 px-3 py-3 text-xs font-semibold transition-all ${
               activeTab === tab.id
-                ? "text-indigo-400 border-b-2 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20"
+                ? "text-[var(--color-accent)] border-b-2 border-[var(--color-accent)] bg-[var(--color-accent-weak)]"
                 : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-elevated)]"
             }`}
           >
@@ -126,7 +126,7 @@ function ResultPanel({ result, currentOffer, targetOffer }: { result: Negotiatio
             <p className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wide">
               Counter-Offer Email — Ready to Send
             </p>
-            <div className="bg-[var(--color-inset)] rounded-xl border border-[var(--color-border)] p-4">
+            <div className="bg-[var(--color-inset)] rounded-md border border-[var(--color-border)] p-4">
               <pre className="text-sm text-[var(--color-text-output)] leading-relaxed whitespace-pre-wrap font-mono">
                 {result.counter_email}
               </pre>
@@ -139,7 +139,7 @@ function ResultPanel({ result, currentOffer, targetOffer }: { result: Negotiatio
             <p className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wide">
               Phone Call Script
             </p>
-            <div className="bg-[var(--color-inset)] rounded-xl border border-[var(--color-border)] p-4">
+            <div className="bg-[var(--color-inset)] rounded-md border border-[var(--color-border)] p-4">
               <p className="text-sm text-[var(--color-text-output)] leading-relaxed whitespace-pre-wrap">
                 {result.phone_script}
               </p>
@@ -154,8 +154,8 @@ function ResultPanel({ result, currentOffer, targetOffer }: { result: Negotiatio
             </p>
             <div className="space-y-3">
               {result.pushback_responses.map((item, i) => (
-                <div key={i} className="bg-[var(--color-inset)] rounded-xl border border-[var(--color-border)] p-4 space-y-2">
-                  <p className="text-xs font-semibold text-amber-400">
+                <div key={i} className="bg-[var(--color-inset)] rounded-md border border-[var(--color-border)] p-4 space-y-2">
+                  <p className="text-xs font-semibold text-[var(--color-warning)]">
                     {`"${item.objection}"`}
                   </p>
                   <p className="text-sm text-[var(--color-text-output)] leading-relaxed">{item.response}</p>
@@ -247,7 +247,7 @@ export default function NegotiateClient({
   if (!isAuthed) {
     return (
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-16 text-center">
-        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-10 space-y-5">
+        <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-10 space-y-5">
           <svg className="w-10 h-10 text-[var(--color-text-tertiary)] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
@@ -257,7 +257,7 @@ export default function NegotiateClient({
           </p>
           <Link
             href="/auth/login"
-            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-sm shadow-indigo-600/20 hover:-translate-y-px transition-all"
+            className="inline-flex items-center gap-2 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-semibold px-6 py-2.5 rounded-md shadow-sm hover:-translate-y-px transition-all"
           >
             Sign in
           </Link>
@@ -269,11 +269,11 @@ export default function NegotiateClient({
   if (plan !== "pro") {
     return (
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-16 text-center">
-        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-10 space-y-5">
+        <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-10 space-y-5">
           <svg className="w-10 h-10 text-[var(--color-text-tertiary)] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-3 py-1.5 rounded-full">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)] px-3 py-1.5 rounded-full">
             Pro feature
           </div>
           <h2 className="text-xl font-bold text-[var(--color-text-primary)]">Salary Negotiation Coach</h2>
@@ -282,7 +282,7 @@ export default function NegotiateClient({
           </p>
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-sm shadow-indigo-600/20 hover:-translate-y-px transition-all"
+            className="inline-flex items-center gap-2 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-semibold px-6 py-2.5 rounded-md shadow-sm hover:-translate-y-px transition-all"
           >
             Upgrade to Pro →
           </Link>
@@ -295,7 +295,7 @@ export default function NegotiateClient({
     <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
       {/* Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-3 py-1.5 rounded-full mb-4">
+        <div className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)] px-3 py-1.5 rounded-full mb-4">
           Pro · Salary Negotiation Coach
         </div>
         <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-3">Negotiate Your Offer</h1>
@@ -305,7 +305,7 @@ export default function NegotiateClient({
       </div>
 
       {/* Form card */}
-      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6 mb-4 space-y-5">
+      <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-6 mb-4 space-y-5">
 
         {/* Offer details */}
         <div>
@@ -314,7 +314,7 @@ export default function NegotiateClient({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-[var(--color-text-label)] mb-1.5">
-                Company <span className="text-red-400">*</span>
+                Company <span className="text-[var(--color-error)]">*</span>
               </label>
               <input
                 type="text"
@@ -322,12 +322,12 @@ export default function NegotiateClient({
                 onChange={(e) => setCompany(e.target.value)}
                 placeholder="e.g. Acme Corp"
                 maxLength={200}
-                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--color-text-label)] mb-1.5">
-                Role <span className="text-red-400">*</span>
+                Role <span className="text-[var(--color-error)]">*</span>
               </label>
               <input
                 type="text"
@@ -335,18 +335,18 @@ export default function NegotiateClient({
                 onChange={(e) => setRole(e.target.value)}
                 placeholder="e.g. Senior Product Manager"
                 maxLength={200}
-                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--color-text-label)] mb-1.5">
-                Current offer (base) <span className="text-red-400">*</span>
+                Current offer (base) <span className="text-[var(--color-error)]">*</span>
               </label>
               <div className="flex gap-2">
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="border border-[var(--color-border)] rounded-lg px-3 py-2.5 text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+                  className="border border-[var(--color-border)] rounded-lg px-3 py-2.5 text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
                 >
                   <option value="USD">USD</option>
                   <option value="EUR">EUR</option>
@@ -360,13 +360,13 @@ export default function NegotiateClient({
                   value={currentOffer}
                   onChange={(e) => setCurrentOffer(e.target.value)}
                   placeholder="120,000"
-                  className="flex-1 border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+                  className="flex-1 border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
                 />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--color-text-label)] mb-1.5">
-                Your target (base) <span className="text-red-400">*</span>
+                Your target (base) <span className="text-[var(--color-error)]">*</span>
               </label>
               <input
                 type="text"
@@ -374,10 +374,10 @@ export default function NegotiateClient({
                 value={targetOffer}
                 onChange={(e) => setTargetOffer(e.target.value)}
                 placeholder="135,000"
-                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
               />
               {parsedCurrent > 0 && parsedTarget > 0 && parsedTarget <= parsedCurrent && (
-                <p className="text-xs text-amber-400 mt-1">Target must be higher than current offer</p>
+                <p className="text-xs text-[var(--color-warning)] mt-1">Target must be higher than current offer</p>
               )}
             </div>
           </div>
@@ -396,7 +396,7 @@ export default function NegotiateClient({
                 onChange={(e) => setBonus(e.target.value)}
                 placeholder="e.g. 10% target, up to 20%"
                 maxLength={200}
-                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
               />
             </div>
             <div>
@@ -407,7 +407,7 @@ export default function NegotiateClient({
                 onChange={(e) => setEquity(e.target.value)}
                 placeholder="e.g. 50 RSUs over 4 years"
                 maxLength={200}
-                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
               />
             </div>
             <div className="sm:col-span-2">
@@ -421,7 +421,7 @@ export default function NegotiateClient({
                 onChange={(e) => setCompetingOffer(e.target.value)}
                 placeholder="e.g. competing offer at $140k, or market rate from Levels.fyi"
                 maxLength={300}
-                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
               />
             </div>
             <div className="sm:col-span-2">
@@ -434,7 +434,7 @@ export default function NegotiateClient({
                 rows={2}
                 placeholder="e.g. they seem very interested, I'm currently employed, I have another final-round interview"
                 maxLength={500}
-                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
+                className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
               />
             </div>
           </div>
@@ -451,7 +451,7 @@ export default function NegotiateClient({
             onChange={(e) => setResumeText(e.target.value)}
             rows={6}
             placeholder="Paste your resume here for more personalized advice..."
-            className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
+            className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
           />
         </div>
       </div>
@@ -461,9 +461,9 @@ export default function NegotiateClient({
         <button
           onClick={handleGenerate}
           disabled={!canSubmit}
-          className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+          className={`px-6 py-2.5 rounded-md text-sm font-semibold transition-all ${
             canSubmit
-              ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
+              ? "bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white shadow-sm hover:-translate-y-px"
               : "bg-[var(--color-disabled)] text-[var(--color-text-placeholder)] cursor-not-allowed"
           }`}
         >
@@ -480,8 +480,8 @@ export default function NegotiateClient({
 
       {/* Error */}
       {error && error !== "pro_required" && (
-        <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-2xl p-5 mb-6 text-center">
-          <p className="text-sm text-red-400">{error}</p>
+        <div className="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-md p-5 mb-6 text-center">
+          <p className="text-sm text-[var(--color-error)]">{error}</p>
         </div>
       )}
 

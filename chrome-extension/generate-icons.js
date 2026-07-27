@@ -108,13 +108,13 @@ function roundedRect(px, size, x0, y0, x1, y1, cr, r, g, b, a = 255) {
 }
 
 // ── Icon design ───────────────────────────────────────────────────────────────
-// Indigo (#4f46e5) rounded-corner background with a white document card
-// and three indigo horizontal lines representing resume bullets.
+// Forest (#2F4A3C) rounded-corner background with a paper document card
+// and three forest horizontal lines representing resume bullets.
 
 function drawIcon(size) {
   const px = Buffer.alloc(size * size * 4, 0); // fully transparent
 
-  const BG_R = 79, BG_G = 70, BG_B = 229; // #4f46e5 indigo-600
+  const BG_R = 47, BG_G = 74, BG_B = 60; // #2F4A3C forest accent
 
   // Background
   const bgCr = Math.max(2, Math.round(size * 0.20));

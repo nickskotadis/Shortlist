@@ -2,16 +2,16 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[#1A1D38] mt-auto">
+    <footer className="border-t border-[var(--color-border-subtle)] mt-auto">
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-[#5A5A80]">
+          <p className="text-sm text-[var(--color-text-tertiary)]">
             Built by{" "}
             <a
               href="https://www.linkedin.com/in/nickskotadis/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#8888A8] hover:text-[#EEEEFC] transition-colors"
+              className="text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors"
             >
               Nick Skotadis
             </a>
@@ -22,30 +22,30 @@ export default function Footer() {
               href="https://www.linkedin.com/in/nickskotadis/"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-1.5 text-xs text-[#5A5A80] hover:text-[#EEEEFC] hover:bg-[#13182C] rounded-lg transition-all"
+              className="px-3 py-1.5 text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] rounded transition-all"
             >
               LinkedIn
             </a>
-            <span className="text-[#363960] text-xs">·</span>
+            <span className="text-[var(--color-separator)] text-xs">·</span>
             <a
               href="https://github.com/nickskotadis/Shortlist"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-1.5 text-xs text-[#5A5A80] hover:text-[#EEEEFC] hover:bg-[#13182C] rounded-lg transition-all"
+              className="px-3 py-1.5 text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] rounded transition-all"
             >
               GitHub
             </a>
-            <span className="text-[#363960] text-xs">·</span>
+            <span className="text-[var(--color-separator)] text-xs">·</span>
             <Link
               href="/privacy"
-              className="px-3 py-1.5 text-xs text-[#5A5A80] hover:text-[#EEEEFC] hover:bg-[#13182C] rounded-lg transition-all"
+              className="px-3 py-1.5 text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] rounded transition-all"
             >
               Privacy Policy
             </Link>
-            <span className="text-[#363960] text-xs">·</span>
+            <span className="text-[var(--color-separator)] text-xs">·</span>
             <Link
               href="/pricing"
-              className="px-3 py-1.5 text-xs text-[#5A5A80] hover:text-[#EEEEFC] hover:bg-[#13182C] rounded-lg transition-all"
+              className="px-3 py-1.5 text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] rounded transition-all"
             >
               Pricing
             </Link>

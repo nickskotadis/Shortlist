@@ -75,7 +75,7 @@ export default async function AdminQualityPage() {
     <div className="min-h-screen bg-[var(--color-page)]">
       <nav className="bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 flex items-center gap-4 h-14">
-          <Link href="/dashboard" className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-indigo-400 transition-colors">
+          <Link href="/dashboard" className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors">
             Shortlist
           </Link>
           <span className="text-[var(--color-separator)]">·</span>

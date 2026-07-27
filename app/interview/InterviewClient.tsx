@@ -19,19 +19,19 @@ const CATEGORY_STYLES: Record<
 > = {
   behavioral: {
     label: "Behavioral",
-    classes: "text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/50",
+    classes: "text-[var(--color-accent)] bg-[var(--color-accent-weak)] border-[var(--color-accent-weak-border)]",
   },
   technical: {
     label: "Technical",
-    classes: "text-violet-700 bg-violet-50 dark:text-violet-400 dark:bg-violet-950/40 border-violet-200 dark:border-violet-900/50",
+    classes: "text-violet-700 bg-violet-50 border-violet-200",
   },
   situational: {
     label: "Situational",
-    classes: "text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40",
+    classes: "text-[var(--color-warning)] bg-[var(--color-warning-bg)] border-[var(--color-warning-border)]",
   },
   culture: {
     label: "Culture",
-    classes: "text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40",
+    classes: "text-[var(--color-success)] bg-[var(--color-success-bg)] border-[var(--color-success-border)]",
   },
 };
 
@@ -42,7 +42,7 @@ function ScoreRing({ score, maxScore = 10 }: { score: number; maxScore?: number 
   const circumference = 2 * Math.PI * radius;
   const pct = Math.max(0, Math.min(score, maxScore)) / maxScore;
   const offset = circumference * (1 - pct);
-  const color = score >= maxScore * 0.8 ? "#34d399" : score >= maxScore * 0.6 ? "#818cf8" : "#fbbf24";
+  const color = score >= maxScore * 0.8 ? "#35583F" : score >= maxScore * 0.6 ? "#2F4A3C" : "#7A5C1E";
 
   return (
     <div className="relative inline-flex items-center justify-center w-16 h-16 shrink-0">
@@ -131,7 +131,7 @@ function QuestionCard({
   };
 
   return (
-    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
+    <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-6">
       <div className="flex items-start justify-between gap-3 mb-3">
         <span
           className={`inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0 ${style.classes}`}
@@ -141,7 +141,7 @@ function QuestionCard({
         <button
           onClick={handleCopy}
           title="Copy question + framework"
-          className="shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-100 dark:hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all"
+          className="shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] bg-[var(--color-elevated)] hover:bg-[var(--color-accent-weak)] border border-[var(--color-border)] hover:border-[var(--color-accent-weak-border)] px-3 py-1.5 rounded-lg transition-all"
         >
           {copied ? (
             <>
@@ -189,7 +189,7 @@ function QuestionCard({
                     setEvalError(null);
                   }
                 }}
-                className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="text-xs font-semibold text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors"
               >
                 {practiceOpen ? "Hide practice" : "Practice your answer"}
                 <span className="ml-1">{practiceOpen ? "↑" : "↓"}</span>
@@ -206,16 +206,16 @@ function QuestionCard({
                     }}
                     rows={4}
                     placeholder="Type your answer here..."
-                    className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
+                    className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
                   />
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-[var(--color-text-tertiary)]">{answerText.trim().length} / 3000 chars</span>
                     <button
                       onClick={handleEvaluate}
                       disabled={!answerText.trim() || evaluating || answerText.trim().length < 10}
-                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold transition-all ${
                         answerText.trim().length >= 10 && !evaluating
-                          ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
+                          ? "bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white shadow-sm hover:-translate-y-px"
                           : "bg-[var(--color-disabled)] text-[var(--color-text-placeholder)] cursor-not-allowed"
                       }`}
                     >
@@ -231,11 +231,11 @@ function QuestionCard({
                   </div>
 
                   {evalError && (
-                    <p className="text-xs text-red-400">{evalError}</p>
+                    <p className="text-xs text-[var(--color-error)]">{evalError}</p>
                   )}
 
                   {evalResult && (
-                    <div className="bg-[var(--color-inset)] rounded-xl border border-[var(--color-border)] p-4 space-y-4">
+                    <div className="bg-[var(--color-inset)] rounded-md border border-[var(--color-border)] p-4 space-y-4">
                       <div className="flex items-start gap-4">
                         <ScoreRing score={evalResult.score} />
                         <div className="flex-1 min-w-0">
@@ -248,13 +248,13 @@ function QuestionCard({
 
                       {evalResult.what_worked.length > 0 && (
                         <div>
-                          <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wide mb-2">
+                          <p className="text-xs font-semibold text-[var(--color-success)] uppercase tracking-wide mb-2">
                             What worked
                           </p>
                           <ul className="space-y-1">
                             {evalResult.what_worked.map((item, i) => (
                               <li key={i} className="flex items-start gap-2 text-sm text-[var(--color-text-output)]">
-                                <span className="text-emerald-400 shrink-0 mt-0.5">•</span>
+                                <span className="text-[var(--color-success)] shrink-0 mt-0.5">•</span>
                                 {item}
                               </li>
                             ))}
@@ -264,13 +264,13 @@ function QuestionCard({
 
                       {evalResult.what_to_improve.length > 0 && (
                         <div>
-                          <p className="text-xs font-semibold text-amber-400 uppercase tracking-wide mb-2">
+                          <p className="text-xs font-semibold text-[var(--color-warning)] uppercase tracking-wide mb-2">
                             What to improve
                           </p>
                           <ul className="space-y-1">
                             {evalResult.what_to_improve.map((item, i) => (
                               <li key={i} className="flex items-start gap-2 text-sm text-[var(--color-text-output)]">
-                                <span className="text-amber-400 shrink-0 mt-0.5">•</span>
+                                <span className="text-[var(--color-warning)] shrink-0 mt-0.5">•</span>
                                 {item}
                               </li>
                             ))}
@@ -289,7 +289,7 @@ function QuestionCard({
               </svg>
               <span className="text-xs text-[var(--color-text-tertiary)]">
                 Pro ·{" "}
-                <Link href="/pricing" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+                <Link href="/pricing" className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors">
                   Practice your answer
                 </Link>
               </span>
@@ -448,11 +448,11 @@ function MockInterview({
   // ── Pro gate ─────────────────────────────────────────────────────────────
   if (plan !== "pro") {
     return (
-      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-8 text-center space-y-4">
+      <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-8 text-center space-y-4">
         <svg className="w-8 h-8 text-[var(--color-text-tertiary)] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
-        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-3 py-1.5 rounded-full">
+        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)] px-3 py-1.5 rounded-full">
           Pro feature
         </div>
         <p className="text-sm font-semibold text-[var(--color-text-primary)]">Mock Interview Simulator</p>
@@ -461,7 +461,7 @@ function MockInterview({
         </p>
         <Link
           href="/pricing"
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-sm shadow-indigo-600/20 hover:-translate-y-px transition-all"
+          className="inline-flex items-center gap-2 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-semibold px-6 py-2.5 rounded-md shadow-sm hover:-translate-y-px transition-all"
         >
           Upgrade to Pro →
         </Link>
@@ -472,7 +472,7 @@ function MockInterview({
   // ── Setup phase ───────────────────────────────────────────────────────────
   if (phase === "setup") {
     return (
-      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6 space-y-5">
+      <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-6 space-y-5">
         <div>
           <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Mock Interview Simulator</p>
           <p className="text-xs text-[var(--color-text-tertiary)]">
@@ -489,15 +489,15 @@ function MockInterview({
               <button
                 key={opt.value}
                 onClick={() => setCategoryFocus(opt.value)}
-                className={`text-left px-3 py-3 rounded-xl border text-sm transition-all ${
+                className={`text-left px-3 py-3 rounded-md border text-sm transition-all ${
                   categoryFocus === opt.value
-                    ? "border-indigo-500 bg-indigo-100 dark:bg-indigo-950/40 ring-1 ring-indigo-500"
+                    ? "border-[var(--color-accent)] bg-[var(--color-accent-weak)] ring-1 ring-[var(--color-accent)]"
                     : "border-[var(--color-border)] bg-[var(--color-elevated)] hover:border-[var(--color-border-strong)]"
                 }`}
               >
                 <span
                   className={`block font-semibold mb-0.5 ${
-                    categoryFocus === opt.value ? "text-indigo-400" : "text-[var(--color-text-primary)]"
+                    categoryFocus === opt.value ? "text-[var(--color-accent)]" : "text-[var(--color-text-primary)]"
                   }`}
                 >
                   {opt.label}
@@ -509,19 +509,19 @@ function MockInterview({
         </div>
 
         {!resumeText.trim() && (
-          <p className="text-xs text-amber-400">
+          <p className="text-xs text-[var(--color-warning)]">
             Add your resume above for tailored questions and more specific coaching.
           </p>
         )}
 
-        {error && <p className="text-xs text-red-400">{error}</p>}
+        {error && <p className="text-xs text-[var(--color-error)]">{error}</p>}
 
         <button
           onClick={handleStart}
           disabled={loading}
-          className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all ${
+          className={`w-full py-2.5 rounded-md text-sm font-semibold transition-all ${
             !loading
-              ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
+              ? "bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white shadow-sm hover:-translate-y-px"
               : "bg-[var(--color-disabled)] text-[var(--color-text-placeholder)] cursor-not-allowed"
           }`}
         >
@@ -541,11 +541,11 @@ function MockInterview({
   // ── Running phase ─────────────────────────────────────────────────────────
   if (phase === "running") {
     return (
-      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden">
+      <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] overflow-hidden">
         {/* Header */}
         <div className="px-5 py-3 border-b border-[var(--color-border-subtle)] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)] px-2.5 py-1 rounded-full">
               Mock Interview
             </span>
             <span className="text-xs text-[var(--color-text-tertiary)]">{candidateTurns} answer{candidateTurns !== 1 ? "s" : ""} given</span>
@@ -555,7 +555,7 @@ function MockInterview({
               <button
                 onClick={handleEndSession}
                 disabled={loading}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900/40 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-success)] hover:text-[var(--color-success)] bg-[var(--color-success-bg)] hover:bg-[var(--color-success-bg)] border border-[var(--color-success-border)] px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
               >
                 End session + get debrief
               </button>
@@ -578,16 +578,16 @@ function MockInterview({
             >
               {msg.role === "interviewer" && (
                 <div className="w-7 h-7 rounded-full bg-[var(--color-elevated)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
               )}
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                className={`max-w-[80%] rounded-md px-4 py-3 text-sm leading-relaxed ${
                   msg.role === "interviewer"
                     ? "bg-[var(--color-elevated)] border border-[var(--color-border)] text-[var(--color-text-output)]"
-                    : "bg-indigo-600/20 border border-indigo-500/30 text-[var(--color-text-primary)]"
+                    : "bg-[var(--color-accent)] border border-[var(--color-accent)] text-[var(--color-text-primary)]"
                 }`}
               >
                 {msg.content}
@@ -598,11 +598,11 @@ function MockInterview({
           {loading && (
             <div className="flex gap-3 justify-start">
               <div className="w-7 h-7 rounded-full bg-[var(--color-elevated)] border border-[var(--color-border)] flex items-center justify-center shrink-0 mt-0.5">
-                <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              <div className="bg-[var(--color-elevated)] border border-[var(--color-border)] rounded-2xl px-4 py-3">
+              <div className="bg-[var(--color-elevated)] border border-[var(--color-border)] rounded-md px-4 py-3">
                 <span className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-[var(--color-text-tertiary)] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
                   <span className="w-1.5 h-1.5 bg-[var(--color-text-tertiary)] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
@@ -615,7 +615,7 @@ function MockInterview({
 
         {/* Answer input */}
         <div className="px-5 pb-5 border-t border-[var(--color-border-subtle)] pt-4">
-          {error && <p className="text-xs text-red-400 mb-3">{error}</p>}
+          {error && <p className="text-xs text-[var(--color-error)] mb-3">{error}</p>}
           <div className="flex gap-3">
             <textarea
               value={pendingAnswer}
@@ -629,14 +629,14 @@ function MockInterview({
               rows={2}
               placeholder="Type your answer... (Enter to send, Shift+Enter for new line)"
               disabled={loading}
-              className="flex-1 border border-[var(--color-border)] rounded-xl px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition resize-none disabled:opacity-50"
+              className="flex-1 border border-[var(--color-border)] rounded-md px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition resize-none disabled:opacity-50"
             />
             <button
               onClick={handleSendAnswer}
               disabled={!pendingAnswer.trim() || loading}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all self-end ${
+              className={`px-4 py-2 rounded-md text-sm font-semibold transition-all self-end ${
                 pendingAnswer.trim() && !loading
-                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20"
+                  ? "bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white shadow-sm"
                   : "bg-[var(--color-disabled)] text-[var(--color-text-placeholder)] cursor-not-allowed"
               }`}
             >
@@ -665,13 +665,13 @@ function MockInterview({
     };
 
     return (
-      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden">
+      <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between">
           <span className="text-sm font-semibold text-[var(--color-text-primary)]">Session Debrief</span>
           <button
             onClick={handleReset}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] bg-[var(--color-elevated)] hover:bg-indigo-100 dark:hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] bg-[var(--color-elevated)] hover:bg-[var(--color-accent-weak)] border border-[var(--color-border)] hover:border-[var(--color-accent-weak-border)] px-3 py-1.5 rounded-lg transition-all"
           >
             Practice again →
           </button>
@@ -697,9 +697,9 @@ function MockInterview({
             <div className="grid grid-cols-2 gap-3">
               {(Object.keys(debrief.dimension_scores) as Array<keyof MockInterviewDebrief["dimension_scores"]>).map((key) => {
                 const score = debrief.dimension_scores[key];
-                const color = score >= 8 ? "#34d399" : score >= 6 ? "#818cf8" : "#fbbf24";
+                const color = score >= 8 ? "#35583F" : score >= 6 ? "#2F4A3C" : "#7A5C1E";
                 return (
-                  <div key={key} className="bg-[var(--color-inset)] rounded-xl border border-[var(--color-border)] p-3">
+                  <div key={key} className="bg-[var(--color-inset)] rounded-md border border-[var(--color-border)] p-3">
                     <p className="text-xs text-[var(--color-text-tertiary)] mb-1">{dimLabels[key]}</p>
                     <p className="text-xl font-bold" style={{ color }}>{score}<span className="text-xs font-normal text-[var(--color-text-tertiary)]">/10</span></p>
                   </div>
@@ -712,13 +712,13 @@ function MockInterview({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {debrief.strengths.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wide">
+                <p className="text-xs font-semibold text-[var(--color-success)] uppercase tracking-wide">
                   What worked
                 </p>
                 <ul className="space-y-2">
                   {debrief.strengths.map((s, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-[var(--color-text-output)]">
-                      <span className="text-emerald-400 shrink-0 mt-0.5">•</span>
+                      <span className="text-[var(--color-success)] shrink-0 mt-0.5">•</span>
                       {s}
                     </li>
                   ))}
@@ -727,13 +727,13 @@ function MockInterview({
             )}
             {debrief.areas_to_improve.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-amber-400 uppercase tracking-wide">
+                <p className="text-xs font-semibold text-[var(--color-warning)] uppercase tracking-wide">
                   What to improve
                 </p>
                 <ul className="space-y-2">
                   {debrief.areas_to_improve.map((a, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-[var(--color-text-output)]">
-                      <span className="text-amber-400 shrink-0 mt-0.5">•</span>
+                      <span className="text-[var(--color-warning)] shrink-0 mt-0.5">•</span>
                       {a}
                     </li>
                   ))}
@@ -744,14 +744,14 @@ function MockInterview({
 
           {/* Next steps */}
           {debrief.next_steps.length > 0 && (
-            <div className="bg-[var(--color-inset)] rounded-xl border border-[var(--color-border)] p-4 space-y-2">
-              <p className="text-xs font-semibold text-indigo-400 uppercase tracking-wide">
+            <div className="bg-[var(--color-inset)] rounded-md border border-[var(--color-border)] p-4 space-y-2">
+              <p className="text-xs font-semibold text-[var(--color-accent)] uppercase tracking-wide">
                 Next steps before your real interview
               </p>
               <ul className="space-y-1.5">
                 {debrief.next_steps.map((step, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-[var(--color-text-output)]">
-                    <span className="text-indigo-400 shrink-0 mt-0.5">{i + 1}.</span>
+                    <span className="text-[var(--color-accent)] shrink-0 mt-0.5">{i + 1}.</span>
                     {step}
                   </li>
                 ))}
@@ -859,12 +859,12 @@ export default function InterviewClient({
       </div>
 
       {/* Mode toggle */}
-      <div className="flex items-center gap-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-1 mb-6 w-fit mx-auto">
+      <div className="flex items-center gap-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md p-1 mb-6 w-fit mx-auto">
         <button
           onClick={() => setMode("questions")}
           className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
             mode === "questions"
-              ? "bg-indigo-600 text-white shadow-sm"
+              ? "bg-[var(--color-accent)] text-white shadow-sm"
               : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
           }`}
         >
@@ -875,7 +875,7 @@ export default function InterviewClient({
           onClick={() => setMode("mock")}
           className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
             mode === "mock"
-              ? "bg-indigo-600 text-white shadow-sm"
+              ? "bg-[var(--color-accent)] text-white shadow-sm"
               : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
           }`}
         >
@@ -885,7 +885,7 @@ export default function InterviewClient({
       </div>
 
       {/* Input card */}
-      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6 mb-4">
+      <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-6 mb-4">
         {/* JD input */}
         <div className="mb-5">
           <label className="block text-sm font-medium text-[var(--color-text-label)] mb-1.5">
@@ -897,7 +897,7 @@ export default function InterviewClient({
             onChange={(e) => setJdText(e.target.value)}
             rows={5}
             placeholder="Paste the job description — optional but recommended for tailored questions"
-            className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
+            className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
           />
         </div>
 
@@ -905,7 +905,7 @@ export default function InterviewClient({
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="block text-sm font-medium text-[var(--color-text-label)]">
-              Your resume <span className="text-red-400">*</span>
+              Your resume <span className="text-[var(--color-error)]">*</span>
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -922,7 +922,7 @@ export default function InterviewClient({
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={parseLoading}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 bg-[var(--color-elevated)] hover:bg-indigo-100 dark:hover:bg-indigo-950/40 border border-[var(--color-border)] hover:border-indigo-300 dark:hover:border-indigo-900/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] bg-[var(--color-elevated)] hover:bg-[var(--color-accent-weak)] border border-[var(--color-border)] hover:border-[var(--color-accent-weak-border)] px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
               >
                 {parseLoading ? (
                   <span className="w-3 h-3 border-2 border-[var(--color-text-secondary)] border-t-transparent rounded-full animate-spin" />
@@ -935,7 +935,7 @@ export default function InterviewClient({
               </button>
             </div>
           </div>
-          {parseError && <p className="text-xs text-red-400 mb-2">{parseError}</p>}
+          {parseError && <p className="text-xs text-[var(--color-error)] mb-2">{parseError}</p>}
           <textarea
             value={resumeText}
             onChange={(e) => {
@@ -944,7 +944,7 @@ export default function InterviewClient({
             }}
             rows={10}
             placeholder="Paste your resume here — the more detail, the more tailored the questions and frameworks"
-            className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
+            className="w-full border border-[var(--color-border)] rounded-lg px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition resize-none"
           />
           <div className="flex items-center justify-between mt-2">
             <p className="text-xs text-[var(--color-text-tertiary)]">{wordCount} words</p>
@@ -956,15 +956,15 @@ export default function InterviewClient({
       {mode === "questions" && (
         <>
           <div className="flex items-center justify-between mb-6">
-            <span className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-700 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 px-3 py-1.5 rounded-full">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--color-accent)] bg-[var(--color-accent-weak)] border border-[var(--color-accent-weak-border)] px-3 py-1.5 rounded-full">
               Free · No generation count used
             </span>
             <button
               onClick={handleGenerate}
               disabled={!resumeText.trim() || loading}
-              className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              className={`px-6 py-2.5 rounded-md text-sm font-semibold transition-all ${
                 resumeText.trim() && !loading
-                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 hover:-translate-y-px"
+                  ? "bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white shadow-sm hover:-translate-y-px"
                   : "bg-[var(--color-disabled)] text-[var(--color-text-placeholder)] cursor-not-allowed"
               }`}
             >
@@ -980,8 +980,8 @@ export default function InterviewClient({
           </div>
 
           {error && (
-            <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-2xl p-5 mb-6 text-center">
-              <p className="text-sm text-red-400">{error}</p>
+            <div className="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-md p-5 mb-6 text-center">
+              <p className="text-sm text-[var(--color-error)]">{error}</p>
             </div>
           )}
 

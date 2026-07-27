@@ -10,7 +10,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-[var(--color-page)]">
       <nav className="bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-[var(--color-border-subtle)] px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center gap-4">
-          <Link href="/" className="text-lg font-semibold text-[var(--color-text-primary)] tracking-tight">
+          <Link href="/" className="font-serif text-xl text-[var(--color-text-primary)] tracking-tight hover:text-[var(--color-accent)] transition-colors">
             Shortlist
           </Link>
           <span className="text-[var(--color-separator)]">·</span>
@@ -19,7 +19,7 @@ export default function PrivacyPage() {
       </nav>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-8 sm:p-12 space-y-8">
+        <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-8 sm:p-12 space-y-8">
           <div>
             <h1 className="text-2xl font-semibold text-[var(--color-text-primary)] mb-2">Privacy Policy</h1>
             <p className="text-sm text-[var(--color-text-tertiary)]">Last updated: March 2026</p>
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
                   href="https://www.anthropic.com/legal/privacy"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-indigo-400 hover:text-indigo-300 hover:underline"
+                  className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] hover:underline"
                 >
                   Anthropic&rsquo;s privacy policy
                 </a>
@@ -164,7 +164,7 @@ export default function PrivacyPage() {
               Questions about this policy? Email{" "}
               <a
                 href="mailto:nickskotadis@gmail.com"
-                className="text-indigo-400 hover:text-indigo-300 hover:underline"
+                className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] hover:underline"
               >
                 nickskotadis@gmail.com
               </a>

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "@/components/PostHogProvider";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
 
 const geistSans = Geist({
@@ -13,6 +12,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Editorial display serif — optical sizing gives large headings real contrast
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -28,16 +34,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased`}
       >
-        <ThemeProvider>
-          <PostHogProvider>
-            <div className="min-h-screen flex flex-col">
-              {children}
-              <Footer />
-            </div>
-          </PostHogProvider>
-        </ThemeProvider>
+        <PostHogProvider>
+          <div className="min-h-screen flex flex-col">
+            {children}
+            <Footer />
+          </div>
+        </PostHogProvider>
       </body>
     </html>
   );

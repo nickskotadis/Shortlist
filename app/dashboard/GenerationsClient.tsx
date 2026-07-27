@@ -67,14 +67,14 @@ function computeOverall(scores: NonNullable<Generation["validator_scores"]>): nu
 function VerdictBadge({ verdict }: { verdict: ValidatorVerdict | null }) {
   if (!verdict) return null;
   const styles: Record<ValidatorVerdict, string> = {
-    PASS: "text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40",
-    REVISE: "text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40",
-    REJECT: "text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40",
+    PASS: "text-[var(--color-success)] bg-[var(--color-success-bg)] border border-[var(--color-success-border)]",
+    REVISE: "text-[var(--color-warning)] bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)]",
+    REJECT: "text-[var(--color-error)] bg-[var(--color-error-bg)] border border-[var(--color-error-border)]",
   };
   const dots: Record<ValidatorVerdict, string> = {
-    PASS: "bg-emerald-500",
-    REVISE: "bg-amber-500",
-    REJECT: "bg-red-500",
+    PASS: "bg-[var(--color-success)]",
+    REVISE: "bg-[var(--color-warning)]",
+    REJECT: "bg-[var(--color-error)]",
   };
   return (
     <span
@@ -88,9 +88,9 @@ function VerdictBadge({ verdict }: { verdict: ValidatorVerdict | null }) {
 
 function ScoreBar({ label, score }: { label: string; score: number }) {
   const barColor =
-    score >= 8 ? "bg-emerald-500" : score >= 6 ? "bg-indigo-400" : "bg-amber-400";
+    score >= 8 ? "bg-[var(--color-success)]" : score >= 6 ? "bg-[var(--color-accent)]" : "bg-[var(--color-warning)]";
   const textColor =
-    score >= 8 ? "text-emerald-400" : score >= 6 ? "text-indigo-400" : "text-amber-400";
+    score >= 8 ? "text-[var(--color-success)]" : score >= 6 ? "text-[var(--color-accent)]" : "text-[var(--color-warning)]";
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
@@ -154,7 +154,7 @@ function FilterPill({
   onClick: () => void;
 }) {
   const base = "px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer";
-  const activeStyle = activeClass ?? "border-indigo-500 bg-indigo-100 ring-1 ring-indigo-500 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400";
+  const activeStyle = activeClass ?? "border-[var(--color-accent)] bg-[var(--color-accent-weak)] ring-1 ring-[var(--color-accent)] text-[var(--color-accent)]";
   const inactiveStyle = "border-[var(--color-border)] bg-transparent text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)]";
   return (
     <button
@@ -268,7 +268,7 @@ function GenerationCard({ gen }: { gen: Generation }) {
   };
 
   return (
-    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden hover:border-[var(--color-border-strong)] transition-colors">
+    <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] overflow-hidden hover:border-[var(--color-border-strong)] transition-colors">
       {/* Header — always visible, click to expand */}
       <button
         onClick={() => setExpanded((v) => !v)}
@@ -331,10 +331,10 @@ function GenerationCard({ gen }: { gen: Generation }) {
                 onKeyDown={(e) => { if (e.key === "Enter") saveLabel(label); }}
                 maxLength={200}
                 onClick={(e) => e.stopPropagation()}
-                className="flex-1 border border-[var(--color-border)] rounded-lg px-3 py-2 text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-surface)] transition"
+                className="flex-1 border border-[var(--color-border)] rounded-lg px-3 py-2 text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-surface)] transition"
               />
               {labelSaving && <MiniSpinner />}
-              {labelSaved && <span className="text-xs text-emerald-400 font-medium">Saved</span>}
+              {labelSaved && <span className="text-xs text-[var(--color-success)] font-medium">Saved</span>}
             </div>
           </div>
 
@@ -368,7 +368,7 @@ function GenerationCard({ gen }: { gen: Generation }) {
                 <button
                   onClick={() => downloadExport("docx")}
                   disabled={exportLoading.docx}
-                  className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {exportLoading.docx ? <MiniSpinner /> : <DownloadIcon />}
                   DOCX
@@ -378,7 +378,7 @@ function GenerationCard({ gen }: { gen: Generation }) {
                 <button
                   onClick={() => downloadExport("pdf")}
                   disabled={exportLoading.pdf}
-                  className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {exportLoading.pdf ? <MiniSpinner /> : <DownloadIcon />}
                   PDF
@@ -393,8 +393,8 @@ function GenerationCard({ gen }: { gen: Generation }) {
                   aria-label="Helpful"
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium transition-all disabled:cursor-not-allowed ${
                     feedback === true
-                      ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/40 text-emerald-400"
-                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-emerald-300 dark:hover:border-emerald-800/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:text-emerald-400"
+                      ? "bg-[var(--color-success-bg)] border-[var(--color-success-border)] text-[var(--color-success)]"
+                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-[var(--color-success-border)] hover:bg-[var(--color-success-bg)] hover:text-[var(--color-success)]"
                   }`}
                 >
                   <ThumbsUpIcon />
@@ -408,8 +408,8 @@ function GenerationCard({ gen }: { gen: Generation }) {
                   aria-label="Not helpful"
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium transition-all disabled:cursor-not-allowed ${
                     feedback === false
-                      ? "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800/40 text-red-400"
-                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-red-300 dark:hover:border-red-800/50 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-400"
+                      ? "bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-error)]"
+                      : "bg-transparent border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:border-[var(--color-error-border)] hover:bg-[var(--color-error-bg)] hover:text-[var(--color-error)]"
                   }`}
                 >
                   <ThumbsDownIcon />
@@ -421,14 +421,14 @@ function GenerationCard({ gen }: { gen: Generation }) {
                 {/* Copy */}
                 <button
                   onClick={handleCopy}
-                  className="text-xs font-medium text-[var(--color-text-secondary)] hover:text-indigo-400 transition-colors"
+                  className="text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors"
                 >
                   {copied ? "✓ Copied" : "Copy"}
                 </button>
               </div>
             </div>
             {exportError && (
-              <p className="text-xs text-red-400 mt-2">{exportError}</p>
+              <p className="text-xs text-[var(--color-error)] mt-2">{exportError}</p>
             )}
           </div>
         </>
@@ -454,9 +454,9 @@ const VERDICT_FILTER_OPTIONS: Array<{
   activeClass?: string;
 }> = [
   { value: "all", label: "All" },
-  { value: "PASS", label: "PASS", activeClass: "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400" },
-  { value: "REVISE", label: "REVISE", activeClass: "border-amber-500 bg-amber-50 ring-1 ring-amber-500 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400" },
-  { value: "REJECT", label: "REJECT", activeClass: "border-red-500 bg-red-50 ring-1 ring-red-500 text-red-700 dark:bg-red-950/30 dark:text-red-400" },
+  { value: "PASS", label: "PASS", activeClass: "border-[var(--color-success-border)] bg-[var(--color-success-bg)] ring-1 ring-[var(--color-success)] text-[var(--color-success)]" },
+  { value: "REVISE", label: "REVISE", activeClass: "border-[var(--color-warning-border)] bg-[var(--color-warning-bg)] ring-1 ring-[var(--color-warning)] text-[var(--color-warning)]" },
+  { value: "REJECT", label: "REJECT", activeClass: "border-[var(--color-error-border)] bg-[var(--color-error-bg)] ring-1 ring-[var(--color-error)] text-[var(--color-error)]" },
 ];
 
 export default function GenerationsClient({ generations }: { generations: Generation[] }) {
@@ -487,9 +487,9 @@ export default function GenerationsClient({ generations }: { generations: Genera
 
   if (generations.length === 0) {
     return (
-      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-16 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-950/40 flex items-center justify-center mx-auto mb-5">
-          <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-16 text-center">
+        <div className="w-16 h-16 rounded-md bg-[var(--color-accent-weak)] flex items-center justify-center mx-auto mb-5">
+          <svg className="w-8 h-8 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
@@ -504,13 +504,13 @@ export default function GenerationsClient({ generations }: { generations: Genera
         <div className="flex items-center justify-center gap-3">
           <Link
             href="/generate"
-            className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm shadow-indigo-600/20 transition-all"
+            className="inline-flex items-center gap-1 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-semibold px-5 py-2.5 rounded-md shadow-sm transition-all"
           >
             Generate now →
           </Link>
           <Link
             href="/score"
-            className="inline-flex items-center gap-1 bg-[var(--color-elevated)] border border-[var(--color-border)] hover:bg-[var(--color-border)] text-[var(--color-text-label)] text-sm font-medium px-5 py-2.5 rounded-xl transition-all"
+            className="inline-flex items-center gap-1 bg-[var(--color-elevated)] border border-[var(--color-border)] hover:bg-[var(--color-border)] text-[var(--color-text-label)] text-sm font-medium px-5 py-2.5 rounded-md transition-all"
           >
             Score my resume
           </Link>
@@ -522,7 +522,7 @@ export default function GenerationsClient({ generations }: { generations: Genera
   return (
     <div className="space-y-3">
       {/* Filter toolbar */}
-      <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-4">
+      <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-4">
         {/* Search row */}
         <div className="relative mb-3">
           <svg
@@ -537,7 +537,7 @@ export default function GenerationsClient({ generations }: { generations: Genera
             placeholder="Search by label or job..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full border border-[var(--color-border)] rounded-lg pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-[var(--color-elevated)] transition"
+            className="w-full border border-[var(--color-border)] rounded-lg pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent bg-[var(--color-elevated)] transition"
           />
         </div>
 
@@ -573,11 +573,11 @@ export default function GenerationsClient({ generations }: { generations: Genera
         {isFiltered && (
           <div className="mt-3 flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
             <span>Showing {filtered.length} of {generations.length}</span>
-            <span className="text-[#3A3A55]">·</span>
+            <span className="text-[var(--color-separator)]">·</span>
             <button
               type="button"
               onClick={clearFilters}
-              className="text-indigo-400 hover:text-indigo-300 font-medium"
+              className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] font-medium"
             >
               Clear filters ×
             </button>
@@ -587,13 +587,13 @@ export default function GenerationsClient({ generations }: { generations: Genera
 
       {/* No-results state */}
       {filtered.length === 0 && isFiltered ? (
-        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-12 text-center">
+        <div className="bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] p-12 text-center">
           <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">No generations match your filters</p>
           <p className="text-xs text-[var(--color-text-secondary)] mb-4">Try adjusting your search or filter criteria.</p>
           <button
             type="button"
             onClick={clearFilters}
-            className="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm transition-all"
+            className="inline-flex items-center gap-1 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-semibold px-4 py-2 rounded-md shadow-sm transition-all"
           >
             Clear filters
           </button>

@@ -1,139 +1,140 @@
 @import "tailwindcss";
 
-/* Use class-based dark mode (next-themes sets class="dark" on <html>) */
-@variant dark (&:where(.dark, .dark *));
-
-/* ── Design tokens ─────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   Shortlist — "Paper & Ink" design tokens
+   Single light theme. No dark mode, no toggle.
+   Everything themable lives here: retheme = edit this block only.
+   ───────────────────────────────────────────────────────────── */
 :root {
-  /* Legacy (for @theme inline compat) */
-  --background: #090C18;
-  --foreground: #EEEEFC;
+  /* Legacy aliases (kept for @theme inline compat) */
+  --background: #FAF9F6;
+  --foreground: #211E1A;
 
-  /* Semantic color tokens — dark defaults */
-  --color-page:             #090C18;
-  --color-surface:          #0D1122;
-  --color-inset:            #0B0E1E;
-  --color-elevated:         #13182C;
-  --color-disabled:         #141830;
-  --color-border:           #232548;
-  --color-border-subtle:    #1A1D38;
-  --color-border-strong:    #2E3165;
-  --color-separator:        #363960;
-  --color-text-primary:     #EEEEFC;
-  --color-text-secondary:   #8888A8;
-  --color-text-tertiary:    #5A5A80;
-  --color-text-placeholder: #4A4A68;
-  --color-text-output:      #C8C8F0;
-  --color-text-label:       #E0E0F8;
-  --color-nav-bg:           rgba(9,12,24,0.8);
-  --color-shadow:           rgba(0,0,0,0.5);
-  --aurora-opacity:         0.18;
-}
+  /* Paper & ink — surfaces */
+  --color-page:     #FAF9F6; /* warm paper white */
+  --color-surface:  #FFFFFF; /* document paper */
+  --color-inset:    #F3F1EA; /* recessed (pre / marginalia) */
+  --color-elevated: #F6F4EE; /* inputs, subtle raised */
+  --color-disabled: #EEEBE3;
 
-html.light {
-  --background: #F4F6FB;
-  --foreground: #0F1323;
+  /* Ink — text */
+  --color-ink:             #211E1A; /* near-black, warm */
+  --color-ink-secondary:   #57524A;
+  --color-ink-tertiary:    #726C60;
+  --color-ink-placeholder: #787264;
 
-  --color-page:             #F4F6FB;
-  --color-surface:          #FFFFFF;
-  --color-inset:            #F0F2F7;
-  --color-elevated:         #F8F9FC;
-  --color-disabled:         #EFF1F7;
-  --color-border:           #E2E5F0;
-  --color-border-subtle:    #EBEEF7;
-  --color-border-strong:    #CBD0E8;
-  --color-separator:        #B0B7D6;
-  --color-text-primary:     #0F1323;
-  --color-text-secondary:   #4A5580;
-  --color-text-tertiary:    #7A84A8;
-  --color-text-placeholder: #9AA3C4;
-  --color-text-output:      #1A2050;
-  --color-text-label:       #1F2640;
-  --color-nav-bg:           rgba(244,246,251,0.85);
-  --color-shadow:           rgba(0,0,0,0.08);
-  --aurora-opacity:         0.07;
+  /* Rules — hairlines & dividers */
+  --color-rule:        #E5E1D8;
+  --color-rule-strong: #CFC9BB;
+  --color-separator:   #BDB6A6;
+
+  /* Accent — forest green (primary actions, active/selected, focus) */
+  --color-accent:         #2F4A3C;
+  --color-accent-hover:   #24382D;
+  --color-accent-weak:    #E9EEE9; /* pale wash for active pills */
+  --color-accent-weak-border: #C6D4C6;
+  --color-accent-contrast:#FAF9F6; /* paper text on accent fill */
+
+  /* Status — muted editorial, tuned for paper (distinct from accent) */
+  --color-success:        #35583F;
+  --color-success-bg:     #E7EEE6;
+  --color-success-border: #C6D6C4;
+  --color-warning:        #7A5C1E;
+  --color-warning-bg:     #F3EAD4;
+  --color-warning-border: #E0CFA3;
+  --color-error:          #8F3A28;
+  --color-error-bg:       #F3E2DC;
+  --color-error-border:   #E2C1B4;
+
+  --color-nav-bg: rgba(250, 249, 246, 0.85);
+  --color-shadow: rgba(30, 25, 18, 0.06);
+
+  /* ── Legacy semantic names → mapped to paper/ink so the ~400 existing
+        var(--color-*) references across pages resolve with zero edits ── */
+  --color-text-primary:     var(--color-ink);
+  --color-text-secondary:   var(--color-ink-secondary);
+  --color-text-tertiary:    var(--color-ink-tertiary);
+  --color-text-placeholder: var(--color-ink-placeholder);
+  --color-text-label:       var(--color-ink);
+  --color-text-output:      var(--color-ink);
+  --color-border:           var(--color-rule);
+  --color-border-subtle:    #EEEBE2;
+  --color-border-strong:    var(--color-rule-strong);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans:  var(--font-geist-sans);
+  --font-mono:  var(--font-geist-mono);
+  --font-serif: var(--font-fraunces);
 }
 
 /* ── Base ──────────────────────────────────────────────────── */
 body {
   background-color: var(--color-page);
-  /* Indigo aurora bleeding in from top */
-  background-image:
-    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(99,102,241,var(--aurora-opacity)) 0%, transparent 65%);
-  color: var(--color-text-primary);
+  color: var(--color-ink);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Grain texture overlay */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
-  opacity: 0.028;
-  pointer-events: none;
-  z-index: 9998;
+/* ── Editorial type scale ──────────────────────────────────── */
+.font-serif {
+  font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  font-optical-sizing: auto;
 }
 
-/* ── Cursor blink ──────────────────────────────────────────── */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+.display-xl {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: clamp(2.75rem, 6vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.display-l {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+.display-m {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+/* Small-caps editorial label / marginalia */
+.label-editorial {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+  color: var(--color-ink-tertiary);
 }
 
-.cursor-blink::after {
-  content: "▋";
+/* ── Streaming caret (thin accent bar) ──────────────────────── */
+@keyframes caret-blink { 50% { opacity: 0; } }
+.caret::after {
+  content: "▍";
   display: inline-block;
-  animation: blink 0.9s step-start infinite;
-  color: #818CF8;
-  margin-left: 1px;
+  margin-left: 2px;
+  color: var(--color-accent);
+  animation: caret-blink 1s steps(1) infinite;
 }
 
-/* ── Shimmer — active generate button ──────────────────────── */
-@keyframes shimmer-slide {
-  from { background-position: 200% center; }
-  to { background-position: -200% center; }
-}
-
-.btn-shimmer {
-  background: linear-gradient(
-    90deg,
-    #4338CA 0%,
-    #6366F1 30%,
-    #818CF8 50%,
-    #6366F1 70%,
-    #4338CA 100%
-  );
-  background-size: 300% auto;
-  animation: shimmer-slide 3.5s linear infinite;
-}
-
-/* ── Fade-up entrance ──────────────────────────────────────── */
+/* ── Fade-up entrance (subtle, non-decorative) ─────────────── */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0);    }
 }
-
-.animate-fade-up  { animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-delay-1  { animation-delay: 0.06s; }
-.animate-delay-2  { animation-delay: 0.13s; }
-.animate-delay-3  { animation-delay: 0.20s; }
-.animate-delay-4  { animation-delay: 0.28s; }
-
-/* ── Gradient text ─────────────────────────────────────────── */
-.text-gradient {
-  background: linear-gradient(130deg, #C7D2FE 0%, #818CF8 40%, #6366F1 75%, #7C3AED 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+.animate-fade-up { animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-delay-1 { animation-delay: 0.06s; }
+.animate-delay-2 { animation-delay: 0.13s; }
+.animate-delay-3 { animation-delay: 0.20s; }
+.animate-delay-4 { animation-delay: 0.28s; }
