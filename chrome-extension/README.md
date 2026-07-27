@@ -134,9 +134,10 @@ No extension API permissions are requested. The extension injects its button via
 ## How it works
 
 `content.js` runs on job board pages and:
-1. Injects a fixed-position floating button (bottom-right, indigo, z-index 999999)
-2. When clicked, extracts the job description using board-specific DOM selectors with a heuristic fallback
-3. Encodes up to 12,000 characters and opens `shortlist-amber.vercel.app/generate?jd=<encoded>` in a new tab
-4. `app/generate/GenerateForm.tsx` reads `?jd=` on mount and pre-fills the JD textarea
+1. Injects a fixed-position floating button (bottom-right, **forest `#2F4A3C`** on paper `#FAF9F6`, top of the stacking context). Injection is independent of extraction and **self-healing** — a persistent `MutationObserver` re-appends the button if a board's re-render wipes it, so it never silently disappears.
+2. When clicked, extracts the job description with **layered extraction**: the board-specific DOM selector is tried first; if it misses or returns implausibly short text (< 200 chars), it falls back to generic strategies (`<main>`/`<article>`, largest keyword-bearing block, cleaned `document.body`). The path actually used is surfaced.
+3. Logs one structured `[Shortlist]` line per run (board, selector tried, hit/miss, char count, path) so cross-board behavior is observable — see `TESTING.md`. The JD text itself is never logged.
+4. Encodes up to 12,000 characters and opens `shortlist-amber.vercel.app/generate?jd=<encoded>` in a new tab. If nothing usable is extracted, the button shows **"Couldn't read this posting — paste manually"** and still opens `/generate` (empty).
+5. `app/generate/GenerateForm.tsx` reads `?jd=` on mount and pre-fills the JD textarea.
 
 `popup.html` + `popup.js` provide a toolbar popup whose "Open Shortlist" button opens the app in a new tab (handler in `popup.js` to comply with the MV3 `script-src 'self'` CSP).
