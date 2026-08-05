@@ -1,0 +1,44 @@
+Data Scientist, Growth and Experimentation
+Marlowe Fitness — Remote (US)
+
+Marlowe is a connected fitness company: we sell a subscription app with strength and conditioning programming, used by about 1.4 million monthly active members. We are hiring a Data Scientist to work on growth, retention, and experimentation.
+
+What the role covers
+
+Experimentation. We run roughly 30 concurrent A/B tests. Our experimentation platform works, but our statistical practice is uneven: some teams peek at results, some run underpowered tests and declare wins, and almost nobody accounts for multiple comparisons. Part of this job is raising that floor without becoming the person who says no to everything.
+
+Retention modeling. Our monthly churn is 4.2% and the single biggest lever on the business is moving it. We want better understanding of who churns and why, and specifically we want to distinguish churn we can influence from churn we cannot.
+
+Onboarding and activation analysis. Members who complete four workouts in their first two weeks retain at roughly three times the rate of those who do not. That correlation is well established internally and treated as causal more confidently than the evidence supports. Sorting that out properly is a project we want done.
+
+Programming effectiveness. We have outcome data — logged workouts, weights, self-reported progress — and we do almost nothing analytical with it. There is a large opportunity here that no one has had time to pursue.
+
+Requirements
+
+Three or more years as a data scientist or quantitative analyst in a consumer product setting.
+
+Strong SQL. Our warehouse is Snowflake and you will live in it.
+
+Python for analysis: pandas, statsmodels or scikit-learn, and enough comfort to build a reproducible analysis rather than a one-off notebook.
+
+Genuine statistical rigor, particularly around experimentation: power analysis, sequential testing, variance reduction, and the discipline to distinguish correlation from causation when a VP is telling you they are the same thing.
+
+Communication skill. Most of your output is a recommendation someone else acts on, and if it is not understandable it does not count.
+
+Nice to have
+
+Causal inference beyond A/B tests: diff-in-diff, synthetic control, instrumental variables.
+
+Experience with subscription businesses and their particular metrics (cohort retention, LTV modeling, and the ways both get abused).
+
+dbt, and an interest in analytics engineering practices.
+
+Fitness or health domain interest. Most of our team uses the product.
+
+Terms
+
+$140,000 - $175,000 plus equity. Fully remote in the US, with quarterly onsites.
+
+Marlowe is 240 people. The data team is 9 — five analysts, three data engineers, and one data scientist, who would like a colleague.
+
+One thing worth saying: we are a consumer subscription business and the incentives to run misleading analyses in favor of shipping something are real. We want someone with the spine to report a null result as a null result.

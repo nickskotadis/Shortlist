@@ -1,0 +1,58 @@
+Application Security Engineer
+Tern Financial — Remote (US) or Charlotte, NC
+
+Tern provides core banking software to about 130 community banks and credit unions. Our platform handles deposits, loans, and the online and mobile banking channels their customers use.
+
+We are hiring an Application Security Engineer.
+
+Context
+
+We are a vendor to regulated financial institutions, which means our security posture is examined not just by our customers but by their regulators. We go through roughly 40 customer security assessments a year plus an annual SOC 2 Type II and a penetration test.
+
+But the reason this role exists is not compliance. It is that we hold banking credentials and account data for several million retail customers, and the consequences of getting this wrong are not abstract.
+
+What you'd do
+
+Secure code review and threat modeling for significant features. We want security involved at design time, which today happens inconsistently.
+
+Own our SAST/DAST/SCA tooling and, more importantly, own the signal-to-noise problem. Our current setup produces a lot of findings that engineers have learned to ignore, which is worse than having no tooling.
+
+Vulnerability management: triage, prioritization, and driving remediation. A large part of this is influence rather than authority.
+
+Support incident response for security events. We have a documented process and have exercised it twice for real.
+
+Run our security champions program across engineering teams. It exists on paper and has not been active in a year.
+
+Work with our penetration testers and remediate what they find.
+
+Build internal tooling and libraries that make the secure path the default path. We would rather remove a class of vulnerability than find instances of it.
+
+Requirements
+
+Four or more years in application security, or in software engineering with a substantial security focus.
+
+Real ability to read and write code. Our stack is Java, Kotlin, and TypeScript, and you should be able to review a pull request meaningfully rather than only running scanners.
+
+Deep knowledge of web and API vulnerability classes and, importantly, of which ones actually matter in a given architecture.
+
+Experience with authentication and authorization systems, session management, and cryptography at an applied level. You do not need to be a cryptographer; you do need to know not to invent your own.
+
+Ability to work with engineers as a partner. The security engineers who fail here are the ones who file tickets and escalate rather than helping fix things.
+
+Preferred
+
+Financial services or other regulated industry experience.
+
+Familiarity with FFIEC guidance, PCI DSS, or SOC 2 from the practitioner side.
+
+Cloud security experience (we are on AWS with some legacy in a colo facility we are slowly exiting).
+
+Offensive security background — CTF, bug bounty, or pentest experience.
+
+Details
+
+$165,000 - $200,000 plus bonus. Remote in the US or hybrid in Charlotte.
+
+Background check and fingerprinting are required for this role because of our customers' regulatory obligations.
+
+Tern is 480 people. Our customers are community banks, many of them under $2 billion in assets, and they choose us over the large core providers because we are more responsive. Living up to that is the whole business.

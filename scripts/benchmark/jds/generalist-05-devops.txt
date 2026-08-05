@@ -1,0 +1,52 @@
+DevOps Engineer
+Sandpiper Marine — Remote (US) or Norfolk, VA
+
+Sandpiper builds fleet management software for commercial marine operators — tugs, barges, offshore supply vessels, and crew transfer boats. About 190 operators use us to manage maintenance, crewing, compliance, and voyage reporting across roughly 4,000 vessels.
+
+We are hiring a DevOps Engineer.
+
+The unusual constraint
+
+Our software runs both in the cloud and onboard vessels. Vessels have intermittent satellite connectivity, expensive bandwidth, and no IT staff. Onboard installations run on a small server in the ship's office and sync opportunistically when connectivity allows.
+
+That means our deployment story has two halves: a normal cloud deployment, and a fleet of a few thousand semi-connected edge installations that we cannot SSH into on demand and cannot afford to push large updates to.
+
+Responsibilities
+
+Own our cloud infrastructure: AWS, Terraform, ECS, RDS, and a moderately sized Kubernetes cluster for a few workloads that ended up there.
+
+Own the onboard update mechanism. This is the interesting half. Updates need to be small, resumable, verifiable, and safely rollbackable by someone who is not technical and who may be at sea.
+
+Improve observability across both halves. We have decent cloud monitoring and almost no visibility into onboard installations until something breaks and someone emails us.
+
+Manage our CI/CD. We use GitHub Actions. Build times are currently 18 minutes and everyone would like that to be shorter.
+
+Support compliance requirements. Our customers are subject to Coast Guard and class society requirements, and some of our data handling is audited.
+
+Requirements
+
+Four or more years in DevOps, SRE, or infrastructure engineering.
+
+Strong AWS and Terraform. Comfortable with Docker and with Kubernetes at a working level.
+
+Scripting competence in Python or Go. You will write real software here, not just glue.
+
+Linux fundamentals, including the ability to debug a system you cannot easily reach.
+
+Experience with constrained or edge deployment, or a strong appetite for it.
+
+Nice to have
+
+Experience with delta updates, OTA update systems, or embedded deployment.
+
+Maritime, industrial, or field-deployed software background.
+
+Experience with intermittently connected systems and conflict resolution in sync.
+
+Practical notes
+
+$140,000 - $170,000. Remote in the US, or our Norfolk office which is a converted warehouse near the port.
+
+Occasional travel to vessels, maybe twice a year. It is optional and most engineers volunteer for it at least once because it is genuinely useful and also because it is interesting.
+
+Sandpiper is 70 people. We have been around for nine years and are bootstrapped. Our customers operate on thin margins in a cyclical industry and our pricing reflects that; we run a lean and pragmatic engineering organization as a result.

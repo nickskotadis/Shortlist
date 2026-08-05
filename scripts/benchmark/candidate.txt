@@ -1,0 +1,13 @@
+Software engineer, 7 years experience. Currently Senior Software Engineer at Meridian Health (healthcare SaaS, ~200 employees), there since 2022.
+
+At Meridian I own the patient-scheduling service. Rewrote the appointment booking flow from a monolithic Rails controller into a separate Node service; cut p95 booking latency from 2.4s to 380ms and dropped timeout errors from about 3% of bookings to under 0.2%. Led the migration off a shared Postgres instance onto per-tenant schemas — took four months, coordinated with two other teams, zero downtime during cutover. Built the internal on-call runbook after a bad incident in early 2023 where we lost 40 minutes to a misconfigured connection pool; incident count roughly halved the following two quarters. Mentor two junior engineers, run the weekly design review.
+
+Before that, Software Engineer at Cartwright Logistics (2019-2022, freight tracking, ~60 people). Built the carrier-integration layer — normalized tracking events from 14 different carrier APIs into one internal event schema. Wrote the retry and backoff logic that handled carriers going down; before it we dropped roughly 8% of tracking updates during carrier outages, after it under 1%. Also built the customer-facing tracking page in React, which was the first frontend work I'd done professionally.
+
+Started as a backend engineer at a small agency 2018-2019, mostly Django and Postgres for client projects. Nothing especially notable, but it's where I learned to read other people's code fast.
+
+Tech: TypeScript, Node, Python, Go (reading fluency, some production work), Postgres, Redis, Kafka, Docker, Kubernetes (user not operator), AWS (ECS, RDS, S3, Lambda), React, Terraform. Comfortable with distributed tracing and profiling — used Datadog heavily, some OpenTelemetry.
+
+Education: BS Computer Science, Indiana University, 2018.
+
+Things I want to be doing more of: system design ownership earlier in the process rather than inheriting decisions, and working closer to a product surface where I can see usage data. I've been the person who makes an existing system reliable; I'd like to be the person who picks the architecture.

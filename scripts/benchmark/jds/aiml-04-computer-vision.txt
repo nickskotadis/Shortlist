@@ -1,0 +1,54 @@
+Computer Vision Engineer
+Wrenfield Robotics — Boulder, CO (Onsite)
+
+Wrenfield builds autonomous inspection robots for industrial facilities — refineries, chemical plants, and power generation sites. Our robots patrol fixed routes, read analog gauges, detect steam and gas leaks via thermal imaging, and flag corrosion and equipment anomalies. We have about 200 units deployed across 34 sites.
+
+We are hiring a Computer Vision Engineer. This role is onsite in Boulder because you will work with physical hardware daily.
+
+The problems
+
+Gauge reading. An analog pressure gauge photographed at an angle, in variable light, sometimes through a scratched lens cover, sometimes with condensation. We need the needle position to within a few percent, and we need to know when we cannot read it rather than guessing.
+
+Thermal anomaly detection. Distinguishing an actual steam leak from a hot pipe from sun-warmed metal, with a thermal camera whose absolute calibration drifts.
+
+Corrosion classification. This one is genuinely hard: labels are scarce, expert disagreement is high, and the difference between surface rust and structural corrosion matters enormously.
+
+Running all of this on the robot. We have a Jetson Orin onboard and limited power budget. Models that need a datacenter GPU are not useful to us.
+
+Responsibilities
+
+Develop and improve perception models across the above tasks.
+
+Own the on-device inference path: quantization, TensorRT optimization, and the tradeoff conversations about accuracy versus latency versus power.
+
+Build data collection and labeling workflows. We control the robots, which means we can go collect the data we need, and figuring out what to collect is part of the job.
+
+Handle domain shift. A model trained on data from a Gulf Coast refinery does not transfer cleanly to a North Dakota power plant in February.
+
+Go to customer sites. Expect roughly 15% travel. Watching your model fail in person is the fastest way to understand why.
+
+Requirements
+
+Three or more years of computer vision work in production, ideally on embedded or edge deployment.
+
+Strong Python and PyTorch. C++ competence for the inference path.
+
+Experience with model optimization for edge: quantization, pruning, TensorRT or ONNX Runtime.
+
+Experience with the full data lifecycle — collection, labeling strategy, active learning — not just training on a dataset someone handed you.
+
+Comfort working with hardware, and with the ambiguity of debugging a problem that could be in your model, the camera, the lens, the lighting, or the robot's positioning.
+
+Nice to have
+
+ROS or ROS2 experience.
+
+Thermal or multispectral imaging background.
+
+Industrial, energy, or safety-critical domain experience.
+
+Compensation
+
+$165,000 - $200,000 plus equity. Onsite in Boulder, five days, in a building with a test facility where the robots run. We are not flexible on this for this role and we would rather say so plainly.
+
+Wrenfield is 110 people, Series B. Roughly 40% of the company is hardware, which produces a healthy and occasionally contentious tension with the software side.

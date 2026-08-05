@@ -1,0 +1,44 @@
+Senior Backend Engineer, Core Services
+Ridgeline Payments — Denver, CO (Hybrid)
+
+Ridgeline processes ACH and card payments for B2B software companies. We move roughly $4 billion a year across about 900 platform customers. Our core services handle payment authorization, ledger writes, and settlement reconciliation, and they are the parts of the system where being wrong is expensive in a way that is difficult to unwind.
+
+We are hiring a Senior Backend Engineer for the Core Services team.
+
+What you'll work on
+
+The ledger. Our double-entry ledger is the source of truth for every dollar we touch. It is Postgres-backed, append-only, and currently doing about 2,000 writes per second at peak with a hard consistency requirement. We are approaching the limits of a single primary and the sharding work is the largest project on this team's roadmap.
+
+Idempotency and retry semantics across our payment API. Our customers retry aggressively and correctly handling a retried authorization is genuinely subtle. We have gotten this wrong before.
+
+Settlement reconciliation. Every day we reconcile our internal ledger against bank files from four partner institutions, each with its own format and its own definition of a business day. Breaks get investigated by humans and we want fewer of them.
+
+Reliability work. Core Services has a 99.99% availability target and we currently run at about 99.97%. Closing that gap is real engineering, not just adding retries.
+
+Requirements
+
+Five or more years of backend engineering on systems with meaningful scale or correctness requirements.
+
+Strong Go or Java. Our services are primarily Go; the older ledger components are Java and are not going away soon.
+
+Deep SQL and relational database knowledge. You should be comfortable reasoning about isolation levels, lock contention, and what your ORM is actually doing. We use Postgres heavily and we do not hide behind an ORM.
+
+Experience with distributed systems failure modes: partial failure, network partitions, exactly-once delivery being a lie. You should have production scar tissue here.
+
+Comfort with on-call for a system where an outage means customers cannot get paid. Rotation is one week in eight with a secondary.
+
+Strongly preferred
+
+Payments, banking, or fintech background. Familiarity with ACH, NACHA rules, or card network operations is a substantial advantage.
+
+Experience with event sourcing or CQRS in production, including the parts that turned out to be a mistake.
+
+Kafka experience. We run it and we have opinions about it.
+
+Compensation and process
+
+$180,000 - $215,000 base, plus equity and a 10% target bonus. Hybrid in Denver, three days in office. We do not currently hire fully remote onto Core Services because of the on-call and incident-response profile.
+
+Our loop: recruiter screen, a systems design conversation, a code review exercise where you review a real PR from our codebase and we discuss it, and a values conversation. No LeetCode.
+
+Ridgeline is 420 people, Series D, and regulated as a money transmitter in 48 states. That regulatory posture affects how we work: change management is real, audit trails are mandatory, and moving fast has a specific and bounded meaning here.

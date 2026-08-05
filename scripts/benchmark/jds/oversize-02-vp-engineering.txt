@@ -1,0 +1,171 @@
+Vice President of Engineering
+Confidential Search conducted by Ridgeway Partners on behalf of the client
+Client: Series D B2B SaaS company, workforce management vertical
+Location: Boston, MA (Hybrid, 3 days) — relocation supported
+Reports To: Chief Technology Officer
+Direct Reports: 5 (four Engineering Directors, one Director of Engineering Operations)
+Total Organization: 142 engineers and adjacent technical staff
+
+CONFIDENTIALITY NOTE
+
+This search is being conducted confidentially. The client's identity will be disclosed to candidates following an initial qualifying conversation and execution of a mutual non-disclosure agreement. Candidates are asked not to discuss this opportunity publicly.
+
+THE COMPANY
+
+Our client is a workforce management software company serving mid-market and enterprise customers in healthcare, hospitality, retail, and light manufacturing. The platform handles scheduling, time and attendance, labor forecasting, compliance, and workforce analytics for organizations with predominantly hourly workforces.
+
+The company was founded eleven years ago, has raised approximately $290 million across four rounds, and closed its most recent fiscal year with annual recurring revenue of approximately $187 million, growing 34% year over year. Gross retention is 91% and net revenue retention is 116%. The company is not yet profitable and has communicated to its board a path to profitability within eight quarters.
+
+The customer base comprises approximately 1,900 organizations covering roughly 4.1 million individual workers. The platform processes time and attendance data continuously, generates schedules for hundreds of thousands of workers weekly, and produces payroll-feeding output that must be correct because errors in it become errors in people's paychecks.
+
+THE OPPORTUNITY
+
+The Vice President of Engineering will lead the entire engineering organization, reporting to a CTO who has been in seat for two years and who is focused on technology strategy, architecture, and external technical representation. The VP of Engineering owns execution: the organization, its delivery, its operational quality, and its ability to scale with the business.
+
+This is a newly structured role. Engineering has previously reported directly to the CTO, and the organization has grown to a size at which that arrangement is no longer serving either the CTO or the engineering leaders beneath him. The five directors who will report to this role currently report to the CTO and have done so for between one and four years.
+
+The successful candidate will inherit an organization with real strengths and real problems, both of which the client has asked us to describe candidly.
+
+WHAT IS WORKING
+
+The engineering organization has strong domain knowledge. Workforce management is a deceptively complex domain — labor law varies by jurisdiction, union agreements impose constraints that must be encoded, and scheduling is a genuinely hard optimization problem — and the senior engineers here understand it deeply.
+
+The core platform is architecturally sound. A significant re-platforming effort completed two years ago moved the system from a monolith to a set of well-bounded services, and by the account of the client's own engineers and of the technical due diligence conducted during the Series D, that effort was executed well.
+
+Attrition is low. Voluntary regretted attrition ran at 7% last year, materially below market. People stay.
+
+The relationship between engineering and product is functional. This is not universally true at companies of this stage and it should not be taken for granted.
+
+WHAT IS NOT WORKING
+
+Delivery predictability is poor. The organization consistently commits to quarterly roadmap and consistently delivers roughly 60 to 70% of it. This has persisted across multiple quarters and multiple attempts to fix it, and the client's assessment is that the root cause is not estimation technique but rather an unmanaged volume of unplanned work: production issues, customer escalations, and compliance-driven changes that arrive without warning.
+
+Operational quality is inconsistent across services. The core scheduling and time-tracking services are reliable. The reporting and analytics surfaces are not, and customer complaints concentrate there. There is no unified reliability practice and SLOs exist for some services and not others.
+
+The organization has grown faster than its management capability. Three of the five directors were promoted from within in the past two years and are managing at a scale none of them has managed before. Two are performing well and developing. One is struggling, and the client's leadership is aware of this and has deferred addressing it.
+
+Technical debt in the customer configuration layer is significant and growing. The platform's flexibility is a commercial asset and its implementation has become a liability: onboarding a new enterprise customer requires engineering involvement that should not be necessary, and this is a direct constraint on the company's ability to scale sales.
+
+Hiring has been slow. The organization has carried 14 to 18 open requisitions for most of the past year and has been filling roughly two per month against attrition of roughly one.
+
+KEY RESPONSIBILITIES
+
+Organizational Leadership
+
+Lead, develop, and where necessary restructure an engineering organization of 142 people. Assess the current leadership team, develop those who can grow into the next stage of the company, and address performance issues that have been deferred.
+
+Build the management and technical leadership bench required for the organization to reach 250 people over the next two to three years without a corresponding degradation in quality or culture.
+
+Own engineering hiring, in partnership with talent acquisition, including improvement of a process that is currently too slow and too dependent on a small number of interviewers.
+
+Establish and maintain the organization's culture, performance standards, and career development framework. A competency framework exists on paper and is applied inconsistently.
+
+Delivery and Execution
+
+Own engineering delivery against company commitments. Establish a planning and execution model that produces predictable outcomes, which will require both process change and difficult conversations about capacity and scope with commercial leadership.
+
+Establish a coherent approach to managing unplanned work, including explicit capacity reservation and a triage discipline that does not simply absorb every escalation into the current sprint.
+
+Partner with the Chief Product Officer on roadmap development, ensuring that engineering constraints and technical investment needs are represented in planning rather than negotiated afterward.
+
+Own the engineering operating budget, including headcount, vendor spend, and cloud infrastructure cost, which currently runs at approximately 19% of revenue and which the board has asked to see reduced.
+
+Technical and Operational Quality
+
+Establish a reliability practice across the organization, including service level objectives, error budgets, incident management, and a postmortem process that produces change.
+
+Drive resolution of the customer configuration technical debt, which is likely the single highest-value technical investment available and which will require sustained commitment across multiple quarters against competing feature pressure.
+
+Ensure that security and compliance obligations are met. The company holds SOC 2 Type II, is pursuing ISO 27001, and has customers in healthcare requiring HIPAA compliance and customers in the European Union requiring GDPR compliance.
+
+Maintain sufficient technical engagement to make good judgments and to retain credibility with senior engineers, without becoming a bottleneck or displacing the CTO's architectural authority.
+
+TECHNICAL ENVIRONMENT
+
+The client has authorized us to share the following technical detail with candidates.
+
+The platform is a set of approximately 40 services, predominantly Java with Spring Boot, with a smaller number of newer services in Kotlin. The scheduling optimization engine is written in C++ and wrapped in a service interface, and it is the most specialized component in the estate; three engineers understand it well and this concentration is a recognized risk.
+
+The frontend is React with TypeScript, with a customer-facing web application, a manager application, and a mobile application built in React Native. The mobile application is used heavily by hourly workers to view schedules, request shift swaps, and clock in and out, and its reliability characteristics matter more than its feature set.
+
+Data infrastructure comprises PostgreSQL as the primary transactional store, with a small number of services on MySQL inherited from an acquisition, Redis for caching, Apache Kafka for event distribution, and Snowflake for analytics. Time and attendance data volume is substantial and growing, and the analytics surfaces built on Snowflake are the source of most performance complaints.
+
+Infrastructure runs on Amazon Web Services, primarily on Amazon EKS, managed through Terraform. Deployment is through GitHub Actions and Argo CD. Deployment frequency averages 30 per week across the estate, which is lower than the organization would like and is constrained principally by a manual regression testing step that has not been fully automated.
+
+Observability uses Datadog. Coverage is good for infrastructure metrics and uneven for application-level instrumentation, particularly in the older services.
+
+The organization maintains an on-call rotation per service group. Page volume is moderate overall and concentrated in the analytics services, which is consistent with where the reliability problems are.
+
+FIRST YEAR EXPECTATIONS
+
+The client has articulated what they expect this role to accomplish, and candidates should assess whether these expectations are realistic given what they will learn during the process.
+
+Within the first ninety days, the client expects a completed assessment of the organization and its leadership, a clear point of view on the delivery predictability problem and its root causes, and a plan for addressing the deferred management performance situation.
+
+Within six months, the client expects a functioning planning and execution model with early evidence of improved predictability, a reliability practice established with SLOs defined for tier-one services, and hiring velocity improved to at least four hires per month.
+
+Within twelve months, the client expects delivery predictability materially improved and sustained, the configuration technical debt program underway with visible progress, engineering cost as a percentage of revenue reduced, and a leadership team the VP is confident in.
+
+The client acknowledges that this is a demanding set of expectations and has indicated willingness to discuss sequencing and tradeoffs with finalist candidates rather than treating the list as fixed.
+
+CANDIDATE PROFILE
+
+Required Experience
+
+A minimum of fifteen years in software engineering and engineering leadership, including a minimum of five years leading organizations of one hundred or more engineers.
+
+Demonstrated experience scaling an engineering organization through a growth phase comparable to the client's, ideally from roughly 100 to roughly 250, with evidence that quality and culture were maintained.
+
+Experience in B2B SaaS, with strong preference for experience in a vertical software business serving enterprise customers with meaningful configuration and implementation requirements.
+
+Demonstrated track record of improving delivery predictability in an organization where it was poor, with specific and verifiable examples.
+
+Experience managing engineering directors and developing managers of managers.
+
+Experience with mission-critical systems where correctness carries external consequences.
+
+Financial literacy sufficient to own a substantial operating budget and to participate credibly in board-level discussions of engineering investment.
+
+Preferred Experience
+
+Prior experience in workforce management, human capital management, payroll, or an adjacent domain.
+
+Experience at a company that reached profitability from a comparable position, particularly experience managing engineering cost structure during that transition.
+
+Experience with an organization carrying significant technical debt in a commercially important area, and demonstrated success in securing sustained investment to address it.
+
+Prior experience reporting to a CTO in a structure separating technology strategy from engineering execution. This structure is common and it fails frequently; candidates with direct experience making it work are of particular interest.
+
+Personal Characteristics
+
+The client has been specific about the characteristics they believe this role requires.
+
+Directness. Several of the organization's problems have been visible for some time and have not been addressed. The client is seeking a leader who will name problems clearly, including to the CTO and to the executive team.
+
+Operational rigor combined with genuine care for people. The organization's low attrition reflects a culture people value, and the client is explicit that improving execution must not come at the cost of dismantling it.
+
+Comfort with a CTO relationship that requires negotiation. The CTO is technically strong, has clear opinions, and has been accustomed to direct engagement with the engineering organization. Establishing a productive division of responsibility will require deliberate effort from both parties.
+
+Credibility with senior engineers. This organization has a number of long-tenured technical staff who will assess a new leader quickly.
+
+COMPENSATION
+
+The client anticipates a base salary in the range of $310,000 to $370,000, with an annual bonus target of 30% of base and an equity grant expected to be meaningful at this stage and level. The specific equity package will be discussed with finalist candidates and will reflect both the level of the role and the candidate's experience.
+
+The client provides comprehensive benefits including medical, dental, and vision coverage, a 401(k) with match, unlimited paid time off with an enforced minimum, 16 weeks of parental leave, and an annual professional development allowance.
+
+Relocation support is available for candidates who need to relocate to the Boston area.
+
+LOCATION AND WORK ARRANGEMENT
+
+The role is based in Boston with an expectation of three days per week in office. The engineering organization is distributed, with approximately 55% in the Boston area, 25% elsewhere in the United States, and 20% in a development center in Kraków, Poland. Travel to Kraków is expected quarterly.
+
+The client has considered and declined a fully remote arrangement for this position.
+
+PROCESS
+
+Interested candidates should contact Ridgeway Partners directly. The search process will comprise an initial conversation with the search consultants, a meeting with the CTO, meetings with the Chief Executive Officer and Chief Product Officer, a session with the five prospective direct reports, a meeting with two board members, and a final conversation with the CEO.
+
+The client has indicated a target of concluding the search within ten to twelve weeks. Referrals of candidates other than yourself are welcome and appreciated.
+
+Ridgeway Partners and our client are committed to equal opportunity. We encourage applications from candidates of all backgrounds and we are committed to a search process that surfaces a diverse slate of qualified candidates. Our client does not discriminate on the basis of any characteristic protected by applicable law, and provides reasonable accommodation throughout the interview process upon request.

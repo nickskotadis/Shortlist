@@ -1,0 +1,50 @@
+Backend Engineer, Data Pipelines
+Orchard Retail Intelligence — Seattle, WA or Remote (US)
+
+Orchard aggregates point-of-sale and inventory data from retail chains and turns it into forecasting and replenishment recommendations. We ingest from about 3,400 store locations across 60 retail brands, and the data arrives in every format you can imagine and several you cannot.
+
+We are hiring a Backend Engineer for the Data Pipelines team.
+
+What the job is really about
+
+Roughly 40% of this job is making unreliable inputs reliable. A regional grocery chain sends us a fixed-width file over SFTP at 3am, except when their system is down, except when they change the column widths without telling anyone, except when a single store's register clock is set to the wrong year. Our pipeline has to detect all of that, degrade sensibly, and tell a human when it cannot.
+
+The other 60% is the pipeline itself: correctness, throughput, and making the whole thing observable enough that when a brand's forecast looks wrong on a Monday morning we can trace it back to the ingestion batch that caused it.
+
+You'll be responsible for
+
+Building and maintaining ingestion connectors. We have about 90 and they range from a modern REST API to a nightly CSV dump from a system written in 1998.
+
+Data quality validation. We want anomaly detection that catches a store reporting 10x its normal volume before it reaches the forecasting model, not after.
+
+Pipeline orchestration. We run Dagster on Kubernetes. Roughly 4,000 asset materializations a day.
+
+Backfills. When we find a data bug from three weeks ago, someone has to reprocess three weeks of downstream data without disrupting the daily run. That someone will sometimes be you.
+
+Working with the ML team on feature freshness and training-serving consistency.
+
+Requirements
+
+Four or more years of backend or data engineering.
+
+Strong Python. Working SQL, including window functions and query plans.
+
+Experience with a workflow orchestrator in production — Dagster, Airflow, Prefect, Temporal, or similar. We care that you have felt the operational pain, not which tool caused it.
+
+Experience with data quality and validation in a context where bad data has downstream consequences.
+
+Pragmatism about messy inputs. If your instinct is to reject malformed data outright, this job will frustrate you; our customers will not change their systems for us.
+
+Nice to have
+
+Retail, supply chain, or CPG domain experience.
+
+dbt, or experience with analytics engineering practices.
+
+Spark or another distributed processing framework. We use it for a few of the heaviest jobs and would like to use it better.
+
+Compensation
+
+$145,000 - $180,000 plus equity. Seattle hybrid or fully remote in the US; the team is currently about half and half.
+
+Orchard is 130 people, Series B. Our customers are retail chains, and retail is seasonal, which means our on-call intensity is genuinely different in November than it is in March. We staff for that and we are honest about it in interviews.

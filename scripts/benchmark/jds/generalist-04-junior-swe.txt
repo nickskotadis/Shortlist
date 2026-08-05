@@ -1,0 +1,48 @@
+Software Engineer I
+Wexler Municipal Software — Sacramento, CA (Hybrid)
+
+Wexler builds permitting, licensing, and code enforcement software for city and county governments. About 340 jurisdictions use us. If you have ever applied for a building permit online in a mid-size American city, there is a reasonable chance you used something we built.
+
+We are hiring a Software Engineer I. This is an early-career role and we mean it — we are looking for people with zero to three years of professional experience, and we have a structured onboarding program because we hire at this level deliberately every year.
+
+What you'd do
+
+Work on features in our permitting product alongside a mentor for your first six months. You will have real work from week two, but you will not be alone with it.
+
+Fix bugs. This is how most new engineers learn our codebase and we do not treat it as junior-engineer busywork — bug fixing here requires understanding why the system behaves as it does.
+
+Write tests. We take testing seriously and code review will ask about it.
+
+Participate in customer support escalations. Municipal staff are our users and their feedback is direct and specific.
+
+Our stack is Java and Spring on the backend, React and TypeScript on the frontend, and Postgres. We run on AWS GovCloud.
+
+What we're looking for
+
+Zero to three years of professional experience. Bootcamp graduates, CS graduates, and career changers are all welcome; we hire from all three every year.
+
+Demonstrated ability to write code. That can be a portfolio, open source contributions, class projects you can talk about in detail, or prior professional work. We care that you can walk us through something you built and explain your decisions.
+
+Curiosity about how things work. The best predictor of success here has been people who ask why.
+
+Willingness to work in a large existing codebase. Our system is 14 years old. Nobody's first year here involves greenfield work.
+
+Interest in civic technology. Our customers are local governments with constrained budgets serving residents who have no alternative provider. We think that matters and we hire people who agree.
+
+We are not looking for
+
+Any specific technology experience. We will teach you Java.
+
+A CS degree specifically. About 40% of our engineering team does not have one.
+
+Leetcode performance. Our interview has no algorithm puzzle. We do a code reading exercise and a conversation about a project you have built.
+
+The offer
+
+$85,000 - $105,000. Hybrid in Sacramento, three days a week.
+
+Benefits include full health coverage, a pension-style retirement contribution (unusual in tech, a legacy of our public-sector orientation), and 18 days PTO to start.
+
+We have a formal mentorship program, a monthly internal tech talk, and a $1,500 annual education budget. Our last four Software Engineer I hires are all still here; three have been promoted.
+
+Wexler is 155 people and has been in business since 2011. We are majority employee-owned.

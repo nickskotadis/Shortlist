@@ -1,0 +1,44 @@
+Backend Engineer, API Platform
+Sable Health — Remote (US)
+
+Sable builds clinical data infrastructure for health systems. We ingest data from EHRs, normalize it, and expose it through APIs that hospital analytics teams and third-party applications build on. About 60 health systems use us, covering roughly 40 million patient records.
+
+We are hiring a Backend Engineer for the API Platform team, which owns the public-facing API layer: authentication, authorization, rate limiting, versioning, and the developer experience around all of it.
+
+The problems
+
+Authorization is the hard one. Healthcare access control is not role-based in any simple sense — it depends on the patient's care relationships, the requesting clinician's role, the purpose of use, and consent flags that vary by state. Our current implementation is an accumulation of special cases and we want to replace it with something coherent.
+
+API versioning. We have three live API versions and no deprecation story. Customers integrate once and then do not touch it for years, which is understandable and also unsustainable for us.
+
+Performance under unpredictable query shapes. Analytics teams write queries we did not anticipate. Some of them are pathological. We need better guardrails that do not simply block legitimate use.
+
+FHIR conformance. We expose a FHIR R4 interface alongside our native API, and conformance is a moving target we are perpetually behind on.
+
+What we need
+
+Four or more years of backend engineering with substantial API design experience.
+
+Strong Python. Our stack is Python (FastAPI), Postgres, and Redis, running on AWS. Some older services are Django.
+
+Real experience designing authorization systems more complex than simple RBAC. If you have worked with ReBAC, ABAC, or something like Zanzibar, we want to talk to you.
+
+Experience operating a public API with external consumers you cannot control or coordinate with easily.
+
+Care about correctness. In healthcare, returning the wrong patient's data is not a bug you recover from with an apology.
+
+Helpful
+
+Healthcare background: HL7, FHIR, HIPAA, or having worked inside a health system. We can teach the domain but it takes about six months.
+
+Experience with an API gateway at scale (Kong, Envoy, or a hand-rolled equivalent).
+
+Experience with SOC 2 or HITRUST audit processes from the engineering side.
+
+Practicalities
+
+$155,000 - $190,000, fully remote within the US. We require US-based employment for compliance reasons and cannot sponsor visas at this time.
+
+We are HIPAA-covered, which means background checks, annual training, and some constraints on how we handle development data. All of our development environments use synthetic data and we take that seriously.
+
+Sable is 180 people. The engineering team is 55, split across ingestion, platform, and analytics. We are Series C and our customers are large health systems, which means slow sales and durable revenue.

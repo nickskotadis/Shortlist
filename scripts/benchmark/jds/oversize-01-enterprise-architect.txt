@@ -1,0 +1,161 @@
+Enterprise Solutions Architect — Digital Transformation Program
+Requisition: EA-2026-11902
+Global Business Services | Enterprise Architecture Practice
+Primary Location: Columbus, OH | Alternate Locations: Newark, NJ; Irving, TX; Bellevue, WA
+Employment Type: Full-Time Regular, Exempt
+Reports To: Distinguished Architect, Enterprise Architecture
+Travel: 25-30%
+
+ABOUT WESTMARCH INDUSTRIES
+
+Westmarch Industries is a diversified manufacturer and industrial services provider with annual revenue of approximately $27 billion and roughly 96,000 employees across 41 countries. Our business is organized into four operating segments: Industrial Automation, Energy Systems, Materials and Coatings, and Aftermarket Services. Each segment operates with substantial autonomy, maintains its own profit and loss accountability, and has historically made its own technology decisions.
+
+Global Business Services is the shared services organization providing finance, human resources, procurement, and information technology capability across the enterprise. The Enterprise Architecture Practice within GBS is a group of 34 architects responsible for technology strategy, standards, and architectural governance across an application portfolio of approximately 2,900 distinct applications.
+
+That portfolio number is not a typo, and it is the central fact of this posting. Westmarch has grown substantially through acquisition, having completed 31 acquisitions in the past twelve years, and integration of acquired technology estates has historically been deferred in favor of preserving operating momentum in the acquired business. The accumulated result is an environment with extraordinary duplication: eleven distinct enterprise resource planning instances, seven customer relationship management platforms, and a count of distinct data integration tools that we stopped maintaining because it was demoralizing.
+
+THE TRANSFORMATION PROGRAM
+
+Three years ago the Board approved a multi-year enterprise transformation program with a mandate to consolidate this estate, standardize core business processes, and reduce technology operating cost as a percentage of revenue from its then-current 3.9% toward a target of 2.6%.
+
+The program is now in its fourth year. Progress has been mixed. The finance workstream has substantially delivered, consolidating from eleven ERP instances to four with a path to two. The customer-facing workstreams have delivered less, in part because segment leadership has resisted standardization where it perceives commercial differentiation, and in part because the underlying processes genuinely do differ in ways the original program design underestimated.
+
+We are hiring Enterprise Solutions Architects to strengthen the architectural capability supporting this program. This posting is for a position aligned to the Industrial Automation segment and to the manufacturing operations and supply chain domains within it.
+
+POSITION SUMMARY
+
+The Enterprise Solutions Architect serves as the senior architectural authority for a defined business domain, responsible for the target-state architecture within that domain, for the transition architecture that gets us there, and for the architectural governance of initiatives that touch it.
+
+This is a role that operates at the intersection of technology and business. A substantial portion of the work involves understanding a manufacturing or supply chain process well enough to make defensible architectural recommendations, and then communicating those recommendations to audiences ranging from plant IT staff to segment presidents.
+
+The role does not carry direct reports. It does carry significant influence over technology investment decisions within the assigned domain, exercised through the architecture review process and through participation in segment technology planning.
+
+PRINCIPAL ACCOUNTABILITIES
+
+Architecture Definition and Governance
+
+Define and maintain the target-state application, data, and integration architecture for the manufacturing operations and supply chain domains within the Industrial Automation segment, ensuring alignment with enterprise architectural standards and with the transformation program's objectives.
+
+Develop transition architectures describing the intermediate states between current and target. In an environment of this complexity, the path matters more than the destination; a target architecture without a credible transition path is an academic exercise and Westmarch has produced several.
+
+Conduct architecture review for initiatives within the domain, including new investments, significant changes to existing systems, and integration of newly acquired businesses. Provide clear architectural decisions with documented rationale, including decisions that decline a proposed approach.
+
+Maintain architectural documentation in the enterprise repository, including application portfolio records, integration inventories, technology standards compliance status, and technical debt registers.
+
+Contribute to enterprise technology standards, including participation in the Technology Standards Council and periodic review of standards for continued relevance.
+
+Business Partnership
+
+Develop and maintain working relationships with business leadership within the assigned domain, including manufacturing operations leadership, supply chain leadership, and plant-level operational leadership at key sites.
+
+Translate business strategy and process requirements into architectural implications, and translate architectural constraints into business terms. This bidirectional translation is the core competency of the role.
+
+Participate in business planning cycles, providing architectural input to investment prioritization and identifying technology dependencies and risks that business planning frequently omits.
+
+Support merger and acquisition activity, including technical due diligence on acquisition targets and development of integration architecture for completed acquisitions. Westmarch's acquisition pace has not slowed and this component of the role is significant.
+
+Program Delivery Support
+
+Provide architectural oversight to program workstreams within the domain, including review of vendor-proposed architectures, validation of solution designs against target state, and escalation of architectural risk to program leadership.
+
+Support vendor selection processes, including requirements definition, technical evaluation, and architectural assessment of proposed solutions. Westmarch runs formal competitive procurement for significant technology purchases and architectural input is a weighted evaluation criterion.
+
+Resolve architectural conflicts between initiatives competing for the same functional territory. In an organization of this size such conflicts are routine and resolving them requires both technical judgment and political skill.
+
+CURRENT STATE ENVIRONMENT WITHIN THE DOMAIN
+
+The manufacturing operations domain within Industrial Automation encompasses approximately 190 applications supporting 31 manufacturing sites.
+
+Manufacturing execution capability is provided by four distinct MES platforms, reflecting the acquisition history: a commercial platform deployed at eleven sites, a second commercial platform at six sites, a heavily customized deployment of a third platform at four sites, and internally developed systems of varying sophistication at the remaining ten. Two sites have essentially no MES capability and run on spreadsheets and paper travelers, which is a source of some embarrassment.
+
+Enterprise resource planning within the segment is consolidated onto two instances, one supporting the legacy Westmarch sites and one supporting the largest acquired business. Consolidation onto a single instance is in the program plan for the year after next.
+
+Shop floor connectivity and industrial control integration is highly variable. Newer sites have modern OPC UA connectivity into a plant historian; older sites have serial connections through protocol converters into systems that are difficult to describe as architecture. Operational technology and information technology convergence is an explicit program objective and an area of substantial risk, both technical and cybersecurity.
+
+Supply chain planning runs on a commercial advanced planning system at the segment level with substantial local supplementation. Several sites maintain parallel planning processes in spreadsheets because they do not trust the central system, which is a symptom worth understanding rather than a behavior to be prohibited.
+
+Data and analytics capability is fragmented. A segment data warehouse exists and is incomplete. Three sites have built local analytics environments. The enterprise data platform initiative intends to consolidate this and is behind schedule.
+
+Integration is handled by at least five distinct middleware technologies across the domain, including two that are past vendor end-of-support and remain in production because replacing them requires coordinated change across systems owned by different organizations.
+
+MINIMUM QUALIFICATIONS
+
+Bachelor's degree in Computer Science, Information Systems, Engineering, or a related discipline. An advanced degree is preferred. Equivalent experience will be considered in lieu of a degree for candidates with substantial demonstrated architectural experience.
+
+A minimum of twelve years of professional experience in information technology, including a minimum of five years in an enterprise architecture, solutions architecture, or equivalent senior technical advisory role.
+
+Demonstrated experience developing target-state and transition architectures for a business domain within a large, complex, heterogeneous enterprise environment.
+
+Demonstrated experience with manufacturing, supply chain, or industrial operations technology, including familiarity with ERP, MES, and the general shape of shop floor systems.
+
+Substantial experience with enterprise integration patterns and technologies, including both modern API-based approaches and the file-based and message-based integration that dominates industrial environments.
+
+Demonstrated ability to influence technology decisions in an environment where architectural authority is advisory rather than directive.
+
+Excellent written and verbal communication, including demonstrated ability to produce architectural documentation that is read and used rather than filed.
+
+Willingness and ability to travel domestically and internationally, approximately 25 to 30 percent, including travel to manufacturing sites.
+
+PREFERRED QUALIFICATIONS
+
+Advanced degree in a technical or business discipline. An MBA in combination with a technical undergraduate background is a common profile among successful architects in this practice.
+
+Experience in a discrete or process manufacturing environment, ideally with direct exposure to plant operations rather than solely to corporate systems.
+
+Experience with operational technology and information technology convergence, including the security implications and the organizational friction it generates.
+
+Experience supporting merger and acquisition integration from an architectural perspective.
+
+Familiarity with relevant reference architectures and standards, including ISA-95, and with industrial protocols including OPC UA.
+
+Certification in a recognized architecture framework, such as TOGAF, or in relevant cloud platforms. Westmarch supports certification pursuit and reimburses associated costs.
+
+Experience with cloud migration of manufacturing systems, including realistic understanding of which workloads cannot move and why.
+
+Prior experience in an organization with a substantial acquisition history and the architectural pathologies it produces.
+
+Language capability in Spanish, Portuguese, German, or Mandarin, reflecting the geographic distribution of the segment's operations.
+
+COMPETENCY EXPECTATIONS
+
+Westmarch evaluates architects against a defined competency model. The expectations at this level include the following.
+
+Technical breadth sufficient to reason credibly across application, data, integration, and infrastructure domains, combined with genuine depth in at least two. Architects who are broad but shallow lose credibility with engineering teams quickly.
+
+Business acumen sufficient to understand the commercial logic of the segment and to frame architectural recommendations in terms of business outcomes rather than technical elegance.
+
+Comfort with ambiguity and with incomplete information. The current-state documentation for this domain is incomplete and partially inaccurate, and improving it is a continuous background activity rather than a prerequisite to doing the work.
+
+Political judgment. Segment leadership does not report to Global Business Services and cannot be compelled to adopt an architectural recommendation. Architects who rely on organizational authority they do not possess are ineffective here.
+
+Persistence. Change at this scale takes years. Architects who require the satisfaction of shipping something every quarter tend to leave.
+
+WORK ARRANGEMENT
+
+This position operates under Westmarch's hybrid work policy, requiring three days per week at the assigned primary location. Site travel is in addition to this expectation.
+
+Manufacturing site visits require compliance with site safety requirements, including personal protective equipment, safety orientation, and in some environments hearing and respiratory protection. Candidates should be able to walk manufacturing floors for extended periods and to navigate industrial environments safely.
+
+International travel requires a valid passport and the ability to obtain necessary visas.
+
+COMPENSATION AND BENEFITS
+
+The base salary range for this position is $178,000 to $224,000 annually, with placement dependent on experience, qualifications, geographic location, and internal equity. This position participates in Westmarch's Annual Incentive Plan with a target award of 18% of base salary, and is eligible for long-term incentive awards under the Executive Compensation Program.
+
+Westmarch provides a comprehensive benefits program including medical, prescription drug, dental, and vision coverage with multiple plan designs; health savings and flexible spending accounts; company-paid life and disability insurance with buy-up options; a 401(k) plan with a company match of 100% on the first 6% of eligible compensation plus an annual retirement contribution of 3% regardless of employee deferral; an employee stock purchase plan; paid time off beginning at 23 days annually; 11 paid holidays; paid parental leave; adoption assistance; tuition reimbursement; and an employee assistance program.
+
+EQUAL EMPLOYMENT OPPORTUNITY AND LEGAL NOTICES
+
+Westmarch Industries is an Equal Opportunity Employer and a federal contractor subject to affirmative action obligations. All qualified applicants will receive consideration for employment without regard to race, color, religion, creed, sex, sexual orientation, gender identity or expression, pregnancy, national origin, ancestry, age, physical or mental disability, medical condition, genetic information, marital status, military or veteran status, or any other characteristic protected by applicable federal, state, provincial, or local law.
+
+Westmarch is committed to working with and providing reasonable accommodation to individuals with disabilities and to individuals with sincerely held religious beliefs or practices. Applicants requiring accommodation in connection with the application or interview process should contact the Westmarch Accommodation Request Line.
+
+Employment with Westmarch Industries is contingent upon satisfactory completion of pre-employment screening, which may include criminal background investigation, verification of employment and educational history, motor vehicle record review where applicable, and substance abuse testing in accordance with applicable law and company policy.
+
+Certain positions within Westmarch involve access to information subject to United States export control laws and regulations, including the International Traffic in Arms Regulations and the Export Administration Regulations. Employment in such positions may be contingent upon the ability to obtain necessary authorizations.
+
+Westmarch Industries participates in the E-Verify program in the United States. Immigration sponsorship may be available for this position for exceptionally qualified candidates, subject to business need and applicable law.
+
+This job description is intended to describe the general nature and level of work being performed by individuals assigned to this position. It is not intended to be an exhaustive list of all responsibilities, duties, and skills required, and Westmarch reserves the right to modify the responsibilities of this position at any time.
+
+Applicants have rights under federal employment laws. Information regarding these rights is available through the Equal Employment Opportunity Commission and the Office of Federal Contract Compliance Programs.

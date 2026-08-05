@@ -1,0 +1,54 @@
+Research Engineer, Speech
+Alder Audio — Remote (US) or Cambridge, MA
+
+Alder builds speech recognition and diarization for clinical documentation. Our system runs in exam rooms, transcribes conversations between clinicians and patients, and produces structured notes. Roughly 8,000 clinicians use it across 60 health systems.
+
+We are hiring a Research Engineer for the speech team.
+
+The environment we operate in
+
+Exam rooms are acoustically terrible. There is HVAC noise, equipment beeping, doors, hallway conversation, and frequently a third person in the room. Speakers overlap. Patients mumble, use a first language other than English, or are hard of hearing and speak at unusual volume. Clinicians talk fast and use vocabulary no general-purpose ASR system has seen enough of.
+
+Standard benchmarks do not capture any of this. A model that is state of the art on LibriSpeech can be unusable in our setting, and we have learned that the expensive way.
+
+Your work
+
+Improve word error rate on our in-domain evaluation sets, with particular attention to medical terminology, drug names, and dosages, where errors are clinically significant rather than merely annoying.
+
+Speaker diarization in multi-speaker, overlapping conditions. Attributing a statement to the patient rather than the clinician matters for the note.
+
+Robustness across accents and speech patterns. Our WER varies substantially across demographic groups and closing that gap is both a quality priority and an equity one.
+
+On-device and streaming considerations. Some deployments cannot send audio off-premises for regulatory reasons, which constrains model size.
+
+Evaluation methodology. Building test sets that reflect real conditions, and dealing with the fact that transcription ground truth in medical settings is expensive and itself error-prone.
+
+Requirements
+
+Four or more years working on speech, or a PhD in speech, ML, or a related field plus production experience.
+
+Strong PyTorch. Familiarity with modern ASR architectures — transducers, encoder-decoder attention models, and the current Whisper-descended family.
+
+Experience with acoustic modeling, language model fusion, or domain adaptation.
+
+Experience with real-world audio, not just curated corpora.
+
+Comfort with the constraint that you will often be unable to look directly at production data because it is protected health information. We work with de-identified and consented data and this genuinely limits some debugging approaches.
+
+Preferred
+
+Diarization or source separation background.
+
+Clinical or medical domain experience.
+
+Publications in speech venues, though we weight production impact more heavily.
+
+Experience with low-resource languages or accent robustness work.
+
+Details
+
+$190,000 - $240,000 plus equity. Remote in the US or hybrid in Cambridge.
+
+Alder is 170 people. The speech team is 12 — a mix of research and engineering with no hard boundary between them, which we like and which requires everyone to be able to ship as well as investigate.
+
+We publish when we can. Roughly two papers a year, and we support conference attendance.

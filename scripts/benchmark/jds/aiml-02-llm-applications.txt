@@ -1,0 +1,54 @@
+Senior Engineer, LLM Applications
+Quire — San Francisco, CA (Hybrid) or Remote (US)
+
+Quire builds an AI assistant for technical support teams. It reads a company's documentation, past tickets, and internal runbooks, and drafts responses that support agents review and send. About 240 companies use us, and our assistant drafts roughly 400,000 responses a month.
+
+We are hiring a Senior Engineer to work on the core LLM application layer.
+
+What we actually do
+
+Most of the difficulty in this product is not model quality. It is retrieval, grounding, and knowing when to abstain.
+
+A support agent trusts our draft or they do not, and one confidently wrong answer costs more trust than ten good drafts earn. So a lot of our engineering effort goes into: retrieving the right context from a customer's messy and often contradictory knowledge base, making the model's citations verifiable, and detecting when we do not have enough grounding to answer at all.
+
+You'd work on
+
+Retrieval quality. We use a hybrid of BM25 and embeddings with a reranking stage. Our biggest open problem is handling documentation that is stale or internally contradictory, which describes most real knowledge bases.
+
+Evaluation. We maintain a golden set per customer and run offline evals on every prompt change. This system is the most important thing we have built and it needs to be better: it is slow, it under-samples edge cases, and LLM-as-judge scoring correlates with human judgment less well than we would like.
+
+Abstention and confidence. Teaching the system to say "I do not have enough information" is worth more to our customers than marginal quality improvements on answerable questions.
+
+Cost and latency. We route between models by task and we have real opinions about which tasks need a frontier model. Getting this routing right is a substantial part of our gross margin.
+
+Prompt and context management, including handling customers whose knowledge bases exceed any context window.
+
+Requirements
+
+Five or more years of software engineering, with at least one working substantially with LLMs in production.
+
+Strong Python and TypeScript. Our services are Python; the agent-facing product is TypeScript.
+
+Real experience with retrieval systems, embeddings, and the practical failure modes of RAG. We are looking for someone who has been past the demo stage and hit the parts that do not work.
+
+Rigor about evaluation. If your instinct on a quality problem is to eyeball twenty examples, we will get along; if your instinct is to ship based on vibes, we will not.
+
+Healthy skepticism about LLM capabilities. The engineers who do best here are the ones who assume the model will fail and design accordingly.
+
+Not required
+
+ML research background. We do not train models. This is an applied engineering role and the hard parts are systems problems.
+
+Preferred
+
+Experience with LLM-as-judge evaluation and its limitations.
+
+Experience with a multi-tenant product where each tenant's data shapes model behavior.
+
+Support, customer service, or developer tools background.
+
+Compensation
+
+$180,000 - $220,000 plus meaningful equity. Hybrid in SF (two days) or fully remote in the US.
+
+Quire is 60 people, Series A, growing quickly. We are candid in interviews about what is unfinished, and there is a lot.

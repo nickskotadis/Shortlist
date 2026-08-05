@@ -1,0 +1,46 @@
+Backend Engineer (Node.js)
+Thistle Booking — Remote (UK/EU)
+
+Thistle is booking software for independent hotels and small hospitality groups. About 1,100 properties use us to manage reservations, rates, and channel distribution. We are a small team building software for an industry that mostly still runs on spreadsheets and phone calls.
+
+We are hiring a Backend Engineer to work on our reservations and availability services.
+
+The work
+
+Availability is deceptively hard. A hotel with 40 rooms across six room types, with overlapping rate plans, minimum-stay restrictions, and inventory syndicated to eight OTA channels, produces a combinatorial problem that has to be answered in under 200ms because a guest is waiting on a search page.
+
+You will work on:
+
+The availability engine. It is TypeScript, backed by Postgres with a Redis cache layer, and it is the service that most directly determines whether our customers make money.
+
+Channel integrations. We push inventory to and pull bookings from Booking.com, Expedia, Airbnb, and five smaller channels. Each has a different API, different rate limits, and a different opinion about what a cancellation means. Integration failures cause overbookings, which cause very angry phone calls.
+
+Rate management. Hotels want to change prices by day, by room type, by length of stay, by channel, and by how full they are. Expressing that without building a small programming language is an ongoing design conversation.
+
+Reducing our overbooking rate, which is currently about 0.4% of bookings and which we would like to be much closer to zero.
+
+What we're after
+
+Three or more years of backend engineering with solid Node.js and TypeScript.
+
+Good relational database instincts. Most of our hard problems are modeling problems and most of our worst bugs have been concurrency bugs.
+
+Experience integrating with third-party APIs that you do not control and that are not always well-behaved.
+
+An appetite for domain complexity. Hospitality has a lot of it and the people who do well here are the ones who find that interesting rather than annoying.
+
+Not needed
+
+Hospitality experience. Half the team had none when they joined.
+
+A degree.
+
+Experience at large scale. Our absolute traffic is modest; our difficulty is in correctness, not volume.
+
+The details
+
+£65,000 - £85,000 or EU equivalent. Fully remote across UK and EU timezones. We meet in person twice a year, usually somewhere with good food, because we are a hospitality company and it would be embarrassing otherwise.
+
+We are 28 people, 11 in engineering. Bootstrapped and profitable. We have never had a layoff and we have never had a 60-hour week, and both of those are deliberate.
+
+One honest note: our codebase is seven years old and parts of it are not good. The availability engine was rewritten two years ago and is solid. The rate management code was not and is showing its age. We will not pretend otherwise in the interview.

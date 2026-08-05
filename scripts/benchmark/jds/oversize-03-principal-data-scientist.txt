@@ -1,0 +1,166 @@
+Principal Data Scientist — Risk and Decision Science
+Job Requisition: RDS-PRIN-2026-0641
+Function: Risk Analytics and Decision Science
+Location: Phoenix, AZ | Wilmington, DE | Remote (US) considered
+Job Level: Principal (Band 9)
+Reports To: Senior Director, Credit Decision Science
+
+ORGANIZATION
+
+Ashgrove Financial is a consumer lending institution originating personal loans, auto refinance loans, and credit card products. We hold approximately $52 billion in receivables, serve roughly 8 million customers, and originate approximately $19 billion annually. We are a bank holding company subject to supervision by the Federal Reserve, the Office of the Comptroller of the Currency, and the Consumer Financial Protection Bureau.
+
+The Risk Analytics and Decision Science organization comprises approximately 240 people including data scientists, statisticians, model validators, credit strategists, and decision engineering staff. The organization is responsible for the models and strategies that determine who receives credit from Ashgrove, on what terms, and how accounts are managed thereafter.
+
+These decisions are consequential in both directions. A model that is too permissive produces losses that reach the income statement within twelve to eighteen months. A model that is too restrictive denies credit to people who would have repaid, which is a commercial loss and, where the pattern of denial correlates with protected characteristics, a legal and ethical failure.
+
+ROLE OVERVIEW
+
+We are seeking a Principal Data Scientist to serve as a senior technical leader within Credit Decision Science, with primary responsibility for the underwriting model suite supporting our personal loan product.
+
+Principal is Ashgrove's most senior individual contributor level in the analytics function. The role carries no direct reports but is expected to set technical direction, to lead the most complex modeling work, and to develop the capability of the broader team.
+
+This position is accountable for models that are subject to formal model risk management under Federal Reserve SR 11-7 guidance, which means every model this role produces will be independently validated, documented to a standard that supports regulatory examination, and monitored on an ongoing basis against defined performance thresholds. Candidates who have not worked under a model risk management framework should understand that it changes the work substantially.
+
+PRINCIPAL ACCOUNTABILITIES
+
+Model Development and Technical Leadership
+
+Lead development of underwriting and credit risk models for the personal loan portfolio, including probability of default models, loss given default models, and the income and affordability models that support ability-to-repay determinations.
+
+Set the technical approach for modeling within the domain, including feature development strategy, algorithm selection, validation methodology, and the standards to which model documentation is produced.
+
+Lead the ongoing evaluation of modeling methodology. Ashgrove's current underwriting models are predominantly gradient boosted tree ensembles with a scorecard-based challenger. There is an open internal question regarding the appropriate role of more complex approaches given explainability requirements, and this role is expected to bring that question to a defensible conclusion rather than leaving it perpetually open.
+
+Own model monitoring for the assigned suite, including population stability, performance degradation, and the identification of conditions under which a model should be redeveloped or retired.
+
+Partner with Model Risk Management through the validation process. Validation at Ashgrove is genuinely independent and validators are empowered to require remediation. The relationship works best when developers engage with validation findings substantively rather than defensively.
+
+Fair Lending and Responsible Use
+
+Ensure that models developed within the domain meet Ashgrove's fair lending standards, including analysis of disparate impact across protected classes, evaluation of less discriminatory alternatives, and documentation sufficient to support the institution's fair lending program.
+
+Partner with Compliance, Legal, and the Fair Lending team on model review. This is a substantive review, not a formality, and models have been materially modified as a result of it.
+
+Contribute to the institution's approach to the responsible use of alternative data. Ashgrove uses a limited set of alternative data elements in underwriting and evaluates additional sources on an ongoing basis, with each evaluation carrying both predictive and fair lending dimensions.
+
+Ensure adverse action reasons produced by models are accurate and meaningful, as required under the Equal Credit Opportunity Act and Regulation B. This requirement constrains model design in ways that are not always obvious and that this role is expected to navigate.
+
+Business Partnership and Influence
+
+Partner with Credit Strategy, Product, Finance, and Collections on the application of models to business decisions. A model is an input to a strategy, and the strategy work is where the model's value is realized or squandered.
+
+Communicate model behavior, limitations, and uncertainty to audiences including credit officers, business leadership, the Credit Risk Committee, and on occasion regulatory examiners.
+
+Provide technical review of modeling work produced elsewhere in the organization and mentor senior and lead data scientists.
+
+Contribute to the organization's technical hiring and to the development of internal capability, including participation in the organization's internal training program.
+
+TECHNICAL ENVIRONMENT
+
+Modeling is performed principally in Python, using scikit-learn, XGBoost, and LightGBM, with an internally developed library providing standardized model development, evaluation, and documentation workflows. A substantial legacy body of work exists in SAS and remains in production; familiarity is useful and not required.
+
+Data infrastructure comprises a Snowflake analytical environment, an internally maintained feature store, and access to credit bureau data under contractual and regulatory constraints that govern what may be used for what purpose. Understanding those constraints is part of the job.
+
+Model deployment is through an internally developed decision engine that executes models in real time within the underwriting decision path, with a latency budget measured in tens of milliseconds and a throughput requirement driven by application volume.
+
+Model governance tooling includes a model inventory, automated monitoring pipelines, and a documentation system that produces the artifacts required by validation and examination.
+
+Version control is Git, and model code is subject to review standards comparable to production software.
+
+CURRENT PORTFOLIO CONTEXT AND ACTIVE PROBLEMS
+
+Candidates should understand the specific state of the model suite this role would inherit.
+
+The primary underwriting model for the personal loan product was developed three years ago and redeveloped once since. It performs adequately on the population it was built for. Its performance on the thin-file and near-prime segments, which the business has been expanding into, is measurably weaker, and the question of whether that segment warrants a separate model or a modification to the existing one has been debated internally for four quarters without resolution.
+
+Our income verification and affordability modeling relies on a combination of stated income, bureau-derived income estimates, and bank transaction data for a subset of applicants. The three sources disagree with each other more often than is comfortable, and our current approach to reconciling them is a heuristic that predates anyone currently on the team.
+
+Population stability has been drifting on two of the five models in the suite. Neither has breached its redevelopment threshold, but the trend is consistent rather than noisy, and the underlying cause has not been established. Determining whether this reflects a genuine shift in applicant population, a change in an upstream data source, or a marketing mix change is an immediate priority.
+
+The challenger scorecard has outperformed the champion model on two of the last four monthly evaluations, in a specific segment, by a margin that is not statistically decisive but is persistent. This has not been escalated and probably should have been.
+
+Our reject inference approach is documented, was accepted by validation at the time, and is in the assessment of several people on the team not defensible under current thinking. Revisiting it is an item that has been on the roadmap for two cycles.
+
+Model monitoring is automated for performance metrics and manual for fair lending metrics, which are computed quarterly by an analyst. Automating the latter is both an efficiency improvement and a risk reduction, since quarterly detection of a fair lending drift is slower than we would want to defend.
+
+We describe these openly because a candidate at this level will discover them within a month and because we would rather select for someone who finds this list interesting than someone who is surprised by it.
+
+MINIMUM QUALIFICATIONS
+
+Master's or doctoral degree in Statistics, Economics, Mathematics, Operations Research, Computer Science, or a closely related quantitative discipline. A bachelor's degree with substantial additional experience will be considered.
+
+Ten or more years of experience in quantitative modeling, including a minimum of six years developing credit risk, fraud, or comparable decisioning models in a financial services or lending context.
+
+Demonstrated experience developing models that were deployed into production and used to make consequential decisions, including experience with the full lifecycle from problem formulation through monitoring and retirement.
+
+Deep statistical foundation, including thorough understanding of the assumptions underlying the methods used and the ability to reason about when they fail. This role will be examined on statistical depth rather than on tool familiarity.
+
+Strong Python for data science work, and strong SQL.
+
+Demonstrated experience working within a model risk management framework, including experience producing documentation for independent validation and responding to validation findings.
+
+Demonstrated understanding of fair lending analysis in a credit context, including disparate impact testing and less discriminatory alternative analysis.
+
+Excellent written communication. Model documentation at this institution is read by validators, auditors, and examiners, and its quality has consequences.
+
+PREFERRED QUALIFICATIONS
+
+Doctoral degree in a quantitative discipline.
+
+Experience with unsecured consumer lending specifically, including familiarity with the performance characteristics and vintage dynamics of personal loan portfolios.
+
+Experience with the regulatory examination process, including direct interaction with examiners.
+
+Experience with explainability methods and, importantly, with their limitations in a regulatory context where an explanation must be legally defensible rather than merely plausible.
+
+Experience with reject inference and with the selection bias problems inherent to credit modeling, where outcomes are observed only for approved applicants.
+
+Experience with econometric approaches to macroeconomic sensitivity, relevant to stress testing and to CECL allowance estimation.
+
+Experience with causal inference applied to credit strategy, particularly to the evaluation of line assignment, pricing, and treatment strategies.
+
+Familiarity with credit bureau data structures and with the regulatory framework governing their use under the Fair Credit Reporting Act.
+
+Prior experience at a Principal, Distinguished, or Fellow level in a large analytics organization.
+
+WHAT DISTINGUISHES A STRONG CANDIDATE
+
+We have found that the strongest candidates for roles at this level share several characteristics that do not appear on a resume.
+
+They are appropriately skeptical of their own models. Credit modeling offers many opportunities to produce an impressive validation statistic that will not survive contact with a changed economic environment or a changed applicant population. The best practitioners assume their model is wrong in some way they have not yet identified and design monitoring accordingly.
+
+They understand that the constraint set is part of the problem rather than an obstacle to it. Explainability requirements, fair lending obligations, and adverse action rules are not impediments to good modeling in this context; they are part of the specification, and a model that ignores them is not a better model that happens to be non-compliant.
+
+They can say "I do not know" to a senior executive who wants a number. Credit decisions involve genuine uncertainty and the pressure to present false precision is constant.
+
+They engage seriously with the fair lending dimension of the work. A model that produces disparate outcomes is a problem regardless of whether any protected characteristic appears among its inputs, and practitioners who treat this as a compliance formality rather than a substantive question are not a fit here.
+
+WORK ARRANGEMENT
+
+This position may be based in Phoenix or Wilmington under a hybrid arrangement requiring three days per week onsite, or may be performed remotely from within the United States for candidates whose qualifications warrant it. Remote candidates should expect to travel to Phoenix approximately monthly.
+
+Occasional travel for regulatory or audit activity may be required.
+
+COMPENSATION AND BENEFITS
+
+The base salary range for this position is $205,000 to $255,000, with placement based on experience, qualifications, and location. This position is eligible for an annual incentive with a target of 25% of base salary and for long-term incentive awards.
+
+Ashgrove provides medical, dental, and vision coverage; health savings and flexible spending accounts; company-paid basic life and disability coverage with supplemental options; a 401(k) with a company match of 100% on the first 6% of eligible pay; an employee stock purchase plan; paid time off beginning at 25 days annually plus 11 holidays; 16 weeks of paid parental leave; backup child and elder care; tuition reimbursement of up to $10,000 annually; and support for professional certification and continuing education.
+
+REGULATORY NOTICES
+
+Ashgrove Financial is a regulated financial institution. Employment is contingent upon successful completion of a background investigation including criminal history, credit history, and verification of employment and education. Section 19 of the Federal Deposit Insurance Act prohibits the employment of individuals with certain criminal convictions at insured depository institutions without prior regulatory approval.
+
+Employees are subject to Ashgrove's code of conduct, conflicts of interest policy, personal trading restrictions, and annual compliance training obligations.
+
+This position may be designated as a Material Risk Taker under applicable incentive compensation regulations, in which case a portion of incentive compensation may be subject to deferral and clawback provisions.
+
+EQUAL EMPLOYMENT OPPORTUNITY
+
+Ashgrove Financial is an Equal Opportunity Employer and a federal contractor. We evaluate all qualified applicants without regard to race, color, religion, sex, sexual orientation, gender identity or expression, pregnancy, national origin, ancestry, age, disability, genetic information, marital status, veteran status, or any other characteristic protected by federal, state, or local law.
+
+Ashgrove is committed to providing reasonable accommodations to qualified individuals with disabilities and to individuals with sincerely held religious beliefs, in both the application process and in employment. Applicants requiring accommodation may contact our Talent Acquisition organization.
+
+Ashgrove participates in E-Verify. Immigration sponsorship is available for this position for qualified candidates, subject to business need.
+
+The above statements describe the general nature and level of work performed in this position and are not an exhaustive list of all duties and responsibilities. Ashgrove reserves the right to modify this description at any time.

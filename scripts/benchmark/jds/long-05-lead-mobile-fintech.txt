@@ -1,0 +1,156 @@
+Lead Mobile Engineer (iOS and Android) — Consumer Banking Applications
+Job ID: MOB-LEAD-2026-0233
+Business Line: Consumer Digital Channels
+Location: Wilmington, DE | Jersey City, NJ | Tampa, FL (Hybrid, 3 days onsite)
+Level: Lead Engineer (IC5)
+Reports To: Director of Engineering, Consumer Mobile
+
+INTRODUCTION
+
+Larkspur Bank is a national consumer bank with approximately 19 million retail customers, $340 billion in assets, and a branch network of about 1,400 locations. Our mobile applications are the primary channel through which our customers interact with us: approximately 74% of customer-initiated interactions occur in the mobile app, compared with 9% in branches and 12% through our website.
+
+The Consumer Mobile organization comprises roughly 190 engineers across platform, feature, and quality teams, supporting native iOS and Android applications with a combined 14 million monthly active users.
+
+We are hiring a Lead Mobile Engineer to provide technical leadership across both platforms within the Money Movement domain, which owns transfers, bill pay, person-to-person payments, wires, and scheduled and recurring payment functionality.
+
+WHY THIS ROLE
+
+Money Movement is the highest-stakes area of our mobile applications. A defect here does not degrade an experience; it moves a customer's money incorrectly, and unwinding that is expensive, slow, and damaging to trust in ways that persist long after the technical issue is resolved.
+
+The domain currently spans four feature teams, two per platform, and those teams have drifted apart architecturally. iOS and Android implement the same user-facing flows with different state management approaches, different error handling conventions, and different degrees of test coverage. Behavior differs between platforms in ways that are not intentional and that our quality organization catches inconsistently.
+
+This role exists to bring technical coherence to that domain, to raise the reliability bar, and to lead the most consequential technical work within it.
+
+RESPONSIBILITIES
+
+Technical Leadership
+
+Set and maintain the technical direction for the Money Movement domain across both mobile platforms, in coordination with platform architecture and with the backend organizations that own the underlying payment services.
+
+Drive architectural convergence between iOS and Android where convergence adds value, while resisting convergence for its own sake. We are explicitly not seeking someone who will propose replacing both native applications with a cross-platform framework; that decision was evaluated and settled, and revisiting it is not within this role's scope.
+
+Lead design review for significant work across the four teams. Establish and enforce standards for state management, error handling, offline behavior, and instrumentation.
+
+Own the domain's approach to resilience. Mobile payment flows fail in ways that server-side systems do not: the app is backgrounded mid-transaction, connectivity drops between request and response, the user force-quits and reopens uncertain whether their transfer went through. Handling these correctly is the central technical problem of this role.
+
+Serve as the senior technical escalation point for production incidents affecting money movement, including participation in an on-call rotation and in the formal incident review process that applies to customer-impacting events.
+
+Hands-On Contribution
+
+Write production code. We expect approximately 40% of this role's time to be spent implementing, prototyping, and investigating. A Lead Engineer at Larkspur who stops writing code loses the credibility the role depends on.
+
+Personally lead the highest-risk implementation work in the domain. The current example is the migration of our person-to-person payment flow onto a new backend service, which must occur without any window during which a payment can be lost or duplicated.
+
+Mentorship and Organizational Contribution
+
+Mentor senior engineers across the four teams, with particular attention to developing the technical judgment required for work at this level of consequence.
+
+Participate in hiring, including technical interviews and periodic review of our assessment approach for mobile roles.
+
+Contribute to the broader Consumer Mobile technical community, including our internal architecture forum and our mobile guild.
+
+Partner with product management, design, compliance, fraud operations, and the payment operations teams who handle exceptions when something goes wrong. That last relationship is more important than it sounds; the people who clean up failed payments have detailed knowledge of our failure modes and are chronically under-consulted.
+
+TECHNICAL ENVIRONMENT
+
+The iOS application is Swift, targeting the two most recent major iOS versions plus one, using UIKit predominantly with SwiftUI adoption in newer surfaces. Architecture is broadly MVVM with Combine, though older code uses delegate patterns and there is no single consistent approach.
+
+The Android application is Kotlin, targeting API level 26 and above, using a mixture of Views and Jetpack Compose with Compose adoption around 45%. Architecture follows Google's recommended patterns loosely, with Hilt for dependency injection and Coroutines with Flow for asynchrony.
+
+Both applications consume a backend-for-frontend layer that we own, which aggregates calls to underlying service domains. The BFF is Kotlin and is maintained by a separate team with whom this role will work closely.
+
+Our build and release infrastructure runs on an internal CI platform. Release cadence is every two weeks for both platforms, with a staged rollout process and the ability to halt a rollout. We maintain a server-driven feature flag system that allows disabling a feature without a release, which we have used in earnest more than once.
+
+Observability includes crash reporting, custom instrumentation feeding an internal analytics platform, and synthetic monitoring of critical flows. Our instrumentation of money movement flows is better than most of the app and still not good enough to answer some questions we routinely need answered during incidents.
+
+SPECIFIC PROBLEMS YOU WOULD INHERIT
+
+We would rather describe the actual state of the domain than write in generalities, so the following are real and current.
+
+Duplicate submission handling differs between platforms. iOS debounces at the interface layer and relies on an idempotency key generated at request time. Android generates its idempotency key at a different point in the flow, with the result that a specific sequence involving backgrounding the app during a transfer can produce two distinct keys for what the user experienced as one action. We have seen this in production three times in eighteen months. It is understood and it is not fixed.
+
+Our scheduled transfer functionality maintains local state about upcoming transfers for display purposes and reconciles it against the server on app launch. When reconciliation fails, which happens on poor connectivity, the two platforms make different choices about what to display, and one of them displays stale data without indicating that it is stale.
+
+Error messaging in the payment flows is inconsistent and in several cases actively unhelpful. A customer whose transfer is declined for insufficient funds, one declined for a fraud hold, and one declined because the receiving institution rejected it currently see messages that are difficult to distinguish. Our contact center has told us about this repeatedly.
+
+Test coverage in the domain is approximately 62% on iOS and 48% on Android by line coverage, and coverage of the specific failure paths described above is substantially lower than those figures suggest.
+
+None of this is presented as a warning. It is the work, and a candidate who finds these problems interesting is the candidate we are looking for.
+
+REQUIRED QUALIFICATIONS
+
+Bachelor's degree in a technical field, or equivalent practical experience. Larkspur accepts demonstrated experience in place of formal education for engineering roles.
+
+Nine or more years of professional software engineering experience, including at least six years building native mobile applications.
+
+Deep expertise in at least one of Swift or Kotlin, and working proficiency in the other, sufficient to review code, participate in design discussions, and contribute meaningfully on both platforms. Candidates strong in only one platform will be considered if their depth is exceptional and their willingness to build competence in the second is genuine.
+
+Demonstrated experience leading technical direction across multiple teams, including experience influencing engineers who do not report to you.
+
+Substantial experience with mobile applications at scale, including release management, staged rollout, crash triage, and the operational realities of software running on devices you do not control.
+
+Demonstrated experience with correctness-critical flows, whether in payments, healthcare, or another domain where a defect has consequences beyond user annoyance.
+
+Strong understanding of mobile networking, offline behavior, and state reconciliation.
+
+PREFERRED QUALIFICATIONS
+
+Experience in banking, payments, or financial services, including familiarity with the operational and regulatory context of consumer payments.
+
+Familiarity with payment rails and their characteristics: ACH, RTP, Zelle, wire transfer, and card networks. Understanding that different rails have different reversibility properties is directly relevant.
+
+Experience with mobile security in a high-value target environment: certificate pinning, jailbreak and root detection, secure storage, and the limits of each.
+
+Experience with accessibility on mobile at a level beyond automated checks. Larkspur has regulatory obligations and a large customer base with accessibility needs.
+
+Experience leading a migration or replatforming effort in a live consumer application.
+
+Experience with feature flag driven development and progressive delivery on mobile.
+
+COMPENSATION
+
+The base salary range for this position is $195,000 to $240,000, varying by work location. Wilmington and Tampa placements are typically toward the middle of the range; Jersey City placements are typically higher, reflecting local market conditions.
+
+This position is eligible for an annual incentive award with a target of 20% of base salary, and for equity awards granted annually under Larkspur's long-term incentive program.
+
+Benefits include medical, dental, and vision coverage; a 401(k) with a dollar-for-dollar match on the first 6% of eligible pay plus an annual non-elective contribution; 24 days of paid time off plus holidays; 16 weeks of paid parental leave; adoption and fertility benefits; tuition reimbursement; and preferential rates on Larkspur banking products.
+
+WORK ARRANGEMENT AND CONDITIONS
+
+This position requires three days per week onsite at one of the three listed locations. Larkspur does not currently offer fully remote arrangements for Lead-level engineering positions in Consumer Digital Channels.
+
+Participation in an on-call rotation is required, currently one week in six with a secondary escalation tier. Money movement incidents can occur at any hour and the expectation of responsiveness during a rotation is real.
+
+Certain release activities occur outside standard business hours.
+
+REGULATORY AND COMPLIANCE NOTICES
+
+Larkspur Bank is a regulated financial institution. Employment in this position requires successful completion of a background investigation including credit history review, verification of employment and education, and criminal history screening. Certain criminal convictions render an individual ineligible for employment at an insured depository institution under Section 19 of the Federal Deposit Insurance Act.
+
+Employees are subject to Larkspur's code of conduct, personal trading policies, and annual compliance training requirements.
+
+INTERVIEW PROCESS
+
+Our process for Lead-level mobile roles comprises six stages and typically runs three to four weeks.
+
+An initial recruiter conversation confirms mutual interest and covers compensation expectations early, because we would rather find a mismatch in week one than week four.
+
+A conversation with the hiring manager covers your background, the specific problems described above, and what you would want to understand before forming a view on them.
+
+A mobile systems design session asks you to design a payment flow with specified failure and reversibility characteristics. This is conducted collaboratively; the interviewer will act as a colleague rather than an examiner, and asking clarifying questions is expected rather than penalized.
+
+A code review exercise uses a real pull request from our codebase on the platform you are strongest in. We are interested in what you notice and in how you would communicate it to the author.
+
+A technical leadership conversation focuses on prior experience driving change across teams, including at least one situation that did not go well.
+
+A final panel includes two senior engineers from the domain and a product partner.
+
+We provide interview feedback to all candidates who reach the second stage.
+
+EQUAL OPPORTUNITY
+
+Larkspur Bank is an equal opportunity employer. We evaluate qualified applicants without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, age, disability, veteran status, genetic information, marital status, pregnancy, or any other characteristic protected by applicable law.
+
+Larkspur provides reasonable accommodation to applicants and employees with disabilities and to applicants and employees with sincerely held religious beliefs. Requests may be submitted through our accommodation request process.
+
+Larkspur participates in E-Verify. We do not provide immigration sponsorship for this position.

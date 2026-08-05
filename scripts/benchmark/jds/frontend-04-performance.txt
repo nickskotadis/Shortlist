@@ -1,0 +1,44 @@
+Staff Frontend Engineer, Performance
+Halcyon Commerce — Austin, TX (Hybrid)
+
+Halcyon powers checkout for about 12,000 online merchants. Our embedded checkout loads inside our customers' storefronts, which means our JavaScript is a guest on someone else's page and every kilobyte we ship is a kilobyte their conversion rate pays for. We have measured a 0.7% conversion drop per additional 100ms of checkout load time on our own traffic. Performance is not an engineering vanity metric here; it is directly attributable revenue.
+
+We are hiring a Staff Frontend Engineer to own checkout performance as a discipline.
+
+Scope
+
+You will own the performance budget for the embedded checkout bundle and have authority to block releases that exceed it. Today the bundle is 187KB gzipped and the budget is 200KB. We want that number to go down, not to stay under the line.
+
+You will build the measurement infrastructure that makes performance regressions visible before they ship. We have real user monitoring but our synthetic testing is thin and our CI has no performance gate at all.
+
+You will work across teams. Most bundle growth comes from product teams shipping features, not from the platform team. A large part of this job is influence: making the cost of a change legible to the person making it, early enough that they can choose differently.
+
+You will lead a project we have been deferring for a year: moving our payment method rendering off the main thread. We know roughly what this involves and we know it is hard.
+
+You will mentor. We have three engineers who are interested in performance work and no one senior enough to teach them.
+
+What we need
+
+Seven or more years of frontend engineering, with at least two spent on performance as a primary focus rather than an occasional cleanup.
+
+Deep browser knowledge. You should be fluent in the critical rendering path, know what actually causes layout thrash, and be able to read a flame graph without a tutorial.
+
+Experience with third-party script constraints. Code that runs on pages you do not control has failure modes that first-party code does not.
+
+Track record of driving cross-team technical change without direct authority. This is probably the hardest requirement and the one we will probe most.
+
+Strong TypeScript and modern build tooling. We use Rollup for the embed bundle and Vite for the merchant dashboard.
+
+Helpful but not required
+
+E-commerce or payments background. Familiarity with PCI scope is a genuine plus.
+
+Experience with WebAssembly, web workers, or other off-main-thread techniques in production.
+
+Public writing or speaking about performance work.
+
+Details
+
+$210,000 - $250,000 base plus equity and an annual bonus target of 15%. Austin-based, hybrid, two days a week in our East Austin office. We will relocate the right candidate.
+
+Halcyon has 340 employees and has been around for eight years. Engineering is 90 people organized into eight teams. We ship to production roughly 40 times a day.

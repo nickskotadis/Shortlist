@@ -1,0 +1,137 @@
+Principal Software Engineer, Cloud Platform Engineering
+Requisition ID: ENG-2026-04471
+Business Unit: Technology and Digital Operations
+Location: Atlanta, GA / Dallas, TX / Phoenix, AZ (Hybrid — 3 days onsite) — Relocation assistance available
+Employment Type: Full-Time, Exempt
+Reports To: Senior Director, Cloud Platform Engineering
+Travel Requirement: Up to 15%
+
+ABOUT MERIDIAN GLOBAL LOGISTICS TECHNOLOGY
+
+Meridian Global Logistics is one of North America's largest third-party logistics providers, with annual revenue exceeding $18 billion, operations in 34 countries, and a workforce of approximately 71,000 employees. Our Technology and Digital Operations organization comprises roughly 3,400 technologists distributed across four primary engineering hubs and a number of smaller satellite locations.
+
+For the past four years Meridian has been executing a comprehensive technology modernization program. When it began, approximately 78% of our application portfolio ran on infrastructure we owned in seven data centers. Today that figure is 41%, and our objective is 15% by the end of the next fiscal year.
+
+The Cloud Platform Engineering organization is the group responsible for making that migration possible and for operating the platform that receives the migrated workloads. We build and run the internal developer platform used by approximately 1,900 engineers across 140 delivery teams. When those teams provision infrastructure, deploy an application, request a database, configure observability, or route traffic, they do so through interfaces our organization designs, builds, and supports.
+
+THE OPPORTUNITY
+
+We are seeking a Principal Software Engineer to provide technical leadership across the Cloud Platform Engineering organization. This is our most senior individual contributor engineering level. Principal Engineers at Meridian are expected to operate with substantial autonomy, to set technical direction that spans multiple teams and often multiple organizations, and to be accountable for outcomes that extend well beyond code they personally write.
+
+This position exists because our platform has reached a scale and complexity at which incremental team-level decision-making is producing divergence. We have three distinct approaches to service-to-service authentication in production. We have two competing internal conventions for how a team declares infrastructure dependencies. We have observability tooling that is excellent in some parts of the estate and effectively absent in others. Each of these situations arose from a locally reasonable decision, and resolving them requires someone with the standing, the technical depth, and the organizational patience to drive convergence across teams that do not report to the same leader.
+
+PRIMARY RESPONSIBILITIES
+
+Technical Strategy and Architecture
+
+Define and maintain the multi-year technical architecture for the internal developer platform, in partnership with the Senior Director of Cloud Platform Engineering and with architecture leadership in the broader Technology organization. Produce and maintain architecture decision records for platform-level decisions and ensure that the reasoning behind significant choices remains discoverable after the people who made them have moved on.
+
+Lead the technical design of platform capabilities that span multiple teams. Recent and upcoming examples include a unified service identity and workload authentication model, a consolidated policy enforcement layer for infrastructure provisioning, a redesign of our deployment orchestration to support progressive delivery patterns consistently across runtimes, and a multi-region active-active capability for a subset of tier-one applications.
+
+Evaluate emerging technologies and make recommendations regarding adoption, with particular attention to total cost of ownership and to the organizational capability required to operate a technology well over a multi-year horizon. Meridian has a history of adopting technologies successfully at the pilot stage and struggling to operate them at scale, and we are looking for judgment that accounts for this.
+
+Own the technical roadmap for platform reliability, including the definition of service level objectives for platform capabilities and the establishment of error budget policies that have real consequences.
+
+Hands-On Engineering
+
+Contribute directly to the most complex or highest-risk implementation work. We expect a Principal Engineer to spend approximately 30 to 40 percent of their time writing production code, prototyping approaches, and conducting deep technical investigations. This is not a role that has moved away from the keyboard.
+
+Lead incident response for severity-one platform incidents and drive the resulting corrective action to completion. Meridian operates a formal problem management process and Principal Engineers frequently own the technical portions of major incident reviews.
+
+Conduct architecture and design review for significant work produced by platform teams, and participate in review of significant application-side work where platform interaction is material.
+
+Organizational Leadership and Influence
+
+Mentor senior and staff engineers across the platform organization. We currently have eleven engineers at the Staff level and four of them have expressed interest in progressing toward Principal. Developing that pipeline is an explicit expectation of this role.
+
+Represent Cloud Platform Engineering in cross-organizational technical forums, including the Technology Architecture Review Board and the quarterly Technology Investment Committee, where platform investment is justified against competing demands.
+
+Build consensus across delivery teams for platform standards and migrations. In practice, a substantial portion of this role involves persuading engineering leaders in other organizations that a change we are proposing is worth their team's time. Formal authority to compel this does not exist and would not work if it did.
+
+Partner with our Information Security, Enterprise Risk, and Internal Audit functions. Meridian is subject to a range of regulatory and contractual obligations arising from our customers in healthcare, defense, and financial services verticals, and platform-level controls are frequently the mechanism by which those obligations are satisfied.
+
+Contribute to technical hiring across the organization, including participation in interview loops for staff-plus roles and periodic calibration of our technical assessment approach.
+
+CURRENT TECHNICAL ENVIRONMENT
+
+Cloud infrastructure is predominantly Amazon Web Services, with a meaningful and growing Microsoft Azure footprint arising primarily from acquisitions. We operate approximately 240 AWS accounts under an organizational structure with centralized guardrails. Compute is a mixture of Amazon EKS, Amazon ECS on Fargate, AWS Lambda, and a declining population of EC2-based deployments.
+
+Infrastructure is managed principally through Terraform, with an internally developed module library and a policy enforcement layer built on Open Policy Agent. We are evaluating whether to continue investing in our Terraform-based approach or to move toward a control-plane model based on Crossplane, and the person in this role would be expected to lead that evaluation to a conclusion.
+
+Our internal developer portal is built on Backstage and has been in production for two years. Adoption is approximately 65% of delivery teams. The gap between our adoption rate and our target is one of the more visible open problems in the organization.
+
+Service runtimes across the estate include Java (Spring Boot, predominantly versions 2.7 and 3.x), .NET (both .NET Framework on the legacy estate and .NET 8 for modern services), Python, Go, and Node.js. Platform components themselves are written primarily in Go, with Python used for operational tooling and TypeScript used for the developer portal and associated frontends.
+
+Data infrastructure includes Amazon Aurora PostgreSQL and MySQL, DynamoDB, Amazon MSK for event streaming with approximately 900 production topics, ElastiCache, and a Snowflake data platform outside this organization's scope.
+
+Observability is built on Datadog for metrics and APM, an internally operated OpenTelemetry collection layer, and Splunk for log aggregation. Consolidating this stack has been proposed twice and deferred twice.
+
+Continuous integration and delivery run on GitLab CI, with Argo CD handling Kubernetes deployments. Approximately 2,600 deployments to production occur in a typical week.
+
+MINIMUM QUALIFICATIONS
+
+Bachelor's degree in Computer Science, Computer Engineering, Information Systems, or a closely related technical discipline, or equivalent practical experience. Meridian recognizes demonstrated capability in place of formal credentials and a substantial number of our senior engineers do not hold a degree in a computing field.
+
+Twelve or more years of professional software engineering experience, including a minimum of four years at a Staff, Principal, Architect, or equivalent senior individual contributor level in an organization of comparable scale and complexity.
+
+Demonstrated experience designing, building, and operating distributed systems at significant scale, including direct accountability for the operational characteristics of those systems in production.
+
+Substantial experience with at least one major public cloud provider at a depth that includes networking, identity and access management, and cost management, not solely compute and storage services.
+
+Expert-level proficiency in at least one systems programming language, with Go strongly preferred given our platform codebase, and working proficiency in at least two additional languages represented in our environment.
+
+Demonstrated experience leading technical initiatives that spanned multiple teams and required influencing engineers and engineering leaders outside the candidate's direct reporting line.
+
+Experience with infrastructure as code at scale, including the organizational and governance dimensions rather than solely the technical ones.
+
+Demonstrated ability to communicate complex technical concepts to audiences ranging from individual engineers to non-technical senior executives.
+
+PREFERRED QUALIFICATIONS
+
+Advanced degree in a relevant technical discipline.
+
+Experience within a large enterprise undergoing significant technology modernization, particularly one involving migration from owned data center infrastructure to public cloud.
+
+Direct experience building or substantially contributing to an internal developer platform serving more than a thousand engineers.
+
+Experience in logistics, transportation, supply chain, or a comparably operations-intensive industry.
+
+Experience operating in a regulated environment, including familiarity with the engineering implications of SOC 2, PCI DSS, ITAR, or HIPAA obligations.
+
+Experience with multi-cloud or hybrid cloud operating models, including honest perspective on their costs.
+
+Contributions to relevant open source projects, published technical writing, or conference speaking on platform engineering, distributed systems, or cloud architecture topics.
+
+Experience with FinOps practices and cloud cost optimization at enterprise scale.
+
+COMPETENCIES AND WORKING STYLE
+
+The engineers who succeed at the Principal level within Meridian's Technology organization exercise sound judgment about which problems merit their attention, are comfortable making reversible decisions quickly while treating irreversible ones with caution, and communicate in writing with clarity, because in an organization of our size most decisions are made asynchronously through documents rather than in meetings.
+
+They also demonstrate humility about the existing system. Meridian's technology estate reflects thirty years of decisions made by capable people under constraints that are not always documented. Candidates who approach that estate primarily as a problem to be criticized rather than as a system to be understood tend not to be effective here.
+
+COMPENSATION AND BENEFITS
+
+The anticipated base salary range for this position is $215,000 to $268,000 annually. Actual compensation within this range depends on geographic location, relevant experience, demonstrated skills, and internal equity considerations. This position is additionally eligible for an annual performance bonus with a target of 20% of base salary, and for participation in Meridian's long-term incentive program, which for this level typically comprises restricted stock units vesting over four years.
+
+Meridian offers comprehensive medical, dental, and vision coverage effective on the first day of employment, a 401(k) with company match and immediate vesting, 22 days of paid time off increasing with tenure, 11 paid holidays, and 16 weeks of paid parental leave for all new parents.
+
+Additional benefits include an annual professional development allowance of $3,500, tuition reimbursement, an employee stock purchase plan, and backup dependent care.
+
+WORK ARRANGEMENT
+
+This position operates under a hybrid arrangement requiring three days per week onsite at one of the three listed locations. Meridian's current policy establishes Tuesday, Wednesday, and Thursday as anchor days for most Technology organizations, though teams have some latitude. Fully remote arrangements are not available for this role.
+
+Relocation assistance is available for candidates who need to relocate to one of the listed locations.
+
+SELECTION PROCESS
+
+Our process comprises: a recruiter conversation; a screening conversation with the hiring manager; a technical deep dive in which the candidate presents a system they have designed; a collaborative systems design exercise; a technical leadership and influence interview; a peer session with two engineers; and a conversation with the Senior Director. The full process typically spans four to six weeks.
+
+EQUAL EMPLOYMENT OPPORTUNITY
+
+Meridian Global Logistics is an Equal Opportunity Employer. All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity or expression, national origin, age, disability, veteran status, marital status, pregnancy, genetic information, or any other characteristic protected by applicable federal, state, or local law.
+
+Meridian is committed to providing reasonable accommodations to applicants and employees with disabilities. Applicants who require accommodation should contact our Talent Acquisition team.
+
+Employment is contingent upon successful completion of a background investigation. This job description describes the general nature and level of work expected and is not an exhaustive list of all responsibilities.

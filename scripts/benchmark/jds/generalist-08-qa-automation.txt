@@ -1,0 +1,56 @@
+Software Engineer in Test
+Verity Diagnostics — Remote (US) or Madison, WI
+
+Verity builds laboratory information management software for clinical diagnostic labs. About 400 labs use us to track specimens from accession through result reporting. Our software is part of the chain that determines what result a physician sees, which means a defect in it can produce a wrong diagnosis.
+
+We are hiring a Software Engineer in Test.
+
+Why this is a serious role here
+
+Our software is subject to FDA design control as part of our customers' regulated workflows, and our testing is auditable evidence. When we say a feature is tested, that statement has to be defensible to an auditor and, more importantly, has to be true.
+
+We are not looking for someone to write click-through scripts. We are looking for an engineer who owns quality as a technical discipline.
+
+Responsibilities
+
+Own our automated test suite across API, integration, and end-to-end layers. It exists, it is roughly 2,800 tests, and about 6% of them are flaky, which is 6% too many.
+
+Build test infrastructure. Test data management for a clinical system is genuinely hard: you need realistic specimen and result data that is not real patient data, across dozens of assay types with different result structures.
+
+Work on our instrument simulation harness. We integrate with about 50 lab analyzers, and we cannot have one of each in the office. Our simulators let us test integrations without hardware, and they need to be faithful enough to be worth trusting.
+
+Partner with engineers on testability. A lot of quality work is upstream of testing — it is convincing someone to design the feature so it can be verified.
+
+Contribute to validation documentation used in customer audits.
+
+Improve CI. Our full suite takes 52 minutes and gates every merge.
+
+Requirements
+
+Three or more years in test engineering, SDET, or a software engineering role with significant testing ownership.
+
+Strong programming ability in Python, Java, or TypeScript. Our test code is Python; the application is Java and TypeScript.
+
+Experience with API testing and with browser automation (we use Playwright).
+
+Experience diagnosing and eliminating flaky tests, and the conviction that a flaky test is a bug rather than a fact of life.
+
+Precision. This domain rewards people who are careful and notice small inconsistencies.
+
+Preferred
+
+Healthcare, clinical, laboratory, or medical device experience.
+
+Experience in a regulated software environment (FDA, ISO 13485, or similar).
+
+Performance testing experience.
+
+Experience with hardware or instrument integration testing.
+
+Terms
+
+$120,000 - $150,000. Remote in the US or hybrid in Madison.
+
+Verity is 210 people. We ship on a six-week cadence with a formal release qualification period, which is slower than most software companies and appropriate for what we do.
+
+One thing candidates ask about: no, we do not have a separate QA department that engineers throw work over the wall to. Test engineers sit on product teams and engineers write tests too. This role is about raising the ceiling, not about being the only person who cares.

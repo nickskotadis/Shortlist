@@ -1,0 +1,40 @@
+Senior Frontend Engineer, Web Platform
+Lumen Analytics — San Francisco, CA (Hybrid, 3 days onsite)
+
+About the role
+
+Lumen Analytics builds dashboarding and reporting tools for mid-market finance teams. Our customers spend most of their working day inside our product, which means frontend performance and interaction quality are not polish items for us — they are the product. We are looking for a Senior Frontend Engineer to join the Web Platform team, which owns the component library, the rendering layer for our chart system, and the build and deploy pipeline that the four product teams depend on.
+
+This is a role for someone who wants to work on the substrate rather than shipping features on top of it. You will spend as much time thinking about bundle size, render scheduling, and API ergonomics for other engineers as you will about pixels.
+
+What you'll do
+
+- Own and evolve our internal component library (React, TypeScript, Radix primitives, CSS modules) used by roughly 30 engineers across four product teams.
+- Improve rendering performance of our chart surface. Customers routinely load dashboards with 40+ charts against datasets in the hundreds of thousands of rows. We currently virtualize inconsistently and there is real work to do here.
+- Reduce our main bundle. We are at 1.1MB gzipped and it has grown every quarter for two years. We want someone who will treat that as a problem worth owning.
+- Improve the local development experience. Cold start on our Vite dev server is currently around 45 seconds and engineers complain about it constantly, with justification.
+- Partner with the design team on a design token system that actually gets adopted, rather than a token system that exists in Figma and nowhere else.
+- Participate in frontend on-call rotation (business hours, roughly one week in six).
+
+What we're looking for
+
+- 5+ years building production web applications, with meaningful depth in React.
+- Strong TypeScript. We are strict-mode everywhere and we care about the types being useful rather than decorative.
+- Real experience with browser performance work: profiling, understanding of layout and paint, familiarity with the performance timeline. If you have opinions about when to reach for a web worker, we want to hear them.
+- Experience owning a shared internal library and dealing with the versioning, migration, and communication problems that come with having internal customers.
+- Comfort with ambiguity. The Web Platform team charter is deliberately broad and you will help define it.
+
+Nice to have
+
+- Data visualization experience, particularly with D3 or a similar low-level charting approach. We do not use a batteries-included charting library and do not plan to.
+- Experience with a monorepo at scale (we use pnpm workspaces and Turborepo).
+- Accessibility experience. We have enterprise customers with hard WCAG 2.1 AA requirements and we currently meet them unevenly.
+- Prior work in a data-dense product — analytics, observability, financial tooling.
+
+What we offer
+
+Salary range $165,000 - $205,000 depending on experience and location, plus equity. Full health, dental, and vision. 401k with 4% match. $2,000 annual learning budget. We are hybrid by default with three days onsite in our SoMa office; we are not currently hiring fully remote for this role.
+
+Our interview process is a 30-minute intro call, a 60-minute technical conversation about work you have actually done, a 90-minute practical exercise on a realistic codebase (not a whiteboard algorithm round), and a final round with two engineers and the design lead. We aim to get from first call to decision in under three weeks.
+
+Lumen Analytics is an equal opportunity employer. We are committed to building a team that reflects the range of people who use our product.

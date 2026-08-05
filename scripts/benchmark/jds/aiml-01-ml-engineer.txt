@@ -1,0 +1,50 @@
+Machine Learning Engineer
+Loamwork Agriculture — Remote (US) or Des Moines, IA
+
+Loamwork builds yield prediction and input optimization software for row-crop farmers. We work with about 9,000 farm operations covering 14 million acres across the US Midwest. Our models take satellite imagery, soil sampling data, weather, and historical yield to recommend seeding rates and nitrogen application by management zone.
+
+We are hiring a Machine Learning Engineer.
+
+What makes this hard
+
+Agricultural data is sparse, seasonal, and expensive to label. A farmer gets one observation per field per year. We cannot run an experiment and get results next week; we get results next October. That changes everything about how we validate models.
+
+The cost of being wrong is also asymmetric and known to the customer. If we recommend under-applying nitrogen and yield drops, the farmer can calculate exactly what our recommendation cost them, and they will.
+
+Responsibilities
+
+Own model development for our nitrogen recommendation product. Current approach is gradient boosting over engineered features with a spatial component; there is active internal debate about whether a deep learning approach on the imagery would beat it and nobody has done the work to find out.
+
+Build backtesting infrastructure. Because we cannot iterate quickly on live outcomes, rigorous historical evaluation is our main feedback loop, and ours is currently not good enough to trust.
+
+Work on the imagery pipeline. We process Sentinel-2 and PlanetScope imagery, deal with cloud masking, and derive vegetation indices at field-boundary resolution.
+
+Deploy and monitor models in production. We serve recommendations through the same platform the agronomy team uses, and drift monitoring matters because soil and climate conditions shift.
+
+Collaborate with our agronomy team, who are domain scientists rather than engineers, and whose objections to your model will frequently be correct.
+
+Requirements
+
+Three or more years of applied ML in production, not just research or notebooks.
+
+Strong Python: numpy, pandas, scikit-learn, and at least one of PyTorch or TensorFlow.
+
+Solid statistics. Specifically, you should be comfortable reasoning about uncertainty and be skeptical of your own results. We would rather have a well-calibrated model that admits ignorance than a confident one.
+
+Experience with spatial or geospatial data (rasters, projections, zonal statistics) or clear evidence you can pick it up.
+
+Experience deploying models, including the parts after deployment: monitoring, retraining, and knowing when a model has stopped working.
+
+Nice to have
+
+Remote sensing or earth observation background.
+
+Agriculture, environmental science, or a related domain.
+
+Experience with causal inference. Much of what we want to answer is causal and much of our data is observational.
+
+Details
+
+$150,000 - $185,000 plus equity. Remote in the US, or our Des Moines office if you want one. We do a week-long field trip each summer where the whole company visits customer farms, and it is the single most useful thing we do for product intuition.
+
+Loamwork is 85 people, Series B. About a quarter of the team grew up on farms, which produces an unusually grounded engineering culture.

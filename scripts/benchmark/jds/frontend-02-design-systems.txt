@@ -1,0 +1,44 @@
+Frontend Engineer — Design Systems
+Corvid Software — Remote (US timezones)
+
+Corvid builds project management software for construction firms. Roughly 4,000 companies use us to run job sites, and our users are field supervisors on tablets in bad lighting, not designers on 5K monitors. That constraint shapes everything about how we build the UI.
+
+We are hiring a Frontend Engineer to work on our design system. The system exists — it is about 60 components, TypeScript, React, built on top of Ariakit — but it has grown organically for three years and it shows. Component APIs are inconsistent, theming is half-implemented, and adoption across our product surfaces sits somewhere around 70%. Your job is to make it good.
+
+Responsibilities
+
+Audit the existing component set and propose a consolidation plan. We are aware we have three different button implementations and we are not proud of it.
+
+Drive the remaining 30% of adoption. This is more a communication and migration-tooling problem than a coding problem. You will write codemods, you will pair with product engineers, and you will spend real time understanding why teams built their own thing instead of using yours.
+
+Own accessibility for the component layer. Our customers include public-sector agencies with Section 508 requirements. Today we handle keyboard navigation reasonably and screen reader support poorly.
+
+Build and maintain our Storybook instance and visual regression testing. We use Chromatic. Coverage is patchy.
+
+Improve the system's responsiveness on tablets and in high-glare conditions. This is a real design constraint for us, not a hypothetical.
+
+Requirements
+
+Three or more years of professional frontend work with substantial React and TypeScript experience.
+
+Demonstrated experience building or significantly contributing to a component library or design system. We would rather hear about a small system you owned end to end than a large one you contributed to occasionally.
+
+Practical accessibility knowledge. You should be able to explain what a screen reader does with a custom combobox and why the naive implementation fails.
+
+Strong CSS fundamentals. We use CSS custom properties heavily and we have no interest in a CSS-in-JS runtime.
+
+Comfort working closely with designers as peers rather than as a downstream implementer.
+
+Bonus points
+
+Experience with codemods and large-scale automated refactoring (jscodeshift or similar).
+
+Experience supporting a design system across web and native, or across multiple frameworks. We have a small React Native app that currently duplicates everything.
+
+Familiarity with the construction, field service, or industrial software space.
+
+Working here
+
+We are fully remote across US timezones with a quarterly onsite. Compensation is $140,000 - $175,000 plus equity, calibrated to a national band rather than by location. Four weeks PTO plus company holidays, and we track that people actually take it.
+
+Corvid is a 90-person company that has been profitable for two years. We are not chasing hypergrowth and our engineering culture reflects that: thorough code review, real design docs, and a strong preference for boring technology that we understand.
