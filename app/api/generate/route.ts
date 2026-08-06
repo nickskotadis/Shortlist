@@ -226,18 +226,26 @@ export async function POST(req: NextRequest) {
           }
 
           if (!cacheHit) {
-            const jdResponse = await anthropic.messages.create({
-              model: MODELS.parser,
-              max_tokens: MAX_TOKENS.parser,
-              messages: [{ role: "user", content: buildJdParserPrompt(jd_text) }],
+            // parseLlmJson, not parseJson: the parser intermittently emits JSON
+            // that won't balance (~11% of calls, independent across attempts,
+            // unrelated to the token budget). Without a second attempt those
+            // failures fall through to an empty analysis and the generator runs
+            // with no knowledge of the job description at all. The validator has
+            // always had this retry; the JD parse did not.
+            const parsedJd = await parseLlmJson<Partial<JdAnalysis>>(async () => {
+              const jdResponse = await anthropic.messages.create({
+                model: MODELS.parser,
+                max_tokens: MAX_TOKENS.parser,
+                messages: [{ role: "user", content: buildJdParserPrompt(jd_text) }],
+              });
+
+              totalInputTokens += jdResponse.usage.input_tokens;
+              totalOutputTokens += jdResponse.usage.output_tokens;
+
+              return jdResponse.content[0]?.type === "text"
+                ? jdResponse.content[0].text
+                : "";
             });
-
-            totalInputTokens += jdResponse.usage.input_tokens;
-            totalOutputTokens += jdResponse.usage.output_tokens;
-
-            const raw =
-              jdResponse.content[0]?.type === "text" ? jdResponse.content[0].text : "";
-            const parsedJd = parseJson<Partial<JdAnalysis>>(raw);
             jdAnalysis = parsedJd.ok ? parsedJd.value : {};
 
             // Store in cache — fire-and-forget, never block the response

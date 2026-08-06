@@ -819,10 +819,99 @@ functional outcome is identical (the route collapses to `{}`), but the
 diagnostic label is misleading, and it is the reason §4.2's truncation counts
 should be read as "JSON extraction failures" rather than strictly "truncations".
 
-**The obvious remedy is not applied here, because it is outside the scope of
-this fix.** The JD parse uses bare `parseJson` (`app/api/generate/route.ts:244`)
-and gets no second attempt. The validator, facing the same class of failure,
-uses `parseLlmJson`, which re-calls the model once on a parse failure. Extending
-the same treatment to the JD parse would be a one-line change and, given the
-failures are independent across attempts, would be expected to reduce the
-residual failure rate from ~11% to roughly 1%. That change has not been made.
+The remedy is the retry the validator already had and the JD parse did not — see
+§9.
+
+---
+
+## 9. Follow-up: JD-parse retry
+
+The §8.4 residual — ~11% of parses emitting unbalanced JSON regardless of token
+budget — was addressed by giving the JD parse the retry the validator already
+had.
+
+### 9.1 The change
+
+`app/api/generate/route.ts` — the JD parse now uses `parseLlmJson` instead of
+bare `parseJson`. On a parse failure the parser is called once more before the
+result falls through to an empty analysis.
+
+This is the same recovery the validator has used since it was written. The
+asymmetry was not deliberate: the validator got `parseLlmJson` and the JD parse
+did not, and because a failed JD parse degrades silently rather than surfacing
+an error, nothing ever drew attention to the gap.
+
+Token accounting sits inside the retried closure, so both attempts are counted
+onto the `generations` row rather than under-reporting usage.
+
+The harness mirrors the change (`scripts/benchmark/pipeline.ts`) with a distinct
+`parse_retry` stage, so future benchmark runs continue to measure the real path
+and can separate first-attempt from post-retry behaviour.
+
+### 9.2 Measured effect
+
+37 eligible fixtures × 2 passes = 74 parses, at cap 4096:
+
+| | First attempt | With retry |
+|---|---|---|
+| Standard JDs | 91% | **100%** |
+| Long JDs | 80% | **100%** |
+| **Overall parse success** | **89.2%** (66/74) | **100%** (74/74) |
+| Generations proceeding with empty `{}` | 8 | **0** |
+
+Retries fired on 8 of 74 parses (10.8%) and recovered 8 of 8. No call hit the
+4,096 cap.
+
+### 9.3 What it costs
+
+| | Value |
+|---|---|
+| Parse cost per parse | $0.00592 → $0.00689 (**+16.4%**, cap fix and retry combined) |
+| Retry's share of parse-stage cost | 10.8% |
+| Added cost per generation | ~$0.001 (**~+3.5%** of the $0.02796 measured in §2.1) |
+| Mean parse latency | 8,076 ms → 9,341 ms |
+| Latency of a retried parse | 18,675 ms (2× a single parse, as expected) |
+| Added mean end-to-end latency | ~1,000 ms (**~+3.6%** of the 28,028 ms in §2.1) |
+
+**The latency cost lands in the worst possible place and is worth stating
+plainly.** The parse retry sits on the critical path *before* generation begins,
+so on roughly 11% of requests the user waits an extra ~9 seconds before the
+first token streams. That is a real regression in perceived responsiveness for
+one request in nine.
+
+It is still the right trade for this product. The alternative is what the
+benchmark measured: generating a "tailored" document with no knowledge of the
+job description, which is the one thing the product exists to do. A slower
+correct answer beats a fast one that silently ignores the input.
+
+If the latency becomes a problem, the fix is not to remove the retry — it is to
+make the first attempt succeed more often (a more constrained parser prompt, or
+structured outputs, neither of which was attempted here).
+
+### 9.4 Combined effect of §8 and §9
+
+| | Before both fixes | After both |
+|---|---|---|
+| Overall parse success | 53.6% | **100%** |
+| Long JDs parsing | 0% | **100%** |
+| **Generations running with no JD analysis** | **46.4%** | **0%** |
+| Cost per generation | $0.02796 | ~$0.02893 (+3.5%) |
+| Mean end-to-end latency | 28,028 ms | ~29,000 ms (+3.6%) |
+
+### 9.5 Limits of this verification
+
+- **n = 74 parses, 8 retry events.** Recovering 8 of 8 is encouraging but does
+  not establish a 100% recovery rate. If first-attempt failures are independent
+  at the observed p ≈ 0.108, the expected residual double-failure rate is
+  p² ≈ **1.2%**, not zero. Observing zero in 74 samples is consistent with that.
+  **The honest claim is "residual failures drop from ~11% to roughly 1%," not
+  "parse failures are eliminated."**
+- Independence across attempts is assumed, supported by §8.4's observation that
+  the same fixture both passes and fails, but not formally tested.
+- Same synthetic corpus as the rest of this document (§5.1). A real-JD corpus
+  could have a different first-attempt failure rate, which would move both the
+  residual and the cost of the retry.
+- Measured on the parser only. The validator's identical truncation failures
+  (11 during the benchmark run) were not addressed, and `MAX_TOKENS.validator`
+  is still 1024 — the same value that proved too low for the parser. That is an
+  open item, not a solved one.

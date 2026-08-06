@@ -27,6 +27,9 @@ export function getAnthropic(): Anthropic {
 
 export type Stage =
   | "parse"
+  // Second parser call made by parseLlmJson when the first response did not
+  // parse. Mirrors validate_parse_retry on the validation side.
+  | "parse_retry"
   | "generate"
   | "validate"
   // Validation of the output produced by a generation retry.

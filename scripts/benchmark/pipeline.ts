@@ -47,6 +47,9 @@ export interface PipelineOutcome {
   /** Parse diagnostics — the route discards these (route.ts:245). */
   jdParseOk: boolean;
   jdParseFailReason: string | null;
+  /** True when parseLlmJson had to re-call the parser. */
+  jdParseRetried: boolean;
+  jdParseFirstFailReason: string | null;
   jdAnalysisKeys: number;
 
   outputChars: number;
@@ -111,6 +114,8 @@ export async function runPipeline(opts: RunOpts): Promise<PipelineOutcome> {
     rejectionReason: null,
     jdParseOk: false,
     jdParseFailReason: null,
+    jdParseRetried: false,
+    jdParseFirstFailReason: null,
     jdAnalysisKeys: 0,
     outputChars: 0,
     generateStopReason: null,
@@ -145,28 +150,46 @@ export async function runPipeline(opts: RunOpts): Promise<PipelineOutcome> {
   }
 
   // ── Stage 1: JD parse ───────────────────────────────────────────────────────
+  // Mirrors the route: parseLlmJson re-calls the parser once if the first
+  // response does not parse. Attempt counting is how we observe whether the
+  // recovery path fired without altering it.
   let jdAnalysis: Partial<JdAnalysis> = {};
-  const parseRes = await callMessage(ctx("parse", routing.parser), deps, {
-    model: routing.parser,
-    max_tokens: MAX_TOKENS.parser,
-    prompt: buildJdParserPrompt(fixture.text),
-  });
-  outcome.totalInputTokens += parseRes.inputTokens;
-  outcome.totalOutputTokens += parseRes.outputTokens;
-  outcome.totalWallMs += parseRes.wallMs;
-  if (!parseRes.ok) outcome.failedCalls++;
+  let parseAttempts = 0;
+  let firstParseFail: string | null = null;
 
-  if (parseRes.ok) {
-    const parsed = parseJson<Partial<JdAnalysis>>(parseRes.text);
-    outcome.jdParseOk = parsed.ok;
-    if (parsed.ok) {
-      jdAnalysis = parsed.value;
-    } else {
-      // The route collapses this to {} and proceeds (route.ts:245). So do we —
-      // but unlike the route, we record which failure mode it was.
-      outcome.jdParseFailReason = parsed.reason;
-      jdAnalysis = {};
+  const parsedJd = await parseLlmJson<Partial<JdAnalysis>>(async () => {
+    parseAttempts++;
+    const res = await callMessage(
+      ctx(parseAttempts === 1 ? "parse" : "parse_retry", routing.parser),
+      deps,
+      {
+        model: routing.parser,
+        max_tokens: MAX_TOKENS.parser,
+        prompt: buildJdParserPrompt(fixture.text),
+      }
+    );
+    outcome.totalInputTokens += res.inputTokens;
+    outcome.totalOutputTokens += res.outputTokens;
+    outcome.totalWallMs += res.wallMs;
+    if (!res.ok) outcome.failedCalls++;
+
+    if (parseAttempts === 1) {
+      const probe = parseJson<Partial<JdAnalysis>>(res.text);
+      if (!probe.ok) firstParseFail = probe.reason;
     }
+    return res.text;
+  });
+
+  outcome.jdParseRetried = parseAttempts > 1;
+  outcome.jdParseFirstFailReason = firstParseFail;
+  outcome.jdParseOk = parsedJd.ok;
+  if (parsedJd.ok) {
+    jdAnalysis = parsedJd.value;
+  } else {
+    // The route collapses this to {} and proceeds. So do we — but unlike the
+    // route, we record which failure mode it was.
+    outcome.jdParseFailReason = parsedJd.reason;
+    jdAnalysis = {};
   }
   outcome.jdAnalysisKeys = Object.keys(jdAnalysis).length;
   outcome.keywords = Array.isArray(jdAnalysis.key_terminology) ? jdAnalysis.key_terminology : [];
@@ -304,6 +327,8 @@ export async function runPipeline(opts: RunOpts): Promise<PipelineOutcome> {
     prompt_version: opts.promptVersionLabel ?? null,
     jd_parse_ok: outcome.jdParseOk,
     jd_parse_fail_reason: outcome.jdParseFailReason,
+    jd_parse_retried: outcome.jdParseRetried,
+    jd_parse_first_fail_reason: outcome.jdParseFirstFailReason,
     jd_analysis_keys: outcome.jdAnalysisKeys,
     generate_stop_reason: outcome.generateStopReason,
     generate_truncated: outcome.generateTruncated,
