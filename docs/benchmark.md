@@ -748,3 +748,81 @@ Raw per-call records, full generated outputs, and `summary.json` are written to
 `scripts/benchmark/results/` (gitignored). The fixture set is committed, so a
 re-run against the same fixtures is directly comparable via the fixture-set hash
 recorded in every results file.
+
+---
+
+## 8. Follow-up: the parser token cap, fixed
+
+The §4.2 finding was acted on after the benchmark run. This section records the
+fix and its measured effect. **The numbers everywhere above this section reflect
+the pre-fix pipeline** (`MAX_TOKENS.parser = 1024`) and are left unchanged so the
+benchmark remains an honest record of what was measured on 2026-08-06.
+
+### 8.1 Establishing the real requirement
+
+Truncated calls only report that the parser needed *more* than 1,024 tokens, not
+how much more — every failing observation was censored at the cap. Re-probing the
+same fixtures at `max_tokens = 8192` produced uncensored measurements:
+
+| JD bucket | Output tokens needed |
+|---|---|
+| standard (~3k chars) | 744 – 1,061 |
+| long (13.7–14.8k chars) | 1,291 – 1,506 |
+
+Nothing came close to the 8,192 probe ceiling, so these are true requirements.
+The old cap of 1,024 sat *below* the requirement for every long JD and for a
+minority of standard ones — which is exactly the observed failure profile.
+
+### 8.2 The change
+
+`MAX_TOKENS.parser`: **1024 → 4096** (`lib/pipeline.ts`), roughly 2.7× the
+observed maximum.
+
+Raising a cap is close to free: `max_tokens` bounds generation, it does not
+reserve or bill capacity. JDs that already fit generate the same tokens and cost
+exactly the same. The only JDs that cost more are the ones that were previously
+producing an unusable truncated analysis.
+
+### 8.3 Measured effect
+
+Re-running the parser over all 37 eligible fixtures:
+
+| | Before (cap 1024) | After (cap 4096) |
+|---|---|---|
+| Standard JDs parsing | 89% | 91% |
+| **Long JDs parsing** | **0%** | **80%** |
+| **Overall parse success** | **53.6%** | **89%** |
+| Generations proceeding with empty `{}` | 46.4% | 11% |
+| Calls hitting the cap | 96 of 224 | **0 of 37** |
+
+Cost: **+1,759 output tokens across 37 parses = $0.0088**, or 3.8% of
+parse-stage cost. At Config A's measured $0.02796 per generation this is roughly
+a 0.9% increase in total cost per generation, in exchange for the JD analysis
+actually reaching the generator.
+
+### 8.4 What the fix does not solve
+
+A residual ~11% of parses still fail, and **this is a different defect that the
+token cap does not touch.** Evidence that it is unrelated to length or budget:
+
+- The failures occur at 800–1,300 output tokens with `stop_reason: end_turn` —
+  completing normally, far below the new cap. Zero calls hit 4,096.
+- They are **stochastic, not fixture-specific**. Re-running a single failing
+  fixture four times produced three successes and one failure at comparable
+  token counts. The same JD both passes and fails.
+
+So the parser intermittently emits JSON that `extractJsonValue` cannot balance.
+Note also that such failures are reported as `truncated` when they are really
+malformed output — `extractJsonValue` returns `truncated` for any value that
+opens and never closes, which conflates "cut off" with "unbalanced". The
+functional outcome is identical (the route collapses to `{}`), but the
+diagnostic label is misleading, and it is the reason §4.2's truncation counts
+should be read as "JSON extraction failures" rather than strictly "truncations".
+
+**The obvious remedy is not applied here, because it is outside the scope of
+this fix.** The JD parse uses bare `parseJson` (`app/api/generate/route.ts:244`)
+and gets no second attempt. The validator, facing the same class of failure,
+uses `parseLlmJson`, which re-calls the model once on a parse failure. Extending
+the same treatment to the JD parse would be a one-line change and, given the
+failures are independent across attempts, would be expected to reduce the
+residual failure rate from ~11% to roughly 1%. That change has not been made.

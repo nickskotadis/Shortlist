@@ -16,8 +16,21 @@ import type { DocumentType, JdAnalysis, ToneType, UserData } from "./types";
 
 // Per-stage output caps. Changing any of these changes cost, latency, and the
 // likelihood of hitting the JSON truncation path in llm-json.ts.
+//
+// parser: 4096. Measured requirement, not a guess. buildJdParserPrompt asks for
+// a 12-field analysis; probing the real fixtures at max_tokens=8192 showed the
+// parser needs 744–1,061 output tokens for a ~3k-char JD and 1,291–1,506 for a
+// JD near the 15,000-char input limit, with nothing approaching the probe
+// ceiling. The previous cap of 1,024 sat below that requirement: it truncated
+// 17% of standard JDs and 100% of long ones, and route.ts silently discards a
+// truncated analysis and generates from {}. 4096 is ~2.7x the observed maximum.
+//
+// Raising a cap is close to free — max_tokens bounds generation, it does not
+// reserve or bill capacity, so JDs that already fit are entirely unaffected.
+// The only JDs that now cost more are the ones that were previously producing
+// an unusable truncated analysis.
 export const MAX_TOKENS = {
-  parser: 1024,
+  parser: 4096,
   generator: 2048,
   validator: 1024,
   tailoring: 512,
