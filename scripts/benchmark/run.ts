@@ -685,6 +685,13 @@ function buildSummary(rows: ReturnType<typeof loadRows>) {
         completed.filter((e) => e.experiment === "exp1" && e.config === "A"),
         PROMPT_VERSIONS.bullets
       ),
+      // Historical versions run once; the current version runs twice. This
+      // slice restricts the current version to run 1 so the version series is
+      // an equal-n comparison.
+      currentRun1: aggregateQuality(
+        completed.filter((e) => e.experiment === "exp1" && e.config === "A" && e.run === 1),
+        `${PROMPT_VERSIONS.bullets} (run 1 only)`
+      ),
       byVersion: Object.fromEntries(
         versions.map((v) => [
           v.replace("version:", ""),
@@ -766,16 +773,19 @@ function printSummary(rows: ReturnType<typeof loadRows>) {
 
   const versionKeys = Object.keys(s.experiment2.byVersion);
   if (versionKeys.length) {
-    console.log(`\n    Pass rate over prompt versions:`);
+    const r1 = s.experiment2.currentRun1;
+    console.log(`\n    Pass rate over prompt versions (equal n, Config A, run 1):`);
     for (const [v, agg] of Object.entries(s.experiment2.byVersion)) {
       console.log(
         `      ${v.padEnd(14)} n=${String(agg.n).padStart(3)}  ` +
-          `mean ${agg.meanOverall.toFixed(2)}  pass ${(agg.passRate * 100).toFixed(1)}%`
+          `mean ${agg.meanOverall.toFixed(2)}  pass ${(agg.passRate * 100).toFixed(1)}%  ` +
+          `flags/gen ${agg.meanFlagsPerGeneration}`
       );
     }
     console.log(
-      `      ${q.label.padEnd(14)} n=${String(q.n).padStart(3)}  ` +
-        `mean ${q.meanOverall.toFixed(2)}  pass ${(q.passRate * 100).toFixed(1)}%  (current)`
+      `      ${PROMPT_VERSIONS.bullets.padEnd(14)} n=${String(r1.n).padStart(3)}  ` +
+        `mean ${r1.meanOverall.toFixed(2)}  pass ${(r1.passRate * 100).toFixed(1)}%  ` +
+        `flags/gen ${r1.meanFlagsPerGeneration}  (current)`
     );
   }
 

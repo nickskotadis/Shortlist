@@ -29,8 +29,14 @@ export type Stage =
   | "parse"
   | "generate"
   | "validate"
+  // Validation of the output produced by a generation retry.
+  | "validate_retry"
   | "generate_retry"
-  | "validate_retry";
+  // The SECOND model call inside a single validation, made by parseLlmJson when
+  // the first response did not parse. Distinct from validate_retry: this is a
+  // JSON-recovery call, not a re-validation after regeneration. Conflating the
+  // two makes the per-stage cost table ambiguous.
+  | "validate_parse_retry";
 
 export interface CallContext {
   experiment: string;

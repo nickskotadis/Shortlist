@@ -223,7 +223,10 @@ export async function runPipeline(opts: RunOpts): Promise<PipelineOutcome> {
     const parsed = await parseLlmJson<ValidatorResult>(async () => {
       attempts++;
       const res = await callMessage(
-        ctx(attempts === 1 ? stage : "validate_retry", routing.validator),
+        // attempts > 1 means parseLlmJson is re-calling the model because the
+        // first response did not parse — a distinct stage from re-validating
+        // after a generation retry.
+        ctx(attempts === 1 ? stage : "validate_parse_retry", routing.validator),
         deps,
         {
           model: routing.validator,
@@ -249,8 +252,12 @@ export async function runPipeline(opts: RunOpts): Promise<PipelineOutcome> {
       return res.text;
     });
 
-    outcome.validatorRetriedParse = attempts > 1;
-    outcome.validatorFirstParseFailReason = firstFailReason;
+    // Accumulate rather than assign: a generation can be validated twice (once
+    // initially, once after a generation retry) and either validation may have
+    // needed a parse-recovery call. Assigning would let the second validation
+    // erase the first's flag and undercount the recovery path.
+    outcome.validatorRetriedParse ||= attempts > 1;
+    outcome.validatorFirstParseFailReason ??= firstFailReason;
 
     if (parsed.ok) {
       // The route overwrites the model's own verdict with resolveVerdict.
