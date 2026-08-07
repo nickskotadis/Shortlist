@@ -1034,3 +1034,329 @@ truncations. The parser figures are largely safe — 96 of 224 parse calls carri
   `buildValidatorPrompt`, not established by ablation.
 - `PASS_THRESHOLD` / `MIN_DIMENSION_SCORE` are still dead constants whose values
   happen to match `resolveVerdict`.
+
+---
+
+## 11. Post-fix re-run (run 2)
+
+Run 1 (§1–§7) measured a pipeline in which 46.4% of generations had no JD
+analysis. This section re-measures the identical matrix against the fixed
+pipeline. **§1–§10 are unchanged** — run 1 stands as the record of what the
+broken pipeline did, and the delta between the runs is itself a result.
+
+### 11.1 Methodology
+
+Identical to run 1: same 40 fixtures (**fixture-set hash `783cd3c8ac5d3ede`,
+verified byte-identical before the run**), same candidate resume (SHA-256
+`b5b08bbebf682455`, verified separately — the fixture hash does not cover it),
+same 4 passes plus the same prompt-version series, same seeded shuffle (seed
+`20260805`), sequential execution, same pricing source, JD cache still bypassed.
+
+Production deltas under test, all committed before the run:
+
+| | run 1 | run 2 |
+|---|---|---|
+| `MAX_TOKENS.parser` | 1024 | **4096** |
+| `MAX_TOKENS.validator` | 1024 | **4096** |
+| JD parse recovery | none (`parseJson`) | **`parseLlmJson`, one retry** |
+| `extractJsonValue` labels | all unbalanced → `truncated` | **`truncated` vs `invalid` distinguished** |
+
+`MODELS`, `PROMPT_VERSIONS`, prompts, and `resolveVerdict` are unchanged.
+
+**Run record.** 2026-08-07 14:01:49Z → 16:41:25Z, **2h 39m**, 924 API calls,
+**actual spend $9.90**. The process was reaped by the environment four times;
+checkpointing resumed from the completed (jd, config, run) tuples each time with
+no lost work and no duplicated units, and the fixture hash was re-verified on
+every resume.
+
+**Cost vs estimate.** I estimated $8.50–9.80 analytically; actual was $9.90, 1%
+above the top of that range. The harness's own single-JD pilot extrapolation said
+$11.45 — the same method that overshot run 1 by 32%, and it overshot again by
+14%. The analytical estimate built from measured per-call costs was the better
+predictor, but I under-called it, for the reason in §11.4.
+
+**Three schema deviations**, forced by the fixes and handled in the comparison
+tooling rather than silently reconciled: run 2 emits distinct `parse_retry` and
+`validate_parse_retry` stages where run 1 conflated things under
+`validate_retry` (decomposed by arithmetic for run 1); run 2's
+`validator_retried_parse` accumulates where run 1's was overwritten and
+undercounted; and run 1 had no JD-parse retry to record at all.
+
+### 11.2 JD-analysis blindness — the primary validation
+
+| | run 1 | run 2 |
+|---|---|---|
+| Parse success | 120/224 (53.6%) | **219/224 (97.8%)** |
+| **Generations running blind (`{}`)** | **104 (46.4%)** | **5 (2.2%)** |
+| Long JDs (>13k chars) | 0/30 (0%) | **26/30 (87%)** |
+| Standard JDs | 120/194 (62%) | **193/194 (99%)** |
+| Failure reasons | `truncated` 101, `invalid` 3 | **`invalid` 5, `truncated` 0** |
+
+The parse-recovery path fired **21 times and recovered 16 (76%)**.
+
+**Residual blindness is 2.2%, not 0%.** My plan's success criterion said 0%;
+§9.5 predicted ~1.2%. The measured value is 2.2% — above the prediction, below
+the pre-fix 46.4%. All five residuals are double-failures where both attempts
+produced unparseable JSON; three of the five are long JDs. **Reported as
+measured: the fix reduces blindness by 95% but does not eliminate it.**
+
+Note that **zero** residual failures are labelled `truncated` — every one is
+`invalid`. The §10.3 relabel is doing exactly its job: these are malformed
+outputs, not budget exhaustion, and under run 1's labelling they would have been
+misreported as truncations pointing at a token cap that is now demonstrably not
+the constraint.
+
+### 11.3 Reliability
+
+| | run 1 | run 2 |
+|---|---|---|
+| Total API calls | 799 | 924 |
+| Terminal failures | 0 | **0** |
+| Backoff retries (429/529/5xx) | 0 | **0** |
+| **Parser calls at `max_tokens`** | **96** | **0** |
+| **Validator calls at `max_tokens`** | **15** | **0** |
+| Generate calls at `max_tokens` | 0 | 0 |
+| **Validation ended `unavailable`** | **4** | **0** |
+| Input-validation rejections | 18 | 18 |
+
+Both token-cap fixes are fully effective at scale: **zero truncations on either
+stage across 924 calls.** The fail-closed path never fired because nothing
+reached it. As in run 1, no rate limiting or server errors occurred, so the
+backoff machinery remains unexercised and this run says nothing about behaviour
+under API pressure.
+
+### 11.4 Routing cost and latency — the delta widened sharply
+
+| | run 1 | run 2 |
+|---|---|---|
+| Config A cost/generation | $0.02796 | $0.03130 (**+11.9%**) |
+| Config B cost/generation | $0.04643 | $0.07126 (**+53.5%**) |
+| Config A mean latency | 28,028 ms | 31,987 ms (**+14.1%**) |
+| Config B mean latency | 41,882 ms | 63,863 ms (**+52.5%**) |
+| **A cheaper than B** | **39.8%** | **56.1%** |
+| **A faster than B** | **33.1%** | **49.9%** |
+
+Latency percentiles, run 2: A p50 33,367 / p90 46,510 / p95 48,705;
+B p50 64,264 / p90 89,165 / p95 93,724.
+
+**My prediction was wrong, and by a lot.** In §9.3 I predicted the fixes would
+add roughly 3.5% cost and 3.6% latency **to both configs alike**. Actual: Config
+A +11.9% / +14.1%, Config B **+53.5% / +52.5%**. I was wrong on magnitude for
+both and wrong on the premise that the impact would be symmetric.
+
+The reason is the finding: **run 1 systematically under-measured Config B
+because 94% of its generations were blind.** Sonnet's parser truncated at 1,024
+tokens on 95% of calls, so Config B's parse was artificially cheap; its validator
+then received the same empty `{}`, had nothing to check, and produced short
+output. Run 2's Config B parse generates 93,436 output tokens against run 1's
+75,569, and its validate stage 72,586 against 56,995.
+
+The dominant driver is the **retry rate**:
+
+| Retry rate | run 1 | run 2 |
+|---|---|---|
+| Config A | 40.5% | 52.7% |
+| Config B | **0.0%** | **54.1%** |
+
+Config B never retried in run 1 because its blind validator passed 98.6% of
+generations. With sight restored it fails and retries like Config A, adding a
+generate + validate cycle to more than half its generations.
+
+**The routing conclusion strengthens, but for a reason that is not to the
+pipeline's credit.** Config A is now 56.1% cheaper rather than 39.8% — not
+because Haiku got better, but because run 1 had been flattering Config B by
+measuring a stage that was silently failing.
+
+### 11.5 Quality — the headline drop is mostly sample composition
+
+Headline movement, both configs, both exceeding the noise floor established from
+run 1's own two runs (Config A ±0.239 mean, ±5.4pp pass):
+
+| | run 1 | run 2 | Δ | vs noise |
+|---|---|---|---|---|
+| Config A mean | 7.929 | 7.580 | **−0.349** | exceeds |
+| Config A pass rate | 75.7% | 59.5% | **−16.2pp** | exceeds |
+| Config B mean | 7.841 | 7.492 | −0.349 | exceeds |
+| Config B pass rate | 98.6% | 63.5% | **−35.1pp** | exceeds |
+
+**Scores went down after fixing the bug. That is not a quality regression — it
+is the measurement becoming honest, and the evidence for that is specific.**
+
+Restricting run 1 to the subset that was *not* blind makes the comparison
+like-for-like:
+
+| Config A subset | n | mean | pass | **relevance** |
+|---|---|---|---|---|
+| run 1, blind (`{}`) generations | 17 | **8.776** | **100%** | **8.24** |
+| run 1, populated generations | 57 | 7.671 | 68.4% | 6.39 |
+| run 2 (97.8% populated) | 74 | 7.580 | 59.5% | 6.16 |
+
+**The blind validator awarded relevance 8.24 to output it had no requirements to
+judge against — against 6.39 when it could see them.** Those 17 generations
+scored a perfect 100% pass rate. They inflated run 1's headline.
+
+Like-for-like, populated vs populated:
+
+- **mean 7.671 → 7.580 = −0.091, which is INSIDE the ±0.239 noise floor.** No
+  detectable change in mean score.
+- pass rate 68.4% → 59.5% = **−8.9pp, which still exceeds the 5.4pp noise
+  floor** — about half the headline −16.2pp, but real.
+
+Per-dimension movement corroborates the mechanism. For Config A, only the
+JD-dependent dimensions fell; the three that do not depend on the JD analysis
+held or rose:
+
+| | specificity | **relevance** | authenticity | impact | clean |
+|---|---|---|---|---|---|
+| run 1 | 8.36 | 6.82 | 8.04 | 8.48 | 8.96 |
+| run 2 | 8.23 | **6.16** | 8.24 | 8.55 | 9.05 |
+| Δ | −0.13 | **−0.66** | +0.20 | +0.07 | +0.09 |
+
+A grader that had simply become harsher across the board would have pushed every
+dimension down. Relevance falling three times further than anything else, while
+authenticity, impact and cleanliness rise, is what "the grader gained
+information about relevance specifically" looks like.
+
+**What this does not establish.** Both the generator's and the validator's
+inputs changed at once, so this cannot separate "output quality is unchanged and
+the grader got stricter" from "output changed too." The like-for-like mean being
+inside noise is consistent with the former and is the most defensible reading,
+but the clean experiment — hold the validator's analysis fixed, vary only the
+generator's — was not run. The residual −8.9pp like-for-like pass-rate drop has
+at least three candidate explanations (run 1's "populated" analyses may
+themselves have been partial; the validator cap change lets it express longer
+issue lists; ordinary cross-day drift) and this benchmark does not distinguish
+them.
+
+Config B's populated-only subset is n=4 and is too small to support any
+comparison; it is excluded rather than reported.
+
+### 11.6 Prompt-version series
+
+| Version | run 1 mean | run 2 mean | run 1 pass | run 2 pass | run 1 flags/gen | run 2 flags/gen |
+|---|---|---|---|---|---|---|
+| `bullets-v1` | 8.054 | 7.589 | 75.7% | 73.0% | 2.76 | 2.65 |
+| `bullets-v2` | 7.846 | 7.459 | 67.6% | 62.2% | 3.35 | 3.16 |
+| `bullets-v3` (current) | 7.811 | 7.505 | 73.0% | 62.2% | 3.65 | 3.70 |
+
+All three versions dropped by a similar amount (−0.47, −0.39, −0.31), and the
+ordering is preserved in both runs: v1 highest mean, v2 lowest. **Re-measuring on
+a pipeline where the JD analysis actually reaches the generator did not change
+the conclusion — there is still no evidence that either documented prompt
+"improvement" improved anything measurable.** The differences between versions
+remain within the noise established in §3.3, and v3's stated goal (banning em
+dashes) still targets something the validator does not score.
+
+### 11.7 Before/after summary
+
+| Metric | run 1 (pre-fix) | run 2 (post-fix) |
+|---|---|---|
+| Generations running blind | **46.4%** | **2.2%** |
+| Long-JD parse success | 0% | 87% |
+| Parser truncations | 96 | **0** |
+| Validator truncations | 15 | **0** |
+| Ungraded (fail-closed) generations | 4 | **0** |
+| A cheaper than B | 39.8% | **56.1%** |
+| A faster than B | 33.1% | **49.9%** |
+| Config A cost/generation | $0.02796 | $0.03130 |
+| Config A mean latency | 28.0s | 32.0s |
+| Config A retry rate | 40.5% | 52.7% |
+| Config A mean score | 7.929 | 7.580 |
+| Config A mean score, like-for-like | 7.671 | 7.580 (inside noise) |
+| Total spend | $7.56 | $9.90 |
+
+### 11.8 What these numbers don't prove
+
+Everything in §5 still applies. Restated for this run, plus what is new:
+
+- **The corpus is still synthetic** and LLM-authored (§5.1). This remains the
+  largest threat to external validity and applies to every number above.
+- **Quality is still LLM-judged self-evaluation, not ground truth**, and in
+  Config A the judge is Haiku grading Sonnet. No human read any output in either
+  run. The §11.5 finding is that the grader's *information* changed; whether its
+  *judgment* is any good is untested.
+- **Config B is still not a valid quality control** (§5.2) — and run 2 makes this
+  worse, not better: its validator changed from blind to sighted at the same time
+  as everything else.
+- **Latency is single-machine and client-side** (§5.4), and the cross-run
+  comparison adds a problem the within-run comparison does not have: run 1 ran
+  2026-08-06 03:32–05:35Z and run 2 ran 2026-08-07 14:01–16:41Z, on the same
+  residential connection but a different day and time of day. "Config A is 49.9%
+  faster than Config B" (measured within one interleaved run) is far stronger
+  evidence than "Config B got 52.5% slower between runs," which mixes the
+  pipeline change with a day of API-side and network drift.
+- **Sample size unchanged**: 37 JDs × 2 runs per config, one candidate profile,
+  one document type, one tone. No significance testing; the noise floor is an
+  empirical two-run spread, not a confidence interval.
+- **The 2.2% residual blindness was not diagnosed**, only counted. Five
+  double-failures is too few to characterise.
+- **The cost figures are cold-cache** (§5.10). Production skips the parse call on
+  a repeat JD, and the parse stage is now more expensive than it was, so the gap
+  between benchmark and production cost has widened.
+
+### 11.9 Resume-ready claims
+
+Each with its number and the specific hole an interviewer would go for.
+
+**Claim 1 — the diagnostic-and-fix arc (lead with this).**
+
+> "Instrumented an LLM generation pipeline and found 46% of requests silently
+> running with an empty job-description analysis — a 1,024-token output cap was
+> truncating the parser's JSON and the error path discarded the failure. Fixed
+> the cap and added a recovery retry, taking blindness from 46.4% to 2.2% and
+> parser truncations from 96 to 0 across 924 calls."
+
+*Vulnerable to:* "how do you know the output was actually worse?" You don't —
+see Claim 3. This is a defect with a quantified frequency and an identified
+mechanism, not a measured quality regression. Say that before they ask.
+
+**Claim 2 — routing cost.**
+
+> "Measured the production model routing at 56% cheaper and 50% faster per
+> generation than an all-Sonnet control, across 37 job descriptions with two runs
+> per configuration and between-run variance under 5%."
+
+*Vulnerable to:* "did quality drop?" The control's validator differs from
+Config A's, so the quality comparison is invalid — concede it unprompted. Also
+note the 56% figure is *larger* than the 39.8% first measured, because the first
+measurement was flattering the control by measuring a silently-failing stage.
+
+**Claim 3 — the measurement-honesty finding (the most interesting one).**
+
+> "After fixing the bug, measured quality scores *fell* 16 points of pass rate.
+> Showed this was the measurement correcting rather than the product regressing:
+> the validator had been scoring 46% of generations without the requirements it
+> was grading against, awarding those a relevance score of 8.24 versus 6.39 when
+> it could see them. Comparing like-for-like, mean score moved 0.09 — inside the
+> 0.24 run-to-run noise floor."
+
+*Vulnerable to:* "you changed the generator's and the grader's inputs at the same
+time, so how do you separate them?" You can't, fully. The per-dimension evidence
+is strong — relevance fell 0.66 while authenticity, impact and cleanliness rose —
+but the clean ablation wasn't run. Volunteer this; it's the difference between
+sounding rigorous and sounding lucky.
+
+**Claim 4 — a wrong prediction, owned.**
+
+> "Predicted the fixes would add ~3.5% cost to both configurations. Actual was
+> +11.9% and +53.5%. The asymmetry was the finding: the control had been cheap
+> only because its parse stage was failing silently."
+
+*Vulnerable to:* nothing much — it's a disclosed miss with the correct
+post-hoc explanation. Volunteering a wrong prediction and what it taught you is
+usually stronger than a clean win.
+
+**Claim 5 — the negative result, twice.**
+
+> "Re-ran three prompt versions against the same test set before and after the
+> fix. Neither documented 'quality improvement' revision moved the pass rate in
+> either run (v1 75.7%/73.0%, v2 67.6%/62.2%, v3 73.0%/62.2%, n=37 each,
+> differences within noise)."
+
+*Vulnerable to:* only if you overstate it. The right framing is "the changes
+didn't move the metric I was measuring, and one of them targeted something the
+validator doesn't score" — which shows you understand your instrument's limits.
+
+**Do not claim** anything about output quality between configs; any
+generalisation to real job postings; or that parse failures were eliminated —
+2.2% remain.
