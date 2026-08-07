@@ -1,0 +1,54 @@
+NLP Engineer
+Cormorant Compliance — Remote (US/UK)
+
+Cormorant builds regulatory change management software for financial institutions. We monitor about 900 regulatory sources across 40 jurisdictions, identify changes that affect a given institution, and map them to that institution's internal policies and controls.
+
+We are hiring an NLP Engineer to work on the document understanding pipeline.
+
+What the pipeline does
+
+Regulatory documents are long, densely cross-referenced, written in legal register, and published in inconsistent formats — some as clean XML, many as PDFs that were scanned from paper in 2009.
+
+Our system has to segment these documents into individually addressable provisions, resolve cross-references (including references to other documents and to superseded versions), classify what each provision requires, and determine whether it applies to a particular institution given its charter, size, and business lines.
+
+Then, when a regulator publishes an amendment, we have to diff it against the prior version at the provision level and tell a compliance officer exactly what changed and what it affects.
+
+Your work
+
+Improve provision-level segmentation and hierarchical structure extraction. This is currently our weakest link and the source of most downstream errors.
+
+Cross-reference resolution, including the genuinely nasty cases: references by description rather than citation, references to provisions that have since been renumbered, and circular references.
+
+Change detection and semantic diffing. A regulator reissuing a document with reformatted whitespace must not generate 400 false change alerts.
+
+Applicability classification, working with our in-house regulatory analysts who provide labels and who will tell you when you are wrong.
+
+Evaluation infrastructure. Our analysts' time is our scarcest resource and we need to spend their labeling effort where it moves the needle.
+
+Requirements
+
+Four or more years of NLP or ML engineering with production experience on document understanding, information extraction, or a related problem.
+
+Strong Python, PyTorch, and the Hugging Face ecosystem.
+
+Experience with long-document processing and the practical problems of documents that exceed model context.
+
+Experience with transformer fine-tuning and with knowing when a fine-tune is the wrong answer versus retrieval or rules.
+
+Comfort with domain experts as collaborators. Our regulatory analysts are not technical and their judgment on what matters is better than yours will be for at least a year.
+
+Nice to have
+
+Legal, regulatory, or financial compliance domain exposure.
+
+Experience with OCR pipelines and the failure modes of scanned documents.
+
+Experience with active learning or weak supervision to make expensive labeling go further.
+
+Experience evaluating LLM approaches against classical NLP baselines. We use LLMs for some tasks and find they lose to a well-tuned classifier for others; we want someone comfortable with that being an empirical question.
+
+Details
+
+$160,000 - $195,000 USD or £95,000 - £120,000. Fully remote across US and UK.
+
+Cormorant is 130 people, about 25 of them regulatory analysts, which is an unusual ratio and the main reason our product works.

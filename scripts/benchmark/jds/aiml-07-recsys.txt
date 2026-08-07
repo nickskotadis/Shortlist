@@ -1,0 +1,48 @@
+Senior ML Engineer, Recommendations
+Bramble — Remote (US) or Portland, OR
+
+Bramble is a marketplace for handmade and small-batch goods. About 180,000 sellers, 6 million buyers, and a catalog where most items are unique — a seller lists one hand-thrown ceramic bowl, it sells, and it is gone forever.
+
+That last detail is why our recommendation problem is unusual. We are hiring a Senior ML Engineer to work on it.
+
+The cold-start problem is the whole problem
+
+In a conventional marketplace, a popular item accumulates interaction data and recommendation systems exploit that. Our median item has fewer than 30 impressions in its entire lifetime before it sells or is delisted. Collaborative filtering signals barely exist at the item level.
+
+So our approach leans on content: image embeddings, text embeddings from titles and descriptions, seller-level signals, and category and attribute structure. We model at the item level for ranking and at the seller and style-cluster level for the collaborative signal.
+
+What you'd own
+
+Candidate generation and ranking for the home feed, search ranking, and similar-item recommendations. These are currently three separate systems with three separate feature pipelines and there is a strong argument for consolidation.
+
+The embedding pipeline. We generate multimodal embeddings for every new listing within minutes of it being posted, because an item that takes a day to become recommendable has lost a meaningful fraction of its selling window.
+
+Diversity and seller fairness. A recommender that concentrates impressions on the top 2% of sellers optimizes short-term GMV and destroys the marketplace. We have explicit constraints here and tuning them is a real ongoing tension with growth goals.
+
+Online evaluation. We run interleaving experiments for ranking changes and standard A/B for larger shifts.
+
+Requirements
+
+Five or more years of ML engineering with substantial recommender systems experience in production.
+
+Strong Python and PyTorch. Solid SQL and comfort with large-scale data processing (we use Spark and Snowflake).
+
+Experience with two-tower architectures, approximate nearest neighbor retrieval, and learning-to-rank. We use FAISS in production.
+
+Experience with cold-start or content-based approaches specifically. This is the single most relevant thing on your resume for this role.
+
+Ability to reason about marketplace dynamics and second-order effects, not just offline metrics.
+
+Nice to have
+
+Multimodal representation learning.
+
+Experience with fairness or exposure constraints in ranking.
+
+Marketplace or two-sided platform experience.
+
+Compensation
+
+$185,000 - $225,000 plus equity. Remote in the US or hybrid at our Portland office.
+
+Bramble is 400 people. We are B Corp certified and our seller community is genuinely central to how we make decisions — sellers show up in planning conversations and occasionally show up in our office. It changes the tenor of the work.

@@ -1,0 +1,52 @@
+Engineering Manager, Platform
+Hollis Education — Remote (US)
+
+Hollis builds student information systems for private K-12 schools. About 1,100 schools use us for admissions, enrollment, scheduling, gradebooks, and family billing.
+
+We are hiring an Engineering Manager for the Platform team.
+
+The team
+
+Platform is seven engineers. They own authentication and identity, the permissions system, our integration and API layer, and the shared services the four product teams build on. Two of the seven are senior, one is a recent Staff promotion, and two joined in the last six months.
+
+The team has been without a manager for four months. The Staff engineer has been holding it together and wants to go back to being a Staff engineer.
+
+What we need from you
+
+Manage and grow seven engineers. Regular one-on-ones, career development, performance conversations including hard ones, and hiring — we expect to add two people next year.
+
+Own the team's roadmap in partnership with product and with the engineering director. Platform work is largely enabling work and a significant part of this job is making the case for it against product feature pressure.
+
+Improve how the team plans and delivers. Their execution is currently uneven, mostly because priorities change under them more than they should.
+
+Stay technically credible. We do not expect you to write production code regularly, but you should be able to read a design doc critically and participate in an architecture discussion as a peer.
+
+Handle the identity migration. The team is midway through moving off a homegrown auth system to a standard OIDC implementation, and it is behind schedule for reasons that are more organizational than technical.
+
+Requirements
+
+Three or more years managing software engineers, including experience managing senior engineers.
+
+Prior hands-on engineering background substantial enough that your team respects your technical judgment.
+
+Experience with platform or infrastructure teams specifically. The dynamics differ from product teams — your customers are internal, your wins are less visible, and the case for your work has to be made repeatedly.
+
+Track record of hiring and of developing people. We will ask for specifics.
+
+Comfort with remote management. We are fully distributed and this team has never been colocated.
+
+Not required
+
+Education technology background.
+
+Experience managing more than about ten people. We are not looking for a manager of managers.
+
+Working here
+
+$180,000 - $215,000 plus equity. Fully remote in the US, with two onsites a year.
+
+Hollis is 320 people. Engineering is 60, across five teams plus a small platform-adjacent SRE group.
+
+We are honest about our constraints: our product serves schools, so our release calendar is dominated by the academic year, and August is genuinely hard. We plan around it and we do not pretend it is not real.
+
+Interview process includes a conversation with the Platform team itself, and their input carries real weight in the decision. We have not hired a manager over a team's objection and we do not intend to start.

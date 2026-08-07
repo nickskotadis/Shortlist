@@ -1,0 +1,154 @@
+Staff Security Engineer — Cloud and Application Security
+Position Number: SEC-STAFF-0917
+Agency Partner: Federal and State Government Solutions Division
+Location: Reston, VA (Onsite 4 days) | Secondary: Colorado Springs, CO
+Clearance: Active Secret required; ability to obtain Top Secret preferred
+Employment Category: Full-time, Regular
+
+COMPANY AND DIVISION
+
+Halbrook Technologies is a professional services and software firm serving federal civilian agencies, the Department of Defense, and state government customers. The company employs approximately 5,800 people, of whom roughly 2,100 hold active security clearances.
+
+The Federal and State Government Solutions Division builds and operates mission systems under contract. Our portfolio includes benefits eligibility platforms for three state agencies, a case management system supporting a federal civilian agency, and several classified programs about which this posting can say nothing further.
+
+The Security Engineering group within FSGS is responsible for the security architecture, controls implementation, continuous monitoring, and authorization support across this portfolio. We are a team of 26 across three sub-groups: application security, cloud and infrastructure security, and governance, risk, and compliance.
+
+ROLE SUMMARY
+
+We are hiring a Staff Security Engineer to serve as the senior technical authority for cloud and application security across the division's programs.
+
+This is a hands-on senior individual contributor role. The position carries no direct reports but does carry substantial technical authority, including the ability to block a release or a deployment on security grounds and the responsibility to justify that decision to program leadership when it happens.
+
+The role exists because our portfolio has grown faster than our senior security capacity, and because the authorization environment has become materially more demanding. Several of our programs are transitioning from legacy Authority to Operate processes toward continuous authorization models, and that transition requires engineering capability we currently have to borrow from programs rather than provide centrally.
+
+PRINCIPAL DUTIES AND RESPONSIBILITIES
+
+Security Architecture and Engineering
+
+Serve as the security architect for cloud environments across the portfolio, principally AWS GovCloud and Azure Government, including boundary design, network segmentation, identity architecture, encryption strategy, and logging architecture.
+
+Design and implement security controls satisfying applicable frameworks, principally NIST SP 800-53 Revision 5 at the Moderate and High baselines, with FedRAMP requirements applying to certain systems and CMMC requirements applying to others.
+
+Lead threat modeling for major systems and significant architectural changes. Produce documented threat models that inform design decisions rather than being generated after the fact for audit purposes.
+
+Design and implement automated security control validation. A central objective for this role is moving our control evidence from manual periodic collection to continuous automated collection, which is both a compliance improvement and a substantial reduction in the burden currently carried by engineering teams.
+
+Own the security architecture review process for new systems and major changes, including the documentation that supports authorization packages.
+
+Application Security
+
+Conduct and lead secure code review for high-risk components across programs. Our portfolio includes systems written in Java, C#, Python, and JavaScript, with a small amount of C in one legacy component.
+
+Own static analysis, dynamic analysis, and software composition analysis tooling across the division, including tuning to reduce false positive burden. Current tooling produces a volume of findings that engineering teams have substantially learned to disregard, which is the failure mode this role should correct.
+
+Manage the vulnerability lifecycle: identification, triage, risk assessment, remediation tracking, and reporting. Certain findings carry contractually mandated remediation timelines and missing them has consequences at the contract level.
+
+Support penetration testing, including scoping, coordination with independent assessors, and remediation of findings. Several programs require annual independent assessment.
+
+Develop secure coding standards and reference implementations, and deliver training to engineering staff across programs.
+
+Authorization and Compliance Support
+
+Support Authority to Operate packages and continuous authorization activities, working with our GRC sub-group, with program Information System Security Officers, and with government Authorizing Officials and their representatives.
+
+Prepare and present technical security material to government stakeholders, including during assessment activities. This requires the ability to explain a control implementation precisely and to acknowledge a gap without becoming defensive, which is a specific skill and not everyone has it.
+
+Support incident response for security events affecting program systems, including the reporting obligations that attach to incidents in government environments, which are time-bound and unforgiving.
+
+Contribute to proposal efforts by providing security architecture content and by assessing the security implications of proposed technical approaches.
+
+CURRENT TECHNICAL LANDSCAPE
+
+Cloud environments across the portfolio are principally AWS GovCloud, with two programs in Azure Government and one legacy system remaining in a government-furnished data center. Infrastructure is managed through Terraform with an internal module library, though adoption is uneven and two programs still provision substantially by hand.
+
+Container workloads run on Amazon EKS and on a hardened Kubernetes distribution in one classified environment. Container image scanning is in place; runtime security monitoring is not, and establishing it is an identified gap.
+
+Identity is federated through a combination of agency-provided identity providers, PIV and CAC authentication for government users, and an internal identity provider for contractor staff. Reconciling these into a coherent model is one of the more persistent architectural problems in the portfolio.
+
+Logging is centralized per program rather than across the division, using a mixture of Splunk and Elastic depending on contract vintage and customer preference. Cross-program visibility is limited and improving it is constrained by data handling rules that in some cases prohibit aggregation.
+
+Our continuous monitoring tooling produces control evidence for roughly 60% of applicable controls automatically. The remainder is collected manually on a quarterly cycle by engineers who would rather be doing something else, which is both a morale problem and a reliability problem.
+
+WHAT WE ARE ACTUALLY LOOKING FOR
+
+Beyond the enumerated qualifications, the characteristics that distinguish successful senior security engineers in this environment are worth stating.
+
+The first is the judgment to distinguish real risk from framework compliance. Our control frameworks are extensive and satisfying every control literally is neither possible nor useful. We need someone who can identify which controls genuinely reduce risk in a given architecture, implement those thoroughly, and handle the remainder through documented and defensible risk acceptance rather than through theater.
+
+The second is the ability to work with engineering teams as a partner rather than as an obstacle. Security engineers who operate primarily by filing findings and escalating are technically correct and organizationally ineffective. The people who succeed here fix things, write the reference implementation, and make the secure path easier than the insecure one.
+
+The third is comfort with the government contracting environment. Decisions take longer than they would elsewhere. Requirements arrive through contractual mechanisms rather than product discussions. Funding is subject to appropriations. Engineers who need a fast-moving environment tend to be unhappy here regardless of how interesting they find the technical work.
+
+REQUIRED QUALIFICATIONS
+
+United States citizenship. This is a firm requirement arising from contract terms and cannot be waived.
+
+Active Secret security clearance at the time of application. Candidates with a lapsed but reinstatable clearance may be considered.
+
+Bachelor's degree in Computer Science, Cybersecurity, Information Systems, Engineering, or a related field. An additional four years of directly relevant experience may substitute for the degree.
+
+Ten or more years of professional experience in information security, application security, or security engineering, including at least three years at a senior or staff level.
+
+Demonstrated hands-on experience securing cloud environments in AWS, Azure, or both, at a depth including identity and access management, network architecture, key management, and logging and monitoring design.
+
+Demonstrated experience implementing NIST SP 800-53 controls in a real system, as distinct from documenting them.
+
+Working ability to read and assess code in at least two of Java, C#, Python, and JavaScript.
+
+Experience with security tooling across the SDLC, including static and dynamic analysis and dependency scanning.
+
+Demonstrated experience supporting a system through an authorization process.
+
+Excellent technical writing. A substantial fraction of this role's output is written documentation that a government reviewer will read closely.
+
+PREFERRED QUALIFICATIONS
+
+Active Top Secret clearance, or eligibility and willingness to undergo the investigation.
+
+Relevant certifications, including CISSP, CCSP, OSCP, GIAC certifications, or cloud provider security specialty certifications. Halbrook reimburses certification costs and provides study time.
+
+Experience with FedRAMP authorization, either as a Cloud Service Provider or as an assessor.
+
+Experience with continuous authorization or Ongoing Authorization models.
+
+Experience with infrastructure as code security, including policy as code approaches using Open Policy Agent, Sentinel, or similar.
+
+Experience with container and Kubernetes security in a hardened or regulated environment.
+
+Prior experience in a government contracting environment and familiarity with its rhythms, including the effect of contract modifications and continuing resolutions on technical planning.
+
+Experience with CMMC or with Defense Federal Acquisition Regulation Supplement cybersecurity requirements.
+
+WORK ENVIRONMENT AND CONDITIONS
+
+This position requires four days per week onsite in Reston, Virginia. Certain work must be performed in a Sensitive Compartmented Information Facility and cannot be performed remotely under any circumstances. Candidates seeking a predominantly remote arrangement should not apply, as we cannot accommodate one and would rather say so plainly than discover the mismatch after an offer.
+
+Occasional travel to program sites and to government facilities is required, estimated at 10 to 15%.
+
+The position may occasionally require work outside standard business hours in response to security incidents or to support deployment activities scheduled during maintenance windows.
+
+COMPENSATION AND BENEFITS
+
+The salary range for this position is $175,000 to $215,000. Placement within the range depends on experience, clearance level, certifications, and contract-specific labor category constraints. Candidates holding an active Top Secret clearance are typically placed in the upper portion of the range.
+
+Halbrook provides medical, dental, and vision coverage, a 401(k) with a 5% company contribution not contingent on employee deferral, 25 days of paid time off plus 11 holidays, an annual $4,000 professional development allowance covering certification and training, tuition assistance, and a referral bonus program.
+
+Certain positions on certain contracts are eligible for a clearance maintenance stipend.
+
+SELECTION PROCESS AND TIMELINE
+
+Candidates should be aware that hiring timelines in cleared positions differ substantially from commercial technology hiring. Our interview process itself typically takes three to four weeks, but the interval between offer acceptance and start date depends on clearance verification and, for candidates requiring investigation, can extend considerably.
+
+The process includes a recruiter screen covering clearance status and eligibility, a technical conversation with the hiring manager, a security architecture interview in which the candidate reviews a system design and identifies risks, a code review exercise, a conversation with two program Information System Security Officers who would be frequent collaborators, and a final discussion with the Security Engineering director.
+
+We do not ask puzzle questions. We do ask candidates to reason aloud about tradeoffs, and we are more interested in how a candidate reasons about an unfamiliar system than in whether they arrive at the answer we had in mind.
+
+EQUAL OPPORTUNITY STATEMENT
+
+Halbrook Technologies is an Equal Opportunity Employer and a VEVRAA Federal Contractor. All qualified applicants receive consideration without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, disability, protected veteran status, or any other characteristic protected by federal, state, or local law.
+
+Halbrook is committed to providing reasonable accommodations to applicants with disabilities. Requests for accommodation may be directed to our Talent Acquisition organization.
+
+Employment is contingent upon verification of citizenship, favorable adjudication of a background investigation, successful completion of drug screening consistent with federal contractor requirements, and confirmation of clearance eligibility. Certain positions require continued clearance eligibility as a condition of ongoing employment.
+
+This position is subject to export control regulations. Applicants must be able to demonstrate eligibility to access export-controlled information.

@@ -1,0 +1,144 @@
+Senior Full Stack Software Engineer — Clinical Workflow Applications
+Posting Number: 2026-CWA-3308
+Department: Digital Health Engineering
+Location: Nashville, TN (Hybrid, 2 days onsite) or Remote within the continental United States
+FLSA Status: Exempt
+Reports To: Engineering Manager, Clinical Workflow
+
+ABOUT ASHFORD HEALTH SYSTEMS TECHNOLOGY
+
+Ashford Health Systems operates 22 acute care hospitals, 140 outpatient clinics, and a home health division across the southeastern United States. We employ approximately 38,000 people and serve about 2.6 million patients annually.
+
+Digital Health Engineering is Ashford's internal software organization, roughly 280 people, building applications used by our own clinical and operational staff. We are not a vendor and we do not sell our software. Our users are the nurses, physicians, therapists, schedulers, and care coordinators who work in our facilities, and we see them in the hallway.
+
+That structure has consequences worth understanding before you apply. We do not have customers who can leave, which removes a certain kind of pressure and adds another: if we build something badly, the people affected are colleagues who will tell us about it, and they cannot go elsewhere. We also operate under the constraints of a health system's budget rather than a technology company's, which means we are chronically resource-constrained relative to the demand for our work and we prioritize ruthlessly.
+
+POSITION OVERVIEW
+
+The Clinical Workflow team builds and maintains applications that sit alongside our electronic health record and handle workflows the EHR handles poorly or not at all. Our applications include a nursing shift handoff tool used by approximately 9,000 nurses, a care coordination platform for our transitions-of-care program, a procedural scheduling application used across surgical and interventional services, and a clinical communication tool that routes messages based on care team assignment and on-call schedules.
+
+We are seeking a Senior Full Stack Software Engineer to join this team of nine engineers. The role involves significant ownership: senior engineers on this team typically own one application end to end, including its architecture, its integration surface, its operational health, and its relationship with the clinical stakeholders who depend on it.
+
+ESSENTIAL FUNCTIONS
+
+Design, develop, test, deploy, and maintain full stack features across one or more clinical workflow applications, working across the frontend, backend services, and data layer.
+
+Own the technical design for significant features and participate in design review for work produced by other engineers on the team.
+
+Integrate with the electronic health record and with ancillary clinical systems. Integration is a substantial portion of this work, using HL7 v2 interfaces, FHIR R4 APIs, and in some cases direct database read access to reporting replicas. Integration patterns vary by system and by facility, and several of our integrations predate current standards.
+
+Participate in requirements discovery directly with clinical stakeholders. Engineers on this team attend clinical workflow observation sessions, and we consider watching a nurse do her job for two hours to be a more reliable source of requirements than a meeting about what she does.
+
+Support applications in production, including participation in an on-call rotation. Our applications are used continuously, including overnight, and a failure in the clinical communication tool has patient safety implications. The rotation is currently one week in nine with a secondary escalation.
+
+Contribute to code review, to the team's testing practices, and to the ongoing effort to reduce the maintenance burden of our older applications.
+
+Document technical designs, integration contracts, and operational runbooks to a standard sufficient for another engineer to support the system.
+
+Participate in incident review and in the safety review process that applies when an incident has potential clinical impact. Ashford treats software defects with patient safety implications through the same review structure used for clinical events, which is more rigorous than a standard engineering postmortem and which some engineers find unfamiliar at first.
+
+TECHNICAL ENVIRONMENT
+
+Frontend applications are React with TypeScript. Older surfaces include an Angular application that is scheduled for replacement and a small number of server-rendered pages that are not.
+
+Backend services are predominantly .NET (C#), with a subset of newer services in Node.js and TypeScript. Data storage is Microsoft SQL Server for transactional workloads and PostgreSQL for two newer services. We use Redis for caching and session state.
+
+Integration infrastructure includes a Mirth Connect interface engine handling HL7 v2 messaging, a FHIR facade over our EHR vendor's API, and a message bus built on Azure Service Bus.
+
+Our infrastructure is Microsoft Azure with some remaining on-premises components, particularly where clinical systems require network proximity. Deployment is through Azure DevOps pipelines.
+
+We use Epic as our electronic health record. Direct Epic experience is valuable and not required; most engineers learn the relevant integration surface within a few months.
+
+THE TEAM AND HOW WE WORK
+
+The Clinical Workflow team is nine engineers, one engineering manager, one product manager, and one clinical informaticist who is a registered nurse by background and who functions as our translation layer between clinical reality and software requirements. Several team members have clinical backgrounds themselves; two are former nurses who moved into technology.
+
+We work in two-week iterations with a planning session at the start and a demonstration at the end that clinical stakeholders attend. We do not do daily standups; the team found them low value and we stopped. Design documents are expected for anything that will take more than about a week, and they are reviewed asynchronously.
+
+Code review is required for all changes and we expect reviewers to actually read the code rather than approving reflexively. Our team norm is that a reviewer who approves a change shares responsibility for it.
+
+We deploy to production roughly twice a week. Deployments to clinical applications are scheduled outside peak clinical hours and require a documented rollback plan. This is slower than most software organizations and it is a deliberate tradeoff.
+
+A NOTE ON PACE AND CONSTRAINTS
+
+We want candidates to have an accurate picture rather than a flattering one.
+
+Our budget is set annually as part of a health system capital and operating planning process, which means our capacity is relatively fixed and our ability to respond to new opportunities mid-year is limited. Engineers coming from well-funded technology companies sometimes find this frustrating.
+
+Our change management requirements are heavier than those of a typical software organization. Changes affecting clinical workflow require review by a clinical governance committee that meets biweekly. This adds latency and it exists for good reasons.
+
+Some of our applications are older than we would like and were built by teams that no longer exist. Two of them have no automated test coverage worth mentioning. We are improving this incrementally and we are not going to pretend the situation is better than it is.
+
+In exchange, the work has unusually direct meaning. When we shipped a change to the shift handoff tool that reduced handoff documentation time by roughly four minutes per nurse per shift, that recovered a measurable amount of time across nine thousand nurses, and several of them told us about it directly. That kind of feedback loop is rare and it is the main reason people stay on this team.
+
+MINIMUM QUALIFICATIONS
+
+Bachelor's degree in Computer Science, Information Technology, or a related field, or equivalent combination of education and directly relevant experience. Ashford accepts demonstrated experience in lieu of a degree for engineering positions.
+
+Five years of professional software engineering experience, including at least three years working full stack rather than exclusively frontend or backend.
+
+Demonstrated proficiency with a modern frontend framework, with React strongly preferred.
+
+Demonstrated proficiency with a server-side language and framework. C# and .NET experience is preferred given our stack; candidates with strong Java, Node.js, or comparable backgrounds have transitioned successfully.
+
+Strong relational database skills, including schema design and query performance analysis.
+
+Experience integrating with third-party or external systems, including handling of partial failure and reconciliation.
+
+Demonstrated ability to work directly with non-technical stakeholders to elicit requirements.
+
+PREFERRED QUALIFICATIONS
+
+Direct healthcare technology experience, whether at a health system, a healthcare software vendor, or a digital health company.
+
+Familiarity with HL7 v2, FHIR, or other healthcare interoperability standards.
+
+Experience with Epic, Cerner, or another major electronic health record platform, including its integration surface.
+
+Understanding of clinical workflows in an inpatient or ambulatory setting.
+
+Experience with software subject to regulatory oversight, or with software where defects carry safety consequences.
+
+Experience with accessibility requirements. Our applications are used by staff with a range of abilities and we have obligations under Section 504 and the Americans with Disabilities Act.
+
+PHYSICAL REQUIREMENTS AND WORKING CONDITIONS
+
+This position is primarily sedentary work performed in an office or remote setting, requiring the ability to operate a computer for extended periods and to communicate effectively by telephone and video conference.
+
+Employees in this position may be required to enter clinical areas for workflow observation. Such visits require compliance with Ashford's health screening, immunization, and infection control policies, including annual influenza vaccination and tuberculosis screening. Reasonable accommodation is available consistent with applicable law and with patient safety requirements.
+
+Occasional travel to Ashford facilities within the region is expected, approximately 5%.
+
+COMPLIANCE AND PRIVACY
+
+All Digital Health Engineering staff have access to systems containing protected health information and are subject to Ashford's privacy and security policies, annual HIPAA training, and periodic access auditing. Inappropriate access to patient records, including access to records of individuals known personally to the employee, is grounds for immediate termination regardless of intent.
+
+Development and testing environments use de-identified or synthetic data. Access to production data for troubleshooting purposes requires documented justification and is logged.
+
+COMPENSATION AND BENEFITS
+
+The salary range for this position is $135,000 to $170,000 annually, with placement based on experience, qualifications, and internal equity. Ashford publishes salary ranges for all posted positions and does not negotiate outside the posted range.
+
+Benefits include comprehensive medical, dental, and vision coverage with substantially subsidized premiums for employees and dependents, a 403(b) retirement plan with employer contribution of 5% plus a match on employee contributions, paid time off accruing at a rate of 25 days annually for this position level, an extended illness bank, paid parental leave of 8 weeks, tuition assistance up to $8,000 annually, and access to Ashford facilities and services at reduced cost.
+
+Ashford is a not-for-profit health system, and employment here may qualify for Public Service Loan Forgiveness for eligible federal student loans.
+
+SELECTION PROCESS
+
+Applications are reviewed by the hiring manager and by a member of the team. We aim to respond to every applicant within two weeks, and we do respond to candidates we decline.
+
+The process comprises an initial thirty-minute conversation with the engineering manager covering background and mutual fit; a ninety-minute technical interview in which the candidate walks through a system they built and answers detailed questions about the decisions involved; a practical exercise conducted as a two-hour pairing session on a realistic problem drawn from our actual backlog, using our stack, with an engineer from the team; a conversation with our clinical informaticist and product manager focused on how the candidate works with non-technical stakeholders; and a final conversation with the engineering manager and one peer.
+
+We do not use algorithmic puzzle questions. We have found them uncorrelated with performance in this environment.
+
+Candidates receive the practical exercise problem statement 48 hours in advance so they can arrive prepared rather than being evaluated on their ability to think under artificial time pressure. The exercise is compensated at $150 per hour for candidates who reach that stage.
+
+EQUAL OPPORTUNITY AND ACCOMMODATION
+
+Ashford Health Systems is an Equal Opportunity Employer and does not discriminate on the basis of race, color, national origin, religion, sex, sexual orientation, gender identity, age, disability, veteran status, genetic information, or any other characteristic protected by law.
+
+Ashford provides reasonable accommodations to qualified individuals with disabilities in the application process and in employment. Applicants requiring accommodation should contact Human Resources.
+
+Employment is contingent upon successful completion of a background check, drug screening, verification of credentials, and confirmation of eligibility to participate in federal healthcare programs. Candidates excluded from federal healthcare program participation are not eligible for employment.
+
+Ashford Health Systems is a tobacco-free workplace and does not hire tobacco users in states where such a policy is permissible.

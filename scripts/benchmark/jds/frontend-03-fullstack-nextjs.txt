@@ -1,0 +1,40 @@
+Product Engineer (Frontend-Leaning)
+Tessellate — New York, NY or Remote
+
+Tessellate is a Series A company building tooling for independent creative studios: proposals, contracts, invoicing, and project tracking in one place. We are 22 people, 9 of them engineers. This is a product engineering role that leans frontend, which at our size means you own features from the database schema through to the interaction design.
+
+We use Next.js (App Router), TypeScript, tRPC, Postgres with Drizzle, and Tailwind. We deploy on Vercel. If you have strong feelings about any of these choices we would genuinely like to hear them during the interview.
+
+The work
+
+You will ship customer-facing features end to end. A recent example: one engineer took our contract e-signature flow from a rough spec through schema design, the signing UI, the audit trail, and the PDF generation, and shipped it in five weeks. That is the shape of the job.
+
+You will also spend real time on the parts of the product that are already built but not good enough. Our invoicing table is slow past a few hundred rows. Our onboarding has a 40% drop-off at the workspace-setup step and we do not fully understand why. We want someone who treats those as interesting rather than as chores.
+
+Because we are small, you will talk to customers. Every engineer does two support shifts a month and sits in on customer calls. We think this is the highest-leverage thing we do.
+
+Who we're looking for
+
+Four or more years shipping product. We care much more about what you have shipped and whether users liked it than about which frameworks you used to do it.
+
+Solid React and TypeScript. Comfort with server components and the App Router mental model, or clear evidence you pick up new paradigms quickly.
+
+Enough backend competence to design a reasonable schema and write a query that does not fall over. You do not need to be a database expert; you do need to not be afraid of the database.
+
+Genuine product sense. You should be able to look at a feature request and figure out what the customer actually needs, which is frequently not what they asked for.
+
+Comfort in a small company. There is no QA team, no dedicated DevOps, and no one to write your tickets for you.
+
+Not required
+
+A CS degree. Two of our nine engineers do not have one.
+
+Experience in the creative or agency space, though it helps if you find the customer interesting.
+
+Compensation and logistics
+
+$150,000 - $180,000 with meaningful early-stage equity. We publish our comp bands internally and we will tell you the band before you interview.
+
+We have an office in Manhattan that about half the team uses. Fully remote is fine within US timezones. We fly the whole company somewhere twice a year.
+
+Interview process: intro call, a paid take-home (we pay $500 for roughly four hours, and it is a real problem from our backlog), a walkthrough of your take-home with two engineers, and a conversation with the founders. Three weeks start to finish, usually less.

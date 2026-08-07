@@ -1,0 +1,42 @@
+Software Engineer
+Pinehurst Systems — Raleigh, NC (Hybrid)
+
+Pinehurst builds inventory and point-of-sale software for independent pharmacies. About 2,600 pharmacies use us. Our software handles prescription intake, insurance adjudication, inventory ordering, and the register.
+
+We are hiring a Software Engineer. This is a generalist role — you will work across the stack and across products depending on what needs doing.
+
+The work
+
+In a given quarter you might build a feature in our web application, fix a performance problem in a database query, write an integration with a wholesaler's ordering API, or debug why a receipt printer at a pharmacy in Ohio is producing garbage output. We are a small enough team that specialization is a luxury.
+
+Current projects on the roadmap include: rebuilding our insurance rejection handling (pharmacists spend real time on this daily and our current interface is bad), an integration with a third wholesaler, and moving our reporting off the production database where it does not belong.
+
+What we're looking for
+
+Two to six years of professional software engineering. We are flexible on the level and will calibrate the offer to what we see.
+
+Competence in at least one server-side language and a willingness to work in ours, which is C# and .NET. We have hired people from Java, Python, and Ruby backgrounds and it has worked out.
+
+SQL comfort. Our data model is the heart of the product and you will spend meaningful time in SQL Server.
+
+Some frontend ability. Our web application is React; you do not need to be a specialist but you should be able to build a form that works.
+
+Willingness to learn the domain. Pharmacy has a lot of specific rules — DEA scheduling, insurance rejection codes, 340B pricing — and understanding them is what separates a useful engineer here from one who ships technically correct features that do not fit how a pharmacy works.
+
+We do not require
+
+A computer science degree.
+
+Healthcare or pharmacy experience.
+
+Experience with our exact stack.
+
+What it's like here
+
+We are 65 people in Raleigh. Engineering is 18. Hybrid, three days in office.
+
+Our customers are independent pharmacies, which are small businesses under real economic pressure from chains and PBMs. They call our support line and talk to a person. Engineers rotate through a support shadowing week once a year and it is the fastest education in what the product actually needs.
+
+We ship on a two-week cadence. There is no on-call rotation for most engineers; we have a small ops team that handles after-hours, and engineers are escalated to rarely.
+
+Compensation is $95,000 - $135,000 depending on experience, with full benefits and a 4% 401k match. We do annual raises in April and we do not make people negotiate for them.

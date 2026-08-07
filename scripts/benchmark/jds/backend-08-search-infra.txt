@@ -1,0 +1,50 @@
+Backend Engineer, Search Infrastructure
+Foundry Parts — Remote (US) or Pittsburgh, PA
+
+Foundry Parts is a marketplace for industrial and MRO components — bearings, fasteners, hydraulic fittings, and about 14 million other SKUs from 900 suppliers. Our users are maintenance engineers and procurement staff who know exactly what they need and cannot find it, because the part they want is listed by four suppliers under four different naming conventions with three different part number formats.
+
+Search is our core product problem. We are hiring a Backend Engineer to work on it.
+
+The problem space
+
+A user searches for "1/2 inch NPT brass ball valve 600 wog". Somewhere in our catalog there are eleven products that match, listed variously as "Ball Valve, Brass, 1/2in NPT, 600WOG", "BV-050-BR-600", and "1/2\" 600 WOG Brass Ball Valve FNPT". Getting all eleven back, ranked sensibly, is the job.
+
+This involves entity extraction from unstructured supplier descriptions, unit and dimension normalization (imperial and metric, fractional and decimal), synonym and abbreviation handling in a domain with enormous vocabulary, and cross-supplier product matching so we can show one product with eleven offers rather than eleven products.
+
+Responsibilities
+
+Own our search and ranking pipeline. We run OpenSearch with a custom analysis chain and a learning-to-rank layer.
+
+Improve catalog normalization. This is where the biggest gains are. Our current attribute extraction is a mix of regexes and supplier-specific parsers and its coverage is roughly 60%.
+
+Build offline evaluation for search quality. We currently ship ranking changes based on A/B tests alone, which is slow and noisy at our traffic levels.
+
+Work on query understanding: spelling correction that knows "bearring" means "bearing", abbreviation expansion that knows "SS" means stainless steel in this context, and unit parsing that handles "1/2\"" and "0.5 in" and "12.7mm" as the same thing.
+
+Requirements
+
+Four or more years of backend engineering, with real search or information retrieval experience.
+
+Strong Python or Java. Our pipeline is Python; OpenSearch plugins are Java.
+
+Hands-on experience with Elasticsearch or OpenSearch beyond basic queries — analyzers, custom scoring, index design.
+
+Understanding of ranking evaluation: NDCG, MRR, and the practical problem of getting relevance judgments when you do not have annotators.
+
+Comfort with genuinely messy data.
+
+Preferred
+
+Learning-to-rank experience in production.
+
+Experience with entity resolution or record linkage.
+
+Industrial, e-commerce, or catalog domain experience.
+
+Any exposure to embedding-based retrieval. We have a hybrid approach in prototype and it has not yet beaten our lexical baseline, which we consider an interesting result rather than a failure.
+
+Terms
+
+$155,000 - $190,000 plus equity. Remote in the US or hybrid at our Pittsburgh office, which is in a former steel fabrication building and which we find appropriate.
+
+Foundry Parts is 210 people, Series C. Our market is unsexy, enormous, and almost entirely offline, which is why we are here.

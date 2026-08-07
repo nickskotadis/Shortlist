@@ -46,3 +46,11 @@ supabase/.temp/
 
 # Chrome extension build artifact
 shortlist-extension.zip
+
+# Benchmark output (raw call logs, full generated outputs, checkpoints).
+# The JD fixtures in scripts/benchmark/jds/ ARE committed — they are synthetic
+# and make the benchmark reproducible.
+scripts/benchmark/results/
+# Historical prompt bodies checked out from git history by the harness.
+# Derived artifacts — regenerated automatically, not a source of truth.
+scripts/benchmark/versions/

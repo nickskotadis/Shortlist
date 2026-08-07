@@ -1,0 +1,46 @@
+Frontend Developer (Mid-Level)
+Northgate Utilities Software — Columbus, OH
+
+Northgate builds meter-reading and billing software for municipal water and electric utilities. Our customers are small-to-mid-size public utilities, typically serving between 5,000 and 200,000 accounts. The software is unglamorous and it is load-bearing: if our billing run fails, a city does not send bills that month.
+
+We are looking for a mid-level frontend developer to join our customer portal team. The portal is what utility customers use to view usage, pay bills, and set up autopay. It handles about 1.4 million sessions a month.
+
+Day to day
+
+Build and maintain features in our Vue 3 application. The codebase is roughly five years old, was migrated from Vue 2 last year, and is in decent shape.
+
+Work on the parts of the portal that serve users with older devices and slower connections. A meaningful fraction of our traffic comes from phones several generations old. We support browsers further back than most teams would.
+
+Fix bugs reported through utility support desks. These come with unusual context — a customer calls their water utility, the utility calls us — and tracing them is genuinely interesting detective work.
+
+Work with our backend team on API design. Our backend is .NET and you will be reviewing API contracts, not writing C#.
+
+Participate in accessibility remediation. As a vendor to public utilities we have contractual WCAG 2.1 AA obligations and we are currently working through an audit backlog.
+
+What we're looking for
+
+Two to five years of professional frontend development.
+
+Working knowledge of Vue (2 or 3) or strong React experience and willingness to learn Vue. We have hired React developers into this team before and it has gone fine.
+
+Solid JavaScript fundamentals. We care more about whether you understand the language than about which framework you have used.
+
+CSS competence, including responsive layout and cross-browser debugging.
+
+Patience for a domain that takes a while to learn. Utility billing has real complexity — tiered rate structures, prorated service periods, budget billing plans — and it takes most people a few months to feel fluent.
+
+We do not require
+
+A degree. Several people on our team came through bootcamps or self-taught.
+
+Prior utility or public-sector experience.
+
+Experience with our exact stack.
+
+The offer
+
+$95,000 - $120,000 depending on experience. We are in Columbus and this role is onsite three days a week; we are open to discussing more remote flexibility after the first six months.
+
+Benefits are genuinely good: full health coverage with no employee premium, 5% 401k match with immediate vesting, and 20 days PTO to start. We are employee-owned, which means an ESOP contribution on top of the 401k.
+
+Northgate is 140 people and has been in business since 1997. We are not a startup and we do not pretend to be. People stay here a long time — median tenure on the engineering team is just over six years.

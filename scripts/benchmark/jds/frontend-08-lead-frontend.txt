@@ -1,0 +1,40 @@
+Frontend Lead
+Vellum Legal — Remote (Europe or US East)
+
+Vellum builds document review software for litigation teams. Our users are attorneys and paralegals reviewing tens of thousands of documents under deadline pressure, and the interface they use for eight hours a day is our entire product surface.
+
+We are looking for a Frontend Lead to take technical ownership of that surface. This is a hands-on lead role: roughly 70% individual contribution, 30% technical leadership. It is not a management role and there is no direct reporting line, though we would support a move in that direction later if you wanted one.
+
+What you'd own
+
+Technical direction for the frontend across a team of six engineers. This means architecture decisions, code review standards, and being the person who says no to complexity that will not pay for itself.
+
+The document viewer, which is the heart of the product. It renders PDFs, native Office documents, and email threads with annotation layers, redaction, and full-text highlight synchronization. It is the most complex thing we build and it is currently the least maintainable.
+
+A migration we have committed to and not yet started: moving off our aging Angular 14 application to React. We have a plan on paper and no execution. Realistically this is a multi-year strip-and-replace and you would be the person accountable for it not becoming a permanent state of two frameworks.
+
+Hiring. We expect to add two more frontend engineers in the next year and you would run those loops.
+
+What we need to see
+
+Seven or more years of frontend engineering, including time at a level where you set direction rather than received it.
+
+Experience leading a significant migration or rewrite. We are specifically interested in someone who has done one that went badly and can talk about why, as much as someone whose migration went well.
+
+Strong React and TypeScript. Angular experience is genuinely useful here given the migration, though not required if you are willing to work in it.
+
+Experience with document rendering, canvas work, or another domain with hard performance constraints and rich interaction.
+
+The judgment to distinguish between technical debt worth paying down and technical debt worth living with. Our codebase has plenty of both and we cannot afford to fix all of it.
+
+Working style
+
+We are remote-first across European and US East timezones, with a required overlap window of 14:00-17:00 CET. We write things down: design docs for anything non-trivial, written weekly updates, and decisions recorded with their reasoning.
+
+We do not do sprints. Engineers pull from a prioritized list and we review scope monthly. This works well for us and badly for people who want more structure, which is worth knowing going in.
+
+Compensation
+
+€130,000 - €165,000 or $185,000 - $225,000 depending on location, plus equity. We use location-band comp and we will show you the bands.
+
+Vellum is 55 people, Series B, and profitable on a unit basis if not overall. Our customers are law firms, which means slow sales cycles and very low churn.

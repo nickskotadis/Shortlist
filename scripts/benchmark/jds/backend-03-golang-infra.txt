@@ -1,0 +1,52 @@
+Backend Engineer (Go) — Infrastructure Services
+Basalt Cloud — Remote (Global, async-friendly)
+
+Basalt provides managed database hosting: Postgres, MySQL, and Redis, provisioned in a customer's own cloud account. We are the control plane, not the data plane, which is an unusual position with an unusual set of problems.
+
+We are hiring a Backend Engineer to work on the provisioning and lifecycle services.
+
+The interesting part
+
+Because we operate inside customer cloud accounts, we cannot assume anything. Permissions get revoked. Quotas get hit. Someone deletes a security group by hand on a Tuesday. Our control plane has to converge toward a desired state in an environment where a third party can arbitrarily change things underneath us, and it has to do it without ever taking down a customer's production database.
+
+That means most of the work here is about reconciliation loops, idempotency, and designing operations that are safe to interrupt and resume. If you have worked on Kubernetes controllers or Terraform providers, this will feel familiar.
+
+Responsibilities
+
+Build and maintain provisioning workflows in Go. We use Temporal for durable execution and we are generally happy with that choice.
+
+Own a set of cloud provider integrations. We support AWS and GCP today; Azure is on the roadmap and would likely be yours.
+
+Improve our drift detection. We currently notice a lot of drift by having a customer complain, which is not the order we would prefer.
+
+Handle upgrades. Major-version Postgres upgrades on customer production databases, with rollback, is the single highest-stakes operation we perform.
+
+On-call: one week in six, with a genuine expectation that you can hand off cleanly and that pages are rare.
+
+Requirements
+
+Four or more years of backend engineering, with at least two writing Go professionally.
+
+Experience with cloud provider APIs at a level beyond calling them occasionally. You should understand eventual consistency in IAM propagation and why it ruins your day.
+
+Experience building systems that converge rather than systems that execute. The distinction matters a lot to us.
+
+Solid understanding of at least one relational database's operational characteristics — replication, backup and restore, failover.
+
+Written communication. We are fully async across nine timezones and if you cannot write clearly this role will be frustrating for everyone.
+
+Nice to have
+
+Kubernetes controller or operator development.
+
+Temporal, Cadence, or similar durable execution framework experience.
+
+Database internals knowledge. Someone on the team who genuinely understands WAL would be valuable.
+
+Terms
+
+$150,000 - $185,000 USD, adjusted by a published location factor. We hire globally through an employer of record.
+
+Fully async. We have no recurring all-hands and no daily standup. Two meetings a week maximum. This is not for everyone and we would rather you self-select than discover it in month three.
+
+Basalt is 40 people, bootstrapped, profitable. We have no investors and no plans to take any.

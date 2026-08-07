@@ -1,0 +1,46 @@
+Staff Software Engineer
+Kelvin Facilities — Remote (US) or Minneapolis, MN
+
+Kelvin builds building management and energy optimization software for commercial real estate. We connect to HVAC, lighting, and metering systems across about 1,900 buildings and reduce energy consumption through scheduling and setpoint optimization.
+
+We are hiring a Staff Software Engineer to work across the platform.
+
+What a Staff role means here
+
+We are 190 people with 45 engineers across six teams. A Staff Engineer at Kelvin is not a manager and does not have reports. The role is about identifying and solving problems that span teams, and about raising the technical quality of decisions made by people who do not report to you.
+
+Concretely, the current Staff engineers spend their time roughly: 50% hands-on implementation on the hardest problems, 30% design review and technical mentorship, and 20% on longer-horizon technical strategy.
+
+Problems we would want you on
+
+Our device connectivity layer. We speak BACnet, Modbus, and a half-dozen proprietary protocols to equipment ranging from new to installed-in-1987. The abstraction we built five years ago is straining and replacing it is a cross-team project with real risk — a bad deploy can leave a building's heating in a bad state on a January night in Minnesota.
+
+Our data model for building topology. Buildings have floors, zones, equipment, and points, related in ways that vary by building and that we currently model inconsistently across three services.
+
+Our optimization scheduling. We compute setpoint schedules and push them to equipment, and the interaction between our schedule and a building operator's manual override is a persistent source of confusion and occasional comfort complaints.
+
+Requirements
+
+Eight or more years of software engineering with demonstrated impact beyond your own team.
+
+Strong systems thinking. The interesting problems here are about interfaces between components and about failure modes, not about any single algorithm.
+
+Depth in at least one of our areas: distributed systems, IoT/embedded connectivity, or time-series data at scale. Breadth across the others.
+
+Strong Python or Go. Our stack is mostly Python with Go in the connectivity layer.
+
+Track record of influencing technical direction without authority, and the judgment to know when to influence versus when to let a team make a different choice than you would.
+
+Willingness to be on the hook when something goes wrong at a customer building.
+
+Helpful
+
+Building systems, HVAC, energy, or industrial control background. This domain has substantial depth and no one arrives knowing it.
+
+Time-series database experience. We use TimescaleDB and ingest about 400 million points a day.
+
+Compensation
+
+$200,000 - $245,000 plus equity. Remote in the US or hybrid in Minneapolis.
+
+Kelvin is Series C. Our customers are commercial landlords and our value proposition is energy cost reduction, which means our business does well when energy prices are high, and we are candid that this is a real dependency.

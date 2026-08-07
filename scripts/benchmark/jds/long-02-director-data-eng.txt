@@ -1,0 +1,137 @@
+Senior Manager, Data Engineering — Enterprise Data Platform
+Job Code: DE-SM-1180 | Grade 12
+Locations: Chicago, IL (primary) | Charlotte, NC | Remote considered for exceptional candidates
+Division: Enterprise Technology Services
+Reports To: Vice President, Data and Analytics Platform
+
+ORGANIZATION OVERVIEW
+
+Kestrelbrook Financial Group is a diversified financial services organization providing retail banking, commercial lending, wealth management, and insurance products through approximately 900 branches and a digital platform serving 11 million customers. We employ roughly 44,000 people, of whom approximately 6,200 work in Enterprise Technology Services.
+
+The Data and Analytics Platform organization within ETS is responsible for the data infrastructure that supports regulatory reporting, risk modeling, customer analytics, fraud detection, and the operational reporting used across every line of business. We manage a data estate of approximately 14 petabytes, ingest from roughly 340 source systems, and support about 2,800 internal data consumers ranging from executives reading dashboards to quantitative analysts building models.
+
+POSITION SUMMARY
+
+We are seeking a Senior Manager of Data Engineering to lead a team of 14 engineers responsible for the core ingestion and transformation layer of the Enterprise Data Platform. This is a people leadership role with substantial technical content. The successful candidate will manage three team leads and their respective sub-teams, own the technical roadmap for the ingestion platform, and serve as the primary technical interface between the data platform organization and the source system owners across the enterprise.
+
+This position has been created following a reorganization that consolidated three previously separate ingestion teams. Those teams built to different standards, used different tooling, and had different relationships with their source system partners. Unifying them, technically and culturally, is the defining challenge of this role in its first year.
+
+KEY RESPONSIBILITIES
+
+Team Leadership and Development
+
+Lead, coach, and develop a team of 14 data engineers organized into three sub-teams, with three team leads reporting directly to this position. Conduct regular one-on-ones, set and review performance objectives, deliver performance evaluations, and manage compensation planning within established frameworks.
+
+Assess current team capability against future requirements and build a development plan that closes the gap. The consolidated team has uneven skill distribution: strong SQL and legacy ETL capability, thinner experience with modern streaming architectures and with software engineering practices such as automated testing and code review.
+
+Manage hiring for approved open positions. Two requisitions are currently open and additional headcount is anticipated pending budget approval.
+
+Address performance concerns directly and constructively. The consolidation surfaced two situations requiring active management, which the incoming leader will inherit.
+
+Technical Ownership and Delivery
+
+Own the technical roadmap for the ingestion platform, balancing new source onboarding, platform modernization, regulatory-driven work, and technical debt reduction. Historically this team has been almost entirely demand-driven, with the consequence that platform investment has been deferred repeatedly.
+
+Establish and enforce engineering standards across the consolidated team, including code review practices, testing requirements, deployment procedures, and data quality instrumentation. Standards documents exist for two of the three predecessor teams and neither is consistently followed.
+
+Lead the migration of approximately 180 legacy ingestion pipelines from our Informatica-based platform to our modern stack. This program is funded, scoped at roughly 30 months, and currently four months behind its original schedule.
+
+Own service levels for data availability. Downstream consumers, particularly regulatory reporting, have hard delivery deadlines, and late data has consequences that extend beyond internal inconvenience. Our current on-time delivery rate for tier-one datasets is 97.4% against a target of 99.5%.
+
+Partner with the Data Governance organization on lineage, cataloging, and data classification. Kestrelbrook is subject to examination by multiple regulators and the ability to demonstrate provenance for reported figures is a standing requirement.
+
+Stakeholder Management
+
+Serve as the primary escalation point for source system owners across retail banking, commercial banking, wealth, insurance, and finance. These relationships are currently uneven and in at least two cases actively strained.
+
+Represent the ingestion platform in enterprise architecture review, in the quarterly technology planning process, and in periodic examinations conducted by internal audit and by external regulators.
+
+Manage vendor relationships for platform components, including participation in contract renewal discussions and license optimization.
+
+Communicate effectively with senior leadership, including preparing and delivering materials for monthly operating reviews with the VP and quarterly reviews with the CIO's leadership team.
+
+TECHNICAL ENVIRONMENT
+
+The modern platform stack comprises Snowflake as the primary analytical warehouse, dbt for transformation, Apache Airflow for orchestration, Apache Kafka and Confluent Schema Registry for streaming ingestion, and a combination of Fivetran, Debezium, and internally developed connectors for source extraction. Object storage is Amazon S3 with an Apache Iceberg table format layer that we are progressively adopting.
+
+The legacy platform, which remains in production and carries a substantial portion of regulatory reporting load, comprises Informatica PowerCenter, an on-premises Teradata appliance, and a large body of stored procedure logic in Oracle and SQL Server.
+
+Languages in active use are SQL predominantly, Python for orchestration and connector development, and Scala for a small number of Spark workloads that remain from an earlier architectural direction.
+
+Source systems include core banking platforms from two vendors, several loan origination systems, a Salesforce instance, mainframe systems accessed via change data capture, and a long tail of departmental systems of varying quality and documentation.
+
+FIRST-YEAR PRIORITIES
+
+We have deliberately articulated what we expect this role to accomplish in its first year, both so candidates can assess fit and so the eventual hire is not evaluated against unstated expectations.
+
+By the end of the first quarter, we expect the incoming manager to have completed a technical and organizational assessment of the consolidated team, established working relationships with the three team leads and with the principal source system owners, and produced a written point of view on the ingestion platform's most significant risks.
+
+By the end of the second quarter, we expect a unified engineering standard adopted across all three sub-teams, with the associated tooling and review process in place, and a revised plan for the Informatica migration that we believe is achievable. If the revised plan extends the timeline, we would rather hear that in month six than in month twenty-four.
+
+By the end of the year, we expect measurable movement on tier-one on-time delivery, meaningful progress against the migration plan, resolution of the two outstanding performance situations, and a team that describes itself in engagement survey results as having clear direction. That last item matters to us and it is the one the predecessor organizations scored worst on.
+
+WHAT SUCCESS LOOKS LIKE, AND WHAT IT DOES NOT
+
+Success in this role is not primarily measured by the volume of new pipelines delivered. The predecessor teams delivered high volume and accumulated the debt that this role now exists to address.
+
+Success looks like a platform whose behavior is predictable, a team whose engineers can move between sub-teams without relearning conventions, and a set of stakeholder relationships in which source system owners engage with us before their changes break our pipelines rather than after. It also looks like a leader who says no to work that should not be done, which requires both judgment and the willingness to have an uncomfortable conversation with a business partner.
+
+We are aware that some of these objectives are in tension with each other and with the ongoing demand for new source onboarding. Managing that tension explicitly, rather than absorbing it silently into the team's workload, is the job.
+
+REQUIRED QUALIFICATIONS
+
+Bachelor's degree in Computer Science, Information Systems, Engineering, Mathematics, or a related quantitative field, or equivalent professional experience.
+
+A minimum of ten years of professional experience in data engineering, data warehousing, or a closely related discipline.
+
+A minimum of four years of direct people management experience, including managing engineers and preferably including managing through team leads rather than only managing individual contributors directly.
+
+Demonstrated experience leading a data platform or data engineering function at meaningful scale, including accountability for delivery commitments to downstream business consumers.
+
+Strong technical foundation in data modeling, dimensional design, SQL performance, and distributed data processing. This role does not require daily hands-on development but does require the technical depth to evaluate designs, question estimates, and be credible with the team.
+
+Experience with cloud data warehouse platforms, with Snowflake, Databricks, BigQuery, or Redshift all acceptable.
+
+Experience with modern orchestration and transformation tooling.
+
+Demonstrated ability to manage stakeholder relationships across organizational boundaries, including relationships involving competing priorities and constrained resources.
+
+Excellent written and verbal communication, including the ability to translate technical constraints into business terms for executive audiences.
+
+PREFERRED QUALIFICATIONS
+
+Advanced degree in a relevant field.
+
+Experience in banking, financial services, insurance, or another heavily regulated industry, with familiarity with the data implications of regulatory frameworks such as BCBS 239, CCAR, or CECL.
+
+Experience leading a platform migration or modernization program of comparable scope, particularly one that ran while the legacy platform remained in production.
+
+Experience with data mesh or domain-oriented data architecture, including realistic assessment of its costs.
+
+Experience with team consolidation following reorganization or acquisition.
+
+Familiarity with data quality frameworks and with the organizational question of who owns data quality, which in most enterprises is unresolved.
+
+Professional certifications in relevant cloud or data platforms.
+
+WORKING CONDITIONS AND EXPECTATIONS
+
+This position is based in Chicago with an expectation of four days per week onsite. Kestrelbrook's current workplace policy for people leaders at Grade 11 and above is more onsite-weighted than for individual contributors, reflecting an organizational judgment about the nature of leadership work. Charlotte-based candidates will be considered. Fully remote arrangements will be considered only for candidates whose qualifications are exceptional and will require quarterly travel to Chicago.
+
+Occasional travel to other Kestrelbrook locations is expected, approximately 10%.
+
+Certain periods carry elevated intensity. Quarter-end and year-end regulatory reporting cycles create firm deadlines, and the team supports them. Leadership is expected to be available during those periods and to manage team workload so that intensity does not become chronic.
+
+COMPENSATION
+
+The base salary range for this position is $185,000 to $230,000. Placement within the range reflects experience, location, and internal equity. This position is eligible for an annual incentive with a target of 25% of base salary, determined by a combination of individual, division, and corporate performance.
+
+Kestrelbrook provides medical, dental, and vision coverage, a 401(k) with company matching and an additional non-elective contribution, a defined-benefit pension component for eligible employees, paid time off beginning at 24 days annually, paid parental leave, tuition assistance, and an employee banking benefit program.
+
+APPLICATION AND SELECTION
+
+Interested candidates should apply through the Kestrelbrook careers portal. Our selection process for management roles at this grade includes a recruiter screen, a hiring manager interview, a technical and functional panel with peer managers and a senior engineer from the team, a leadership interview with the Vice President, a case exercise focused on a realistic prioritization scenario, and a final conversation with a Human Resources business partner.
+
+Kestrelbrook Financial Group is an equal opportunity and affirmative action employer. We consider all qualified applicants without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, age, disability, protected veteran status, or any other legally protected characteristic. We are committed to providing reasonable accommodation throughout the application process upon request.
+
+All offers of employment are contingent upon satisfactory completion of background screening, including credit history review consistent with the requirements applicable to positions in financial services, and upon verification of eligibility to work in the United States. Kestrelbrook does not provide immigration sponsorship for this position.

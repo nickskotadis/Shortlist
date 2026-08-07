@@ -1,0 +1,50 @@
+Frontend Engineer, Mobile Web
+Kestrel Transit — Chicago, IL (Hybrid)
+
+Kestrel builds the rider-facing apps for regional transit agencies. Eleven agencies use our white-label platform, covering about 3 million monthly riders. Most of those riders reach us through mobile web, not the native app, because they are on a bus and they need arrival times right now and they are not going to install anything.
+
+We are hiring a Frontend Engineer focused on the mobile web experience.
+
+Context you should have
+
+Our mobile web app is a PWA. It has to work on a two-bar LTE connection in a subway tunnel, on a five-year-old Android device, for a rider who has ten seconds of attention. Every technical decision runs through that filter.
+
+We are also a vendor to public agencies, which means long procurement cycles, contractual uptime commitments, and accessibility requirements that are legally enforceable rather than aspirational.
+
+Responsibilities
+
+Own the mobile web client (React, TypeScript, Workbox for service worker management, MapLibre for mapping).
+
+Improve offline and degraded-network behavior. Today we cache schedule data reasonably well and real-time arrival data not at all, which is the wrong way round for what riders actually need.
+
+Work on the map surface. Rendering a live vehicle layer over a transit network on a low-end phone without draining the battery is the single hardest technical problem on this team.
+
+Support agency-specific theming. Each of our eleven agencies has its own branding, and a few have accessibility requirements stricter than the baseline.
+
+Contribute to our performance budget work. Our target is interactive in under 3 seconds on a simulated Moto G4 over regular 3G, and we currently miss it on four of eleven agency configurations.
+
+Requirements
+
+Three or more years of frontend engineering with real mobile web experience — not just responsive layouts, but actual work targeting constrained devices and networks.
+
+Strong React and TypeScript.
+
+Experience with service workers and offline-first patterns.
+
+Understanding of performance measurement on mobile: Lighthouse, WebPageTest, real device testing. We keep a drawer of old phones and you will use them.
+
+Comfort with the constraints of white-label multi-tenancy.
+
+Nice to have
+
+Mapping or geospatial experience (MapLibre, Mapbox GL, Leaflet, or equivalent).
+
+Experience with GTFS or transit data formats. We will teach you this if you have not seen it.
+
+Public-sector or civic tech background.
+
+Details
+
+$130,000 - $160,000 plus benefits. Hybrid in Chicago, two days a week in the Loop office. Public transit stipend, which we would feel silly not offering.
+
+Kestrel is 75 people. About a third of us came from transit agencies rather than from tech, which makes for unusually good product instincts and unusually long meetings.

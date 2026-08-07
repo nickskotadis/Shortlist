@@ -1,0 +1,54 @@
+Senior Python Engineer
+Grantwell — Remote (US) or Boston, MA
+
+Grantwell builds grants management software for nonprofits and community foundations. About 700 organizations use us to run application intake, review workflows, and disbursement tracking, moving roughly $2.8 billion in grant funding annually.
+
+We are hiring a Senior Python Engineer.
+
+Our situation, honestly
+
+The product is eleven years old and it is a Django monolith. That is not an apology — the monolith is well-factored, well-tested, and the reason a 30-person engineering team can support 700 customers. But it has real problems: our background job system is homegrown and predates Celery being obvious, our permissions model has accumulated eight years of exceptions, and our reporting queries are slow enough that some customers schedule them overnight.
+
+We want a senior engineer who is energized rather than depressed by that description.
+
+What you'd work on
+
+The workflow engine. Every foundation has a different review process — some have two review stages, some have seven, some have conditional routing based on grant size. Our engine expresses this and it is the most-modified part of the codebase.
+
+Reporting and exports. Foundations have board meetings and they need numbers. Our slowest report currently takes 90 seconds and times out for our three largest customers.
+
+The permissions refactor. We have a plan to move to a policy-based model and it is a significant project with real migration risk given that permissions here control access to individual grant applications containing sensitive information.
+
+Migrating our background jobs to something standard. This is deferred maintenance and someone needs to want to do it.
+
+General product work. Not everything is a platform project; you will also ship features that customers asked for.
+
+Requirements
+
+Five or more years of Python, with substantial Django experience.
+
+Strong SQL and Postgres. You should be able to read an EXPLAIN plan and act on it.
+
+Experience working in a mature codebase — one where the constraint is not building new things but changing existing things safely.
+
+Testing discipline. We have 4,200 tests and 84% coverage and we would like to keep it that way.
+
+Interest in the nonprofit and philanthropic sector. Our customers are mission-driven organizations with small budgets and our pricing reflects that; if you want to work somewhere with unlimited engineering resources this is not it.
+
+Nice to have
+
+Experience with multi-tenant SaaS and the data isolation problems it brings.
+
+Experience with document generation, e-signature, or workflow automation.
+
+Prior nonprofit sector experience, as an employee or a volunteer.
+
+What we offer
+
+$150,000 - $180,000. Fully remote in the US, or hybrid in Boston if you prefer an office.
+
+Four-day work week. We moved to it three years ago and have kept it. Salaries are for the four-day week, not prorated down from five.
+
+Generous PTO on top of that, and we enforce a minimum rather than advertising an unlimited policy nobody uses.
+
+Grantwell is a B Corp with 95 employees. We have grown about 15% a year for six years and we are not trying to grow faster.

@@ -1,0 +1,46 @@
+Senior Accessibility Engineer (Frontend)
+Ardent Learning — Remote (US or Canada)
+
+Ardent builds a learning management system used by roughly 800 school districts and 40 universities. Accessibility is not a compliance checkbox for us: a meaningful portion of our end users are students with disabilities, and when our product fails them it fails at the specific moment they are trying to learn something.
+
+We are hiring a Senior Accessibility Engineer to sit within the frontend platform team and raise the accessibility floor across the whole product.
+
+What the job actually involves
+
+Roughly half your time will be hands-on frontend engineering: fixing complex accessibility defects, rebuilding components that cannot be remediated in place, and building accessible primitives that product teams can use without needing to be experts themselves.
+
+Roughly a quarter will be tooling and automation. We run axe in CI but it catches a small fraction of real issues. We want better linting, better component-level testing, and a pattern library that makes the accessible path the easy path.
+
+The remaining quarter is education and review. You will run accessibility review on significant design work before it is built, teach a recurring internal workshop, and be the person engineers ask when they are not sure.
+
+You will also work directly with our accessibility consultants and with district-level accessibility coordinators who file complaints. Some of these conversations are difficult. We want someone who can hear a legitimate complaint about our product without getting defensive.
+
+Requirements
+
+Five or more years of frontend engineering with at least two focused substantially on accessibility.
+
+Deep practical knowledge of WCAG 2.1 AA and how it maps to actual implementation decisions, not just the text of the guidelines.
+
+Hands-on screen reader experience across at least NVDA and VoiceOver, ideally JAWS as well. You should be able to test your own work, not just file it for someone else to test.
+
+Strong React and TypeScript. Our product is React; some of the oldest surfaces are still jQuery and you will encounter them.
+
+Experience with ARIA authoring practices, including knowing when ARIA is the wrong answer.
+
+The ability to write clearly. A lot of this role is documentation and persuasion.
+
+Meaningful pluses
+
+Experience in education technology, or with the specific accessibility expectations of public education procurement.
+
+IAAP certification (CPACC or WAS), though we care about demonstrated skill far more than credentials.
+
+Experience with accessibility in complex interactive surfaces: rich text editors, drag-and-drop interfaces, data grids, video players. We have all four and all four are hard.
+
+Lived experience with assistive technology.
+
+Terms
+
+$160,000 - $195,000 USD, or the CAD equivalent for Canadian candidates. Fully remote. We provide a hardware budget that explicitly covers assistive technology and testing devices.
+
+Ardent is a 260-person company, B Corp certified, and about 60% of our revenue comes from public school districts. That shapes both our margins and our priorities, and we are upfront about it.

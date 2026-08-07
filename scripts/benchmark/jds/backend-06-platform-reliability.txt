@@ -1,0 +1,50 @@
+Staff Engineer, Platform Reliability
+Ironwood Media — Los Angeles, CA (Hybrid)
+
+Ironwood operates streaming infrastructure for about 40 media companies — regional broadcasters, sports leagues, and a handful of niche subscription services. At peak we serve around 900,000 concurrent streams, and our traffic is extremely spiky: a mid-tier soccer match can take us from 40,000 to 600,000 concurrent viewers in under four minutes.
+
+We are hiring a Staff Engineer for Platform Reliability.
+
+Why this role exists
+
+Our platform works well most of the time and fails in correlated, expensive ways during exactly the events our customers care most about. In the last year we have had three significant incidents, all during live events, all with a different proximate cause and the same underlying pattern: capacity assumptions that hold under steady state and break under a step change in load.
+
+We want someone senior to own that problem class rather than owning individual services.
+
+What you'd do
+
+Lead capacity and load-shedding strategy across our origin, packaging, and manifest services. Our autoscaling is reactive and our events are not.
+
+Own the reliability engineering practice: SLOs that mean something, incident review that produces change rather than documents, and a genuine error budget policy. We have the vocabulary for all of this and not much of the substance.
+
+Drive chaos and load testing. We have no systematic way to reproduce a 15x traffic spike in a test environment and this is the main reason we keep being surprised.
+
+Work across teams. Reliability at Ironwood is not one team's problem; the fixes will mostly be implemented by service owners and your job is to make sure the right fixes get prioritized.
+
+Be a strong escalation point during major incidents. Our biggest events are on weekends and evenings and this role carries real responsibility during them, compensated accordingly.
+
+Requirements
+
+Eight or more years of engineering, including significant time in SRE, platform, or infrastructure roles.
+
+Deep experience with high-traffic distributed systems, particularly under variable and bursty load.
+
+Strong Go or Rust for the systems work; we are primarily Go with a Rust packaging component.
+
+Fluency with Kubernetes at an operator level, not just as a user. We run our own clusters across three regions.
+
+Real incident command experience. You should be able to run a major incident with 20 people on a bridge and keep it productive.
+
+Meaningful pluses
+
+Streaming or CDN background: HLS, DASH, ABR ladders, origin shield behavior.
+
+Experience with capacity planning for event-driven traffic — ticketing, live sports, elections, or similar.
+
+Track record of raising reliability maturity at an organization, not just at a service.
+
+Compensation
+
+$230,000 - $275,000 base, plus equity and an on-call differential. Hybrid in Los Angeles, three days onsite in Culver City.
+
+Ironwood is 310 people. Engineering is 120. We are private-equity owned, which shapes our planning cycles and our appetite for long-horizon projects, and it is better that you know that now than find it out later.

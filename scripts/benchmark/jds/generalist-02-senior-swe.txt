@@ -1,0 +1,46 @@
+Senior Software Engineer
+Talbot Freight — Remote (US)
+
+Talbot builds transportation management software for mid-size freight brokerages. Our customers are brokers who move between 200 and 5,000 loads a month, matching shippers with carriers and coordinating everything in between.
+
+We are hiring a Senior Software Engineer.
+
+What you'd work on
+
+Load management. The core object in our system is a load, and its lifecycle — quoted, booked, dispatched, in transit, delivered, invoiced — touches every part of the product. Most feature work lives here.
+
+Carrier integrations. We connect to ELD providers and tracking services to get automated location updates. Fourteen integrations, all different, several unreliable.
+
+Rating and quoting. Freight pricing depends on lane, equipment type, weight, seasonality, fuel surcharge, and accessorials, and brokers each have their own rules. Making this both flexible and comprehensible is an ongoing design problem.
+
+Document handling. Bills of lading, proof of delivery, rate confirmations. A lot of these arrive as photographs taken by a driver in a truck cab, and extracting usable data from them is harder than it sounds.
+
+Our stack: TypeScript throughout, Node on the backend, React on the frontend, Postgres, and a fair amount of AWS. We deploy several times a day.
+
+Requirements
+
+Five or more years of professional software engineering with full-stack capability. You should be comfortable owning a feature from data model to interface.
+
+Strong TypeScript and Node. Strong SQL.
+
+Experience with third-party integrations, including the operational reality of them — monitoring, alerting, and graceful degradation when a partner goes down at 2am.
+
+Product judgment. Our customers are brokers who will tell you exactly what to build, and roughly half the time what they describe is not what would actually help them. We need engineers who can tell the difference.
+
+Autonomy. We are fully remote and our engineers own their work end to end with light process.
+
+Helpful but not necessary
+
+Logistics, freight, or supply chain background. It is a genuinely interesting industry with a lot of accumulated weirdness.
+
+Experience with document extraction or OCR.
+
+Experience at a company between 50 and 200 people, where process exists but is thin.
+
+Logistics of the role
+
+$155,000 - $190,000 plus equity. Fully remote in the US. We overlap on core hours 11am-3pm Eastern and are otherwise flexible.
+
+We are 80 people, Series A, and profitable-ish. Freight is cyclical and we are currently in a soft market, which we talk about openly with candidates because it affects our growth plans.
+
+Interview process: a call with the hiring manager, a technical conversation about your past work, a pairing session on a small real problem in a repo we give you beforehand, and a final conversation. We pay for the pairing session time.

@@ -1,0 +1,50 @@
+MLOps Engineer
+Perch Insurance Technology — Remote (US)
+
+Perch provides underwriting and claims models to regional property and casualty insurers. Twenty-two carriers use our models to price policies and triage claims. Because we operate in a regulated industry, every model we deploy has to be explainable to a state insurance regulator, auditable years after the fact, and demonstrably free of prohibited rating factors.
+
+We are hiring an MLOps Engineer to own the infrastructure that makes that possible.
+
+Why this is not a standard MLOps role
+
+In most companies, model governance is a nice-to-have that gets built after something goes wrong. Here it is a precondition for shipping. A model we cannot explain is a model we cannot deploy, and a model whose training data we cannot reconstruct three years later is a compliance liability.
+
+That means lineage, reproducibility, and audit trails are first-class engineering requirements, not paperwork bolted on afterward.
+
+Responsibilities
+
+Own our model registry and deployment pipeline. Every model version needs to be traceable to its exact training data, code, hyperparameters, and the person who approved it.
+
+Build and maintain reproducible training pipelines. "Rerun this model exactly as it was trained in March 2024" needs to be a command, not an archaeology project.
+
+Own monitoring: data drift, prediction drift, and fairness metrics computed continuously across protected-class proxies. Our regulators care about disparate impact and so do we.
+
+Support the model risk management process. You will work with our actuarial and compliance teams to produce documentation packages for regulatory filings.
+
+Improve iteration speed for the data science team, which currently waits too long between having a model idea and being able to evaluate it.
+
+Requirements
+
+Four or more years in MLOps, ML platform, or infrastructure engineering supporting ML teams.
+
+Strong Python. Comfort with infrastructure as code (we use Terraform) and containers (Kubernetes on AWS).
+
+Experience with an ML platform stack: MLflow, Kubeflow, SageMaker, Metaflow, or equivalent. We use MLflow and are not married to it.
+
+Experience with data versioning and lineage. If you have opinions about the tradeoffs between DVC, LakeFS, and just being extremely disciplined with S3 paths, we want to hear them.
+
+Ability to work with non-engineers. Actuaries are rigorous, exacting, and do not speak your vocabulary. This collaboration is a large part of the job.
+
+Strongly preferred
+
+Regulated industry experience: insurance, banking, healthcare, or anywhere with a model risk management function.
+
+Familiarity with fairness metrics and their limitations.
+
+Experience with explainability tooling (SHAP, LIME) and its limits in a regulatory conversation.
+
+Terms
+
+$160,000 - $195,000, fully remote in the US.
+
+Perch is 150 people. Our pace is deliberate — we ship model updates on a quarterly cadence, not continuously, because each one goes through review. If you want to ship daily, this is the wrong company, and we say so early.
