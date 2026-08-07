@@ -61,8 +61,24 @@ function extractJsonValue(
     }
   }
 
-  // Opened but never closed → the model was cut off (truncation).
-  return { fail: "truncated" };
+  // Opened but never balanced. That has two distinct causes and they were
+  // previously conflated, with every unbalanced value reported as "truncated":
+  //
+  //   1. The model was genuinely cut off at max_tokens, stopping mid-token.
+  //   2. The model finished writing but emitted structurally broken JSON — most
+  //      commonly an unescaped quote inside a string, which desynchronises the
+  //      string tracking above so that braces in string content get counted.
+  //
+  // Both fail to parse, so the caller's behaviour is unchanged either way. The
+  // distinction is diagnostic: reporting (2) as "truncated" sends anyone
+  // investigating toward raising a token cap that was never the problem.
+  //
+  // A cut-off response stops mid-token, so its last meaningful character is not
+  // a closing delimiter. A finished-but-malformed response ends the way
+  // completed JSON ends. Compare against the tail with any trailing code fence
+  // removed, since models routinely wrap output in ```json ... ```.
+  const tail = trimmed.replace(/\s*```\s*$/, "").trimEnd();
+  return { fail: tail.endsWith(closer) ? "invalid" : "truncated" };
 }
 
 // Extract + JSON.parse a single LLM response. Pure, no LLM call.

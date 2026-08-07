@@ -915,3 +915,122 @@ structured outputs, neither of which was attempted here).
   (11 during the benchmark run) were not addressed, and `MAX_TOKENS.validator`
   is still 1024 — the same value that proved too low for the parser. That is an
   open item, not a solved one.
+
+---
+
+## 10. Follow-up: validator token cap and the truncated/invalid relabel
+
+Two changes, both closing items left open in §9.5.
+
+### 10.1 `MAX_TOKENS.validator`: 1024 → 4096
+
+Same defect class as the parser. `buildValidatorPrompt` asks for five dimension
+scores plus an **unbounded issues array**, so validator output length scales with
+how many problems it finds — the worst case is a heavily-flagged generation
+rather than a long JD.
+
+Baseline from the benchmark run: **15 of 293 validator calls (5.1%) hit the 1024
+cap** with `stop_reason: max_tokens`. Broken down:
+
+| Slice | At cap |
+|---|---|
+| exp1 Config A | 6 / 109 (5.5%) |
+| exp1 Config B | 3 / 76 (3.9%) |
+| version `bullets-v2` | 6 / 54 (11.1%) |
+| version `bullets-v1` | 0 / 52 (0%) |
+
+Worth recording because it contradicts an assumption made while investigating:
+Config B's validator (Sonnet) flags roughly twice as many issues per generation
+as Config A's, so it looked like the obvious source of the truncations. It was
+not — **Config A truncated at a slightly higher rate than Config B**, and the
+worst slice was `bullets-v2`. Issue count drives output length, but not so
+cleanly that the config with more flags truncates more.
+
+### 10.2 Verification (live API, same method as the parser fix)
+
+74 generated documents from the benchmark run (`results/outputs-*.jsonl`, Config
+A / exp1) were replayed through the real validator at the new cap, each paired
+with a freshly parsed JD analysis. Replaying genuine generated output matters
+here: validator output length depends on what it finds, so synthesised input
+would not exercise the tail.
+
+| | Result |
+|---|---|
+| Validations | 74 |
+| First-attempt parse success | **74/74 (100%)** |
+| Final success | 74/74 (100%) |
+| Retries fired | **0** |
+| Validation ended `unavailable` | **0** |
+| **Hit the new 4096 cap** | **0** |
+| Would have hit the old 1024 cap | 2 (2.7%) |
+
+Output token distribution: min 129, median 525, p90 917, **max 1,081**. The
+most-flagged validation (8 issues) produced 1,081 tokens.
+
+Cost $0.00452 per validation, mean latency 5,599 ms. Total for the verification
+run including JD parses: $0.59.
+
+**Validator truncations dropped to zero, which is what this change set out to
+do.** Two caveats on the strength of that claim:
+
+- The replay's would-have-truncated rate (2.7%) is *lower* than the benchmark's
+  Config A rate (5.5%). n is small in both; 2 of 74 against a true rate of 5.5%
+  is unremarkable sampling variation. The replay also validates each stored
+  output once rather than reproducing the full retry sequence, so it is not a
+  like-for-like re-execution.
+- **This is a smaller fix than the parser's.** The parser needed 1,506 tokens
+  against a 1,024 cap — 47% over budget, failing 100% of long JDs. The validator
+  peaked at 1,081 against the same cap, only 5.6% over. It was marginally
+  under-provisioned, not badly so. 4096 leaves 3.8× headroom over the observed
+  maximum.
+
+Because the validator has always had a retry and fails closed, its truncations
+were already the least damaging of the three failure modes found: they cost a
+wasted call and, twice in the whole run, an ungraded generation.
+
+### 10.3 `extractJsonValue`: truncated vs invalid
+
+`extractJsonValue` reported **every** unbalanced value as `truncated`. That
+conflated two different causes:
+
+1. the model was genuinely cut off at `max_tokens`, stopping mid-token;
+2. the model finished but emitted structurally broken JSON — most often an
+   unescaped quote inside a string, which desynchronises the scanner's string
+   tracking so that braces in string *content* get counted.
+
+Both fail to parse, and no caller branches on `reason` — verified across all
+seven routes that consume `parseJson`/`parseLlmJson`, every one of which checks
+only `.ok`. **The change is purely diagnostic and cannot alter behaviour.**
+
+It matters because the label points investigation in the wrong direction. §8.4
+found parses failing at 800–1,300 tokens with `stop_reason: end_turn` and zero
+calls near the cap, all reported as "truncated" — which would send anyone
+reading the logs toward raising a token budget that was not the problem.
+
+The fix distinguishes them structurally: a cut-off response stops mid-token, so
+its last meaningful character is not a closing delimiter; a finished-but-
+malformed response ends the way completed JSON ends. The comparison strips any
+trailing code fence first, since models routinely wrap output in ```` ```json ````.
+
+Covered by `scripts/check-llm-json.ts` (19 assertions, no test framework added):
+happy paths including braces inside strings and escaped quotes; genuine
+truncation cut off mid-string, after a comma, and inside a nested array;
+and finished-but-malformed output that previously mislabelled as truncated.
+
+**Consequence for §4.2's numbers.** Those counts were produced under the old
+labelling and should be read as "JSON extraction failures", not strictly
+truncations. The parser figures are largely safe — 96 of 224 parse calls carried
+`stop_reason: max_tokens`, so those were real truncations — but the residual
+~11% described in §8.4 was mislabelled and is now correctly reported as
+`invalid`. Any future re-run will produce cleanly separated counts.
+
+### 10.4 Remaining open items
+
+- **The benchmark has not been re-run since any of these fixes.** §1–§7 describe
+  the pre-fix pipeline. A post-fix re-run costs roughly $8 and about two hours.
+- Config B remains an invalid *quality* control (§5.2); answering "did quality
+  drop?" needs an experiment holding the validator fixed.
+- The §4.3 mechanism (empty analysis scoring higher) is inferred from reading
+  `buildValidatorPrompt`, not established by ablation.
+- `PASS_THRESHOLD` / `MIN_DIMENSION_SCORE` are still dead constants whose values
+  happen to match `resolveVerdict`.

@@ -29,10 +29,19 @@ import type { DocumentType, JdAnalysis, ToneType, UserData } from "./types";
 // reserve or bill capacity, so JDs that already fit are entirely unaffected.
 // The only JDs that now cost more are the ones that were previously producing
 // an unusable truncated analysis.
+// validator: 4096, for the same reason as the parser and on the same evidence.
+// buildValidatorPrompt asks for five dimension scores plus an unbounded issues
+// array; output length scales with how many problems the validator finds, so
+// the worst case is a heavily-flagged generation rather than a long JD. At 1024
+// it hit the cap on 15 of 293 calls (5.1%) during the benchmark, truncating its
+// own JSON. Those failures are less damaging than the parser's — the validator
+// has always had a retry, and a doubly-failed validation fails closed rather
+// than fabricating a PASS — but they cost a wasted call and can end a
+// generation ungraded.
 export const MAX_TOKENS = {
   parser: 4096,
   generator: 2048,
-  validator: 1024,
+  validator: 4096,
   tailoring: 512,
 } as const;
 
