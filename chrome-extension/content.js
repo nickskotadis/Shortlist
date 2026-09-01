@@ -342,3 +342,17 @@ new MutationObserver(() => {
     scheduleEnsure("reinject");
   }
 }).observe(document.documentElement, { subtree: true, childList: true });
+
+// ── Test-only exports ─────────────────────────────────────────────────────────
+// `module` is undefined in a Chrome content script, so this block is inert in
+// the browser. It exists so the Vitest suite can exercise the extraction /
+// normalization logic against fixture DOMs.
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    detectBoard,
+    extractJobDescription,
+    BOARD_SELECTORS,
+    MIN_JD_CHARS,
+    MAX_JD_CHARS,
+  };
+}

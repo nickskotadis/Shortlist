@@ -13,6 +13,14 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    // Zero-dependency Node CLI script (run with plain `node`, not bundled) —
+    // require() is the correct import style there.
+    files: ["chrome-extension/generate-icons.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

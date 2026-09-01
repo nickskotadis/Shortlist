@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest",
+    "test:ci": "vitest run",
     "bench": "tsx scripts/benchmark/run.ts"
   },
   "dependencies": {
@@ -36,8 +38,10 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "happy-dom": "^20.12.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.8",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.11"
   }
 }
