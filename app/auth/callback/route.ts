@@ -1,9 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { getSiteOrigin } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as "email" | "recovery" | null;
@@ -11,13 +12,8 @@ export async function GET(request: NextRequest) {
   const rawNext = searchParams.get("next") ?? "/generate";
   const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/generate";
 
-  // BUG-14: only trust x-forwarded-host for known Vercel deployment domains
-  const ALLOWED_HOST_PATTERN = /^[a-z0-9-]+\.vercel\.app$/;
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const host =
-    forwardedHost && ALLOWED_HOST_PATTERN.test(forwardedHost)
-      ? `https://${forwardedHost}`
-      : origin;
+  // BUG-14: only trust x-forwarded-host for hosts we own (custom domain + Vercel)
+  const host = getSiteOrigin(request.headers);
 
   if (code) {
     // For OAuth PKCE: build the redirect response first, then wire Supabase cookies
@@ -59,5 +55,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/auth/login?error=1`);
+  return NextResponse.redirect(`${host}/auth/login?error=1`);
 }

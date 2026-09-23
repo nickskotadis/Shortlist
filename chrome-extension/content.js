@@ -17,7 +17,7 @@
  * Supported: Greenhouse, Lever, Workday, Indeed, LinkedIn (view-only, no API)
  */
 
-const SHORTLIST_APP_URL = "https://shortlist-amber.vercel.app";
+const SHORTLIST_APP_URL = "https://shortlist.sko.codes";
 const BTN_ID = "shortlist-ext-btn";
 const MIN_JD_CHARS = 200; // a real JD is rarely shorter than this
 const MAX_JD_CHARS = 12000; // stay well under the app's 20k ?jd= cap

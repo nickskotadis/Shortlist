@@ -111,7 +111,7 @@ export default function PrivacyPage() {
               </li>
               <li>
                 Passes that text to{" "}
-                <strong>shortlist-amber.vercel.app/generate</strong> as a URL parameter so it
+                <strong>shortlist.sko.codes/generate</strong> as a URL parameter so it
                 pre-fills the job description field.
               </li>
               <li>Opens the Shortlist app in a new tab.</li>
